@@ -73,46 +73,31 @@ const CommandCenter = () => {
         margin: '0 auto 48px auto',
         textAlign: 'center'
       }}>
-        {/* 10AMPRO Logo */}
-        <div style={{
-          width: '100px',
-          height: '100px',
-          borderRadius: '50%',
-          backgroundColor: '#1a3a2a',
-          border: '3px solid #2d5a40',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 20px auto',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.5)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
-            <span style={{ color: '#d4a84b', fontSize: '14px', fontWeight: '600', fontStyle: 'italic' }}>A</span>
-            <span style={{ color: '#d4a84b', fontSize: '36px', fontWeight: '700', lineHeight: 1 }}>10</span>
-            <span style={{ color: '#d4a84b', fontSize: '14px', fontWeight: '600' }}>M</span>
-          </div>
-          <span style={{ color: '#d4a84b', fontSize: '11px', fontWeight: '600', letterSpacing: '3px', marginTop: '-2px' }}>PRO</span>
-        </div>
+        {/* 10AMPRO Logo - Using actual image */}
+        <img 
+          src="/logo.jpg" 
+          alt="10AMPRO" 
+          style={{
+            width: '100px',
+            height: '100px',
+            borderRadius: '50%',
+            margin: '0 auto 20px auto',
+            display: 'block'
+          }}
+        />
 
         <h1 style={{ fontSize: '24px', fontWeight: '600', margin: '0 0 8px 0' }}>Command Center</h1>
         <p style={{ fontSize: '13px', color: '#6b7280', margin: 0 }}>Your Financial Intelligence Hub</p>
         
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          gap: '24px', 
-          marginTop: '16px',
-          fontSize: '12px' 
-        }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginTop: '16px', fontSize: '12px' }}>
           <a href="https://10am.substack.com" target="_blank" style={{ color: '#6b7280', textDecoration: 'none' }}>10am.pro</a>
           <a href="https://x.com/holdmybirra" target="_blank" style={{ color: '#10b981', textDecoration: 'none' }}>@holdmybirra</a>
         </div>
       </header>
 
       {/* Dashboard Cards - Side by Side Grid */}
-      <main style={{ 
-        maxWidth: '1100px', 
+      <main style={{
+        maxWidth: '1100px',
         margin: '0 auto',
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 1fr)',
@@ -127,19 +112,13 @@ const CommandCenter = () => {
             style={{
               padding: '24px',
               borderRadius: '16px',
-              backgroundColor: hoveredCard === dashboard.id && dashboard.url 
-                ? 'rgba(30, 30, 30, 0.95)' 
-                : 'rgba(17, 17, 17, 0.7)',
-              border: `1px solid ${hoveredCard === dashboard.id && dashboard.url 
-                ? dashboard.signalColor + '50' 
-                : 'rgba(55, 65, 81, 0.3)'}`,
+              backgroundColor: hoveredCard === dashboard.id && dashboard.url ? 'rgba(30, 30, 30, 0.95)' : 'rgba(17, 17, 17, 0.7)',
+              border: `1px solid ${hoveredCard === dashboard.id && dashboard.url ? dashboard.signalColor + '50' : 'rgba(55, 65, 81, 0.3)'}`,
               cursor: dashboard.url ? 'pointer' : 'default',
               opacity: dashboard.url ? 1 : 0.45,
               transition: 'all 0.25s ease',
               transform: hoveredCard === dashboard.id && dashboard.url ? 'translateY(-2px)' : 'translateY(0)',
-              boxShadow: hoveredCard === dashboard.id && dashboard.url 
-                ? `0 8px 32px ${dashboard.signalColor}15` 
-                : 'none'
+              boxShadow: hoveredCard === dashboard.id && dashboard.url ? `0 8px 32px ${dashboard.signalColor}15` : 'none'
             }}
           >
             {/* Card Header */}
@@ -167,9 +146,9 @@ const CommandCenter = () => {
               
               {/* Metric */}
               <div style={{ textAlign: 'right' }}>
-                <div style={{ 
-                  fontSize: '28px', 
-                  fontWeight: '700', 
+                <div style={{
+                  fontSize: '28px',
+                  fontWeight: '700',
                   color: dashboard.url ? dashboard.signalColor : '#4b5563',
                   lineHeight: 1
                 }}>
@@ -182,12 +161,7 @@ const CommandCenter = () => {
             </div>
 
             {/* Description */}
-            <p style={{ 
-              fontSize: '13px', 
-              color: '#9ca3af', 
-              margin: '0 0 16px 0',
-              lineHeight: '1.5'
-            }}>
+            <p style={{ fontSize: '13px', color: '#9ca3af', margin: '0 0 16px 0', lineHeight: '1.5' }}>
               {dashboard.description}
             </p>
 
@@ -197,7 +171,7 @@ const CommandCenter = () => {
               {dashboard.highlights.length > 0 && (
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                   {dashboard.highlights.map((highlight, idx) => (
-                    <span 
+                    <span
                       key={idx}
                       style={{
                         padding: '4px 10px',
@@ -217,9 +191,9 @@ const CommandCenter = () => {
               
               {/* CTA Arrow */}
               {dashboard.url && (
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
                   gap: '6px',
                   color: dashboard.signalColor,
                   fontSize: '12px',
@@ -227,13 +201,7 @@ const CommandCenter = () => {
                   marginLeft: 'auto'
                 }}>
                   <span>Open</span>
-                  <svg 
-                    width="16" 
-                    height="16" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor"
-                    strokeWidth="2"
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
                     style={{
                       transform: hoveredCard === dashboard.id ? 'translateX(4px)' : 'translateX(0)',
                       transition: 'transform 0.2s ease'

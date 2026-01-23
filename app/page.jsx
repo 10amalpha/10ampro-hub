@@ -35,7 +35,7 @@ const CommandCenter = () => {
             id: 'earnings',
             icon: '📅',
             title: 'EarningsWatch',
-            metric: 'HOOD 18d',
+            metric: 'PLTR 10d',
             metricLabel: 'Next Earnings',
             signal: 'TRACKING',
             signalColor: '#10b981',

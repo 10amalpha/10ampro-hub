@@ -32,30 +32,43 @@ const CommandCenter = () => {
       url: 'https://forecast2026.vercel.app/',
     },
     {
-            id: 'earnings',
-            icon: '📅',
-            title: 'EarningsWatch',
-            metric: 'PLTR 10d',
-            metricLabel: 'Next Earnings',
-            signal: 'TRACKING',
-            signalColor: '#10b981',
-            tagline: 'Earnings Calendar',
-            description: 'Track upcoming earnings dates for your portfolio. Never miss an earnings call with countdown timers and quick links to IR research.',
-            highlights: ['Earnings Dates', 'IR Links', '9 Stocks Tracked'],
-            url: 'https://earningswatch.vercel.app/',
+      id: 'earnings',
+      icon: '📅',
+      title: 'EarningsWatch',
+      metric: 'PLTR 10d',
+      metricLabel: 'Next Earnings',
+      signal: 'TRACKING',
+      signalColor: '#10b981',
+      tagline: 'Earnings Calendar',
+      description: 'Track upcoming earnings dates for your portfolio. Never miss an earnings call with countdown timers and quick links to IR research.',
+      highlights: ['Earnings Dates', 'IR Links', '9 Stocks Tracked'],
+      url: 'https://earningswatch.vercel.app/',
     },
     {
-            id: 'btc-pension',
-            icon: '₿',
-            title: 'BTC Pension',
-            metric: '3.6x',
-            metricLabel: 'vs Pensión',
-            signal: 'SIMULATOR',
-            signalColor: '#f7931a',
-            tagline: 'Retirement Simulator',
-            description: 'Simula tu retiro con Bitcoin. Compara el poder de acumulación BTC vs pensión tradicional con proyecciones personalizadas.',
-            highlights: ['Simulador', 'Proyecciones', 'BTC vs Pensión'],
-            url: 'https://btc-pension-psi.vercel.app/',
+      id: 'btc-pension',
+      icon: '₿',
+      title: 'BTC Pension',
+      metric: '3.6x',
+      metricLabel: 'vs Pensión',
+      signal: 'SIMULATOR',
+      signalColor: '#f7931a',
+      tagline: 'Retirement Simulator',
+      description: 'Simula tu retiro con Bitcoin. Compara el poder de acumulación BTC vs pensión tradicional con proyecciones personalizadas.',
+      highlights: ['Simulador', 'Proyecciones', 'BTC vs Pensión'],
+      url: 'https://btc-pension-psi.vercel.app/',
+    },
+    {
+      id: 'info-diet',
+      icon: '📓',
+      title: 'Information Diet',
+      metric: '4.5h',
+      metricLabel: 'Data Transfer Rate',
+      signal: 'LIVE',
+      signalColor: '#ef4444',
+      tagline: 'Content Curation Feed',
+      description: 'Lo que estamos consumiendo y compartiendo en el chat de 10ampro. Curación de contenido de alta calidad sobre crypto, tech y macro.',
+      highlights: ['Content Feed', 'YouTube & X', 'Crypto & Tech'],
+      url: 'https://info-diet.vercel.app/',
     },
     {
       id: 'coming2',
@@ -98,10 +111,8 @@ const CommandCenter = () => {
             display: 'block'
           }}
         />
-
         <h1 style={{ fontSize: '24px', fontWeight: '600', margin: '0 0 8px 0' }}>Command Center</h1>
         <p style={{ fontSize: '13px', color: '#6b7280', margin: 0 }}>Your Financial Intelligence Hub</p>
-        
         <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginTop: '16px', fontSize: '12px' }}>
           <a href="https://10am.substack.com" target="_blank" style={{ color: '#6b7280', textDecoration: 'none' }}>10am.pro</a>
           <a href="https://x.com/holdmybirra" target="_blank" style={{ color: '#10b981', textDecoration: 'none' }}>@holdmybirra</a>
@@ -135,7 +146,12 @@ const CommandCenter = () => {
             }}
           >
             {/* Card Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              marginBottom: '16px'
+            }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <span style={{ fontSize: '36px' }}>{dashboard.icon}</span>
                 <div>
@@ -167,19 +183,34 @@ const CommandCenter = () => {
                 }}>
                   {dashboard.metric}
                 </div>
-                <div style={{ fontSize: '9px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '4px' }}>
+                <div style={{
+                  fontSize: '9px',
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  marginTop: '4px'
+                }}>
                   {dashboard.metricLabel}
                 </div>
               </div>
             </div>
 
             {/* Description */}
-            <p style={{ fontSize: '13px', color: '#9ca3af', margin: '0 0 16px 0', lineHeight: '1.5' }}>
+            <p style={{
+              fontSize: '13px',
+              color: '#9ca3af',
+              margin: '0 0 16px 0',
+              lineHeight: '1.5'
+            }}>
               {dashboard.description}
             </p>
 
             {/* Highlights + CTA */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
               {/* Highlights */}
               {dashboard.highlights.length > 0 && (
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -201,7 +232,7 @@ const CommandCenter = () => {
                   ))}
                 </div>
               )}
-              
+
               {/* CTA Arrow */}
               {dashboard.url && (
                 <div style={{
@@ -214,7 +245,13 @@ const CommandCenter = () => {
                   marginLeft: 'auto'
                 }}>
                   <span>Open</span>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                  <svg 
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2"
                     style={{
                       transform: hoveredCard === dashboard.id ? 'translateX(4px)' : 'translateX(0)',
                       transition: 'transform 0.2s ease'

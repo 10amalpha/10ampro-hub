@@ -1,8 +1,16 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const CommandCenter = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   const dashboards = [
     {
@@ -138,12 +146,11 @@ const CommandCenter = () => {
 
   const CardComponent = ({ dashboard, isCommunity = false }) => (
     <div
-      key={dashboard.id}
       onClick={() => dashboard.url && window.open(dashboard.url, '_blank')}
       onMouseEnter={() => setHoveredCard(dashboard.id)}
       onMouseLeave={() => setHoveredCard(null)}
       style={{
-        padding: '24px',
+        padding: isMobile ? '18px' : '24px',
         borderRadius: '16px',
         backgroundColor: hoveredCard === dashboard.id && dashboard.url ? 'rgba(30, 30, 30, 0.95)' : 'rgba(17, 17, 17, 0.7)',
         border: `1px solid ${hoveredCard === dashboard.id && dashboard.url ? dashboard.signalColor + '50' : 'rgba(55, 65, 81, 0.3)'}`,
@@ -159,13 +166,14 @@ const CommandCenter = () => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: '16px'
+        marginBottom: '12px',
+        gap: '12px',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{ fontSize: '36px' }}>{dashboard.icon}</span>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '18px', fontWeight: '700' }}>{dashboard.title}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '12px', minWidth: 0, flex: 1 }}>
+          <span style={{ fontSize: isMobile ? '28px' : '36px', flexShrink: 0 }}>{dashboard.icon}</span>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: isMobile ? '15px' : '18px', fontWeight: '700' }}>{dashboard.title}</span>
               <span style={{
                 padding: '3px 8px',
                 borderRadius: '6px',
@@ -174,6 +182,7 @@ const CommandCenter = () => {
                 letterSpacing: '0.5px',
                 backgroundColor: dashboard.signalColor + '20',
                 color: dashboard.signalColor,
+                whiteSpace: 'nowrap',
               }}>
                 {dashboard.signal}
               </span>
@@ -182,11 +191,11 @@ const CommandCenter = () => {
           </div>
         </div>
 
-        {/* Metric (only for main dashboards) */}
+        {/* Metric */}
         {dashboard.metric && (
-          <div style={{ textAlign: 'right' }}>
+          <div style={{ textAlign: 'right', flexShrink: 0 }}>
             <div style={{
-              fontSize: '28px',
+              fontSize: isMobile ? '20px' : '28px',
               fontWeight: '700',
               color: dashboard.url ? dashboard.signalColor : '#4b5563',
               lineHeight: 1
@@ -208,9 +217,9 @@ const CommandCenter = () => {
 
       {/* Description */}
       <p style={{
-        fontSize: '13px',
+        fontSize: isMobile ? '12px' : '13px',
         color: '#9ca3af',
-        margin: '0 0 16px 0',
+        margin: '0 0 14px 0',
         lineHeight: '1.5'
       }}>
         {dashboard.description}
@@ -223,7 +232,7 @@ const CommandCenter = () => {
           borderRadius: '10px',
           backgroundColor: 'rgba(255,255,255,0.03)',
           border: '1px solid rgba(255,255,255,0.06)',
-          marginBottom: '16px',
+          marginBottom: '14px',
         }}>
           <div style={{
             fontSize: '9px',
@@ -250,11 +259,11 @@ const CommandCenter = () => {
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        gap: '8px',
       }}>
-        {/* Highlights */}
         {dashboard.highlights.length > 0 && (
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', flex: 1 }}>
             {dashboard.highlights.map((highlight, idx) => (
               <span
                 key={idx}
@@ -265,7 +274,8 @@ const CommandCenter = () => {
                   fontWeight: '500',
                   backgroundColor: 'rgba(255,255,255,0.05)',
                   color: '#9ca3af',
-                  border: '1px solid rgba(255,255,255,0.08)'
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {highlight}
@@ -274,7 +284,6 @@ const CommandCenter = () => {
           </div>
         )}
 
-        {/* CTA Arrow */}
         {dashboard.url && (
           <div style={{
             display: 'flex',
@@ -283,7 +292,7 @@ const CommandCenter = () => {
             color: dashboard.signalColor,
             fontSize: '12px',
             fontWeight: '600',
-            marginLeft: 'auto'
+            flexShrink: 0,
           }}>
             <span>Open</span>
             <svg
@@ -311,27 +320,27 @@ const CommandCenter = () => {
       minHeight: '100vh',
       backgroundColor: '#000000',
       color: '#ffffff',
-      padding: '40px 24px',
+      padding: isMobile ? '24px 16px' : '40px 24px',
       fontFamily: 'system-ui, -apple-system, sans-serif'
     }}>
-      {/* Header with Logo */}
+      {/* Header */}
       <header style={{
         maxWidth: '1100px',
-        margin: '0 auto 48px auto',
+        margin: isMobile ? '0 auto 32px auto' : '0 auto 48px auto',
         textAlign: 'center'
       }}>
         <img
           src="/logo.jpg"
           alt="10AMPRO"
           style={{
-            width: '100px',
-            height: '100px',
+            width: isMobile ? '72px' : '100px',
+            height: isMobile ? '72px' : '100px',
             borderRadius: '50%',
-            margin: '0 auto 20px auto',
+            margin: '0 auto 16px auto',
             display: 'block'
           }}
         />
-        <h1 style={{ fontSize: '24px', fontWeight: '600', margin: '0 0 8px 0' }}>Command Center</h1>
+        <h1 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: '600', margin: '0 0 8px 0' }}>Command Center</h1>
         <p style={{ fontSize: '13px', color: '#6b7280', margin: 0 }}>Your Financial Intelligence Hub</p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginTop: '16px', fontSize: '12px' }}>
           <a href="https://10am.substack.com" target="_blank" style={{ color: '#6b7280', textDecoration: 'none' }}>10am.pro</a>
@@ -339,16 +348,12 @@ const CommandCenter = () => {
         </div>
       </header>
 
-      {/* Dashboard Cards - Side by Side Grid */}
-      <main style={{
-        maxWidth: '1100px',
-        margin: '0 auto',
-      }}>
-        {/* Main Dashboards Section */}
+      <main style={{ maxWidth: '1100px', margin: '0 auto' }}>
+        {/* Main Dashboards */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '20px'
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+          gap: isMobile ? '14px' : '20px',
         }}>
           {dashboards.map((dashboard) => (
             <CardComponent key={dashboard.id} dashboard={dashboard} />
@@ -356,11 +361,10 @@ const CommandCenter = () => {
         </div>
 
         {/* Community Builds Section */}
-        <div style={{ marginTop: '64px' }}>
-          {/* Section Header */}
+        <div style={{ marginTop: isMobile ? '40px' : '64px' }}>
           <div style={{
             textAlign: 'center',
-            marginBottom: '32px',
+            marginBottom: isMobile ? '24px' : '32px',
           }}>
             <div style={{
               display: 'inline-flex',
@@ -384,27 +388,22 @@ const CommandCenter = () => {
               </span>
             </div>
             <h2 style={{
-              fontSize: '20px',
+              fontSize: isMobile ? '17px' : '20px',
               fontWeight: '600',
               margin: '0 0 6px 0',
               color: '#ffffff',
             }}>
               Lo que se aprende en 10AMPRO
             </h2>
-            <p style={{
-              fontSize: '12px',
-              color: '#6b7280',
-              margin: 0,
-            }}>
+            <p style={{ fontSize: '12px', color: '#6b7280', margin: 0 }}>
               Experimentos y proyectos construidos por miembros de la comunidad
             </p>
           </div>
 
-          {/* Community Cards Grid */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '20px'
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+            gap: isMobile ? '14px' : '20px',
           }}>
             {communityBuilds.map((build) => (
               <CardComponent key={build.id} dashboard={build} isCommunity={true} />
@@ -420,9 +419,13 @@ const CommandCenter = () => {
         paddingTop: '24px',
         borderTop: '1px solid rgba(55, 65, 81, 0.2)',
         display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
         justifyContent: 'space-between',
+        alignItems: isMobile ? 'center' : 'flex-start',
+        gap: isMobile ? '8px' : '0',
         fontSize: '11px',
-        color: '#4b5563'
+        color: '#4b5563',
+        textAlign: isMobile ? 'center' : 'left',
       }}>
         <span>Built for the 10AMPRO community</span>
         <span style={{ fontStyle: 'italic' }}>"Calm mind, fit body, house full of love"</span>

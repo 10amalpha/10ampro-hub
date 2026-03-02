@@ -142,6 +142,30 @@ const CommandCenter = () => {
       learned: 'Construcción de un SaaS completo: auth, pagos con Stripe, procesamiento de imágenes con IA, modelos de pricing (packs + suscripciones) y UX de producto.',
       url: 'https://pix2print.net/',
     },
+    {
+      id: 'healvisory',
+      icon: '🌙',
+      title: 'Healvisory Cycles',
+      signal: 'WELLNESS',
+      signalColor: '#c084fc',
+      tagline: 'Cycle-Synced Wellness & Nutrition',
+      description: 'Plataforma de bienestar sincronizada con el ciclo menstrual. Nutrición, ejercicio y recomendaciones personalizadas según la fase del ciclo.',
+      highlights: ['Cycle Tracking', 'Nutrition', 'Wellness'],
+      learned: 'Desarrollo de apps de salud y bienestar, personalización basada en datos de ciclo, diseño de interfaces empáticas y educativas para wellness.',
+      url: 'https://healvisorycycles.com/',
+    },
+    {
+      id: 'smarthos',
+      icon: '🏠',
+      title: 'SmartHOS',
+      signal: 'IoT',
+      signalColor: '#22d3ee',
+      tagline: 'Smart Home Operational System',
+      description: 'El primer sistema operativo para hogares inteligentes. Gestiona estructura, energía, wellness e inteligencia de tu hogar como un sistema vivo.',
+      highlights: ['Smart Home', 'Energy', 'AI Operations'],
+      learned: 'Diseño de plataformas IoT, integración de verticales (estructura, energía, wellness, AI), landing pages técnicas de alto impacto y branding para proptech.',
+      url: 'https://www.smarthos.io/',
+    },
   ];
 
   const CardComponent = ({ dashboard, isCommunity = false }) => (

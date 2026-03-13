@@ -1,8 +1,144 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import {
+  Activity, TrendingUp, TrendingDown, DollarSign, Zap, Globe,
+  Clock, RefreshCw, Loader2, Calendar, ExternalLink, ChevronRight,
+  Radio, BookOpen, Mic, AlertTriangle, Shield, Fuel, BarChart3
+} from 'lucide-react';
 
-const CommandCenter = () => {
-  const [hoveredCard, setHoveredCard] = useState(null);
+// ============================================================
+// CONTENT MAP — Links macro themes to Substack content
+// ============================================================
+const CONTENT_MAP = {
+  liquidity: [
+    { title: 'El Hombre que Está Reprogramando la Economía de EEUU', type: 'article', url: 'https://10am.substack.com/p/el-hombre-que-esta-reprogramando', tag: 'Bessent / Treasury' },
+    { title: 'E190: Forecast 2026', type: 'podcast', url: 'https://10am.substack.com/p/e190-forecast-2026', tag: 'Macro / Liquidez' },
+    { title: 'Los Dashboards de 10am', type: 'article', url: 'https://10am.substack.com/p/los-dashboards-de-10am', tag: 'Herramientas' },
+  ],
+  earnings: [
+    { title: 'Robinhood: El Puente se Construye', type: 'article', url: 'https://10am.substack.com/p/robinhood-el-puente-se-construye', tag: 'HOOD Earnings', tickers: ['HOOD'] },
+    { title: 'Palantir: La Empresa Que No Necesita Explicarse', type: 'article', url: 'https://10am.substack.com/p/palantir-la-empresa', tag: 'PLTR Analysis', tickers: ['PLTR'] },
+  ],
+  crypto: [
+    { title: 'Firedancer: La Infraestructura Invisible', type: 'article', url: 'https://10am.substack.com/p/firedancer-la-infraestructura', tag: 'Solana / Firedancer' },
+    { title: 'E189: La Oportunidad Única Colombia-Venezuela', type: 'podcast', url: 'https://10am.substack.com/p/e189-la-oportunidad-unica', tag: 'Macro / LATAM' },
+  ],
+  macro: [
+    { title: 'E191: Las 5 Señales del Cambio de Era', type: 'podcast', url: 'https://10am.substack.com/p/e191-las-5-senales', tag: 'Macro Thesis' },
+    { title: 'Buena Vista Social Club, AI y Mis Amigos de Mas de 50', type: 'article', url: 'https://10am.substack.com/p/buena-vista-social-club-ai', tag: 'AI / Culture' },
+    { title: 'SpaceX + xAI: La Convergencia del Trillón', type: 'article', url: 'https://10am.substack.com/p/spacex-xai-convergencia', tag: 'xAI / SpaceX' },
+  ],
+};
+
+// ============================================================
+// STYLES
+// ============================================================
+const mono = "'JetBrains Mono', monospace";
+const sans = "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif";
+
+const signalColors = {
+  'RISK ON': { bg: 'rgba(16, 185, 129, 0.12)', border: '#10b981', text: '#34d399', glow: '0 0 40px rgba(16, 185, 129, 0.15)' },
+  'RISK OFF': { bg: 'rgba(239, 68, 68, 0.12)', border: '#ef4444', text: '#f87171', glow: '0 0 40px rgba(239, 68, 68, 0.15)' },
+  'CAUTION': { bg: 'rgba(245, 158, 11, 0.12)', border: '#f59e0b', text: '#fbbf24', glow: '0 0 40px rgba(245, 158, 11, 0.15)' },
+  'NEUTRAL': { bg: 'rgba(100, 116, 139, 0.12)', border: '#64748b', text: '#94a3b8', glow: 'none' },
+};
+
+// ============================================================
+// HELPER COMPONENTS
+// ============================================================
+const Badge = ({ children, color = '#6b7280' }) => (
+  <span style={{
+    display: 'inline-flex', alignItems: 'center', gap: '4px',
+    padding: '2px 8px', borderRadius: '4px', fontSize: '10px',
+    fontWeight: 600, fontFamily: mono, letterSpacing: '0.5px',
+    backgroundColor: `${color}18`, color, border: `1px solid ${color}30`,
+    textTransform: 'uppercase',
+  }}>
+    {children}
+  </span>
+);
+
+const Delta = ({ value, suffix = '%' }) => {
+  if (value == null) return null;
+  const positive = value >= 0;
+  return (
+    <span style={{
+      fontSize: '11px', fontFamily: mono, fontWeight: 600,
+      color: positive ? '#34d399' : '#f87171',
+    }}>
+      {positive ? '▲' : '▼'} {Math.abs(value).toFixed(1)}{suffix}
+    </span>
+  );
+};
+
+const Pulse = ({ color = '#34d399' }) => (
+  <span style={{
+    display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%',
+    backgroundColor: color, animation: 'pulse 2s infinite',
+  }} />
+);
+
+const SectionHeader = ({ icon: Icon, label, color = '#94a3b8' }) => (
+  <div style={{
+    display: 'flex', alignItems: 'center', gap: '8px',
+    marginBottom: '12px', paddingBottom: '8px',
+    borderBottom: '1px solid rgba(255,255,255,0.06)',
+  }}>
+    <Icon style={{ width: '14px', height: '14px', color }} />
+    <span style={{
+      fontSize: '10px', fontWeight: 700, fontFamily: mono,
+      letterSpacing: '1.5px', textTransform: 'uppercase', color,
+    }}>
+      {label}
+    </span>
+  </div>
+);
+
+const ContentLink = ({ item }) => (
+  <a
+    href={item.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{
+      display: 'flex', alignItems: 'center', gap: '10px',
+      padding: '8px 12px', borderRadius: '8px', textDecoration: 'none',
+      backgroundColor: 'rgba(255,255,255,0.02)',
+      border: '1px solid rgba(255,255,255,0.04)',
+      transition: 'all 0.2s',
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)';
+      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)';
+    }}
+  >
+    <span style={{ fontSize: '14px' }}>
+      {item.type === 'podcast' ? '🎙️' : '📝'}
+    </span>
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{
+        fontSize: '12px', fontWeight: 600, color: '#d1d5db',
+        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+      }}>
+        {item.title}
+      </div>
+      <div style={{ fontSize: '10px', color: '#6b7280' }}>{item.tag}</div>
+    </div>
+    <ChevronRight style={{ width: '12px', height: '12px', color: '#4b5563', flexShrink: 0 }} />
+  </a>
+);
+
+// ============================================================
+// MAIN COMPONENT
+// ============================================================
+export default function Briefing() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [now, setNow] = useState(new Date());
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -12,450 +148,557 @@ const CommandCenter = () => {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  const dashboards = [
-    {
-      id: 'liquidity',
-      icon: '💧',
-      title: 'LiquidityFlow',
-      metric: '$5.73T',
-      metricLabel: 'Net Liquidity',
-      signal: 'BULLISH',
-      signalColor: '#10b981',
-      tagline: 'Macro Liquidity Dashboard',
-      description: 'Track the Fed Balance Sheet, TGA, RRP, and key liquidity indicators that drive risk asset performance. Know when liquidity conditions favor Bitcoin and equities.',
-      highlights: ['Fed Balance Sheet', 'TGA & RRP Tracking', 'Real-time Signals'],
-      url: 'https://liquidityflow-five.vercel.app/',
-    },
-    {
-      id: 'carrera',
-      icon: '🏇',
-      title: 'Race to Target 2026',
-      metric: 'PLTR',
-      metricLabel: 'Current Leader',
-      signal: 'RACING',
-      signalColor: '#a855f7',
-      tagline: 'Portfolio Race Tracker',
-      description: 'Track your portfolio progress toward 2026 targets. Compare ROI velocity, positions and progress of each asset in the race.',
-      highlights: ['Progress Tracking', 'ROI Velocity', '8 Assets Racing'],
-      url: 'https://forecast2026.vercel.app/',
-    },
-    {
-      id: 'earnings',
-      icon: '📅',
-      title: 'EarningsWatch',
-      metric: 'PLTR 10d',
-      metricLabel: 'Next Earnings',
-      signal: 'TRACKING',
-      signalColor: '#10b981',
-      tagline: 'Earnings Calendar',
-      description: 'Track upcoming earnings dates for your portfolio. Never miss an earnings call with countdown timers and quick links to IR research.',
-      highlights: ['Earnings Dates', 'IR Links', '9 Stocks Tracked'],
-      url: 'https://earningswatch.vercel.app/',
-    },
-    {
-      id: 'btc-pension',
-      icon: '₿',
-      title: 'BTC Pension',
-      metric: '3.6x',
-      metricLabel: 'vs Pensión',
-      signal: 'SIMULATOR',
-      signalColor: '#f7931a',
-      tagline: 'Retirement Simulator',
-      description: 'Simula tu retiro con Bitcoin. Compara el poder de acumulación BTC vs pensión tradicional con proyecciones personalizadas.',
-      highlights: ['Simulador', 'Proyecciones', 'BTC vs Pensión'],
-      url: 'https://btc-pension-psi.vercel.app/',
-    },
-    {
-      id: 'info-diet',
-      icon: '📓',
-      title: 'Information Diet',
-      metric: '4.5h',
-      metricLabel: 'Data Transfer Rate',
-      signal: 'LIVE',
-      signalColor: '#ef4444',
-      tagline: 'Content Curation Feed',
-      description: 'Lo que estamos consumiendo y compartiendo en el chat de 10ampro. Curación de contenido de alta calidad sobre crypto, tech y macro.',
-      highlights: ['Content Feed', 'YouTube & X', 'Crypto & Tech'],
-      url: 'https://info-diet.vercel.app/',
-    },
-    {
-      id: 'investment-sim',
-      icon: '📊',
-      title: 'InvestmentSim',
-      metric: '+53%',
-      metricLabel: 'Base Return',
-      signal: 'SIMULATOR',
-      signalColor: '#f59e0b',
-      tagline: 'Investment Return Projections',
-      description: 'Simulate portfolio returns for BTC, SOL, PLTR, TSLA & HOOD through Dec 2026. Bull, Base & Bear scenarios with month-by-month projections.',
-      highlights: ['5 Assets', 'Return Scenarios', 'Monthly Projections'],
-      url: 'https://investment-simulator-livid.vercel.app/',
-    }
-  ];
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(t);
+  }, []);
 
-  const communityBuilds = [
-    {
-      id: 'cashflow-viz',
-      icon: '💰',
-      title: 'CashFlow Visualizer',
-      signal: 'TOOL',
-      signalColor: '#06b6d4',
-      tagline: 'Visualización de Flujo de Caja',
-      description: 'Visualiza y entiende tus flujos de caja de forma interactiva. Herramienta construida para mapear ingresos, gastos y encontrar patrones en tu dinero.',
-      highlights: ['Cash Flow', 'Visualización', 'Finanzas Personales'],
-      learned: 'React para visualización de datos financieros, manejo de estado complejo y diseño de interfaces interactivas para finanzas personales.',
-      url: 'https://cashflow-viz.vercel.app/',
-    },
-    {
-      id: 'csp-scanner',
-      icon: '🎯',
-      title: 'CSP Scanner',
-      signal: 'SCANNER',
-      signalColor: '#8b5cf6',
-      tagline: 'Morning Cash-Secured Put Screener',
-      description: 'Screener de cash-secured puts usando Yahoo Finance + Black-Scholes. Ingresa tu capital y encuentra las mejores opciones de puts para generar income.',
-      highlights: ['Options', 'Black-Scholes', 'Yahoo Finance API'],
-      learned: 'Integración con Yahoo Finance API, modelo Black-Scholes para pricing de opciones, server-side data fetching y screener de opciones en tiempo real.',
-      url: 'https://csp-scanner-lac.vercel.app/',
-    },
-    {
-      id: 'homeland',
-      icon: '🏛️',
-      title: 'Homeland',
-      signal: 'WEALTH',
-      signalColor: '#d4a574',
-      tagline: 'Private Wealth Management Platform',
-      description: 'Plataforma de wealth management privada con portal de cliente, tracking de portafolio y reportes personalizados. Construida para familias que piensan en generaciones.',
-      highlights: ['Wealth Mgmt', 'Client Portal', 'Next.js Full-Stack'],
-      learned: 'Diseño de plataformas fintech con autenticación, portal de clientes, landing pages de alta conversión y branding premium para servicios financieros.',
-      url: 'https://www.homeland.net.co/',
-    },
-    {
-      id: 'pix2print',
-      icon: '🖼️',
-      title: 'Pix2Print',
-      signal: 'AI SAAS',
-      signalColor: '#ec4899',
-      tagline: 'Mejora fotos con IA para impresión',
-      description: 'SaaS de upscaling de imágenes con IA. Mejora la resolución de fotos para impresión profesional. Integración con Stripe para monetización con packs y suscripciones.',
-      highlights: ['AI Upscale', 'Stripe Payments', 'SaaS Model'],
-      learned: 'Construcción de un SaaS completo: auth, pagos con Stripe, procesamiento de imágenes con IA, modelos de pricing (packs + suscripciones) y UX de producto.',
-      url: 'https://pix2print.net/',
-    },
-    {
-      id: 'healvisory',
-      icon: '🌙',
-      title: 'Healvisory Cycles',
-      signal: 'WELLNESS',
-      signalColor: '#c084fc',
-      tagline: 'Cycle-Synced Wellness & Nutrition',
-      description: 'Plataforma de bienestar sincronizada con el ciclo menstrual. Nutrición, ejercicio y recomendaciones personalizadas según la fase del ciclo.',
-      highlights: ['Cycle Tracking', 'Nutrition', 'Wellness'],
-      learned: 'Desarrollo de apps de salud y bienestar, personalización basada en datos de ciclo, diseño de interfaces empáticas y educativas para wellness.',
-      url: 'https://healvisorycycles.com/',
-    },
-    {
-      id: 'smarthos',
-      icon: '🏠',
-      title: 'SmartHOS',
-      signal: 'IoT',
-      signalColor: '#22d3ee',
-      tagline: 'Smart Home Operational System',
-      description: 'El primer sistema operativo para hogares inteligentes. Gestiona estructura, energía, wellness e inteligencia de tu hogar como un sistema vivo.',
-      highlights: ['Smart Home', 'Energy', 'AI Operations'],
-      learned: 'Diseño de plataformas IoT, integración de verticales (estructura, energía, wellness, AI), landing pages técnicas de alto impacto y branding para proptech.',
-      url: 'https://www.smarthos.io/',
-    },
-  ];
+  const fetchData = useCallback(async (isRefresh = false) => {
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
+    try {
+      const res = await fetch('/api/briefing');
+      if (res.ok) setData(await res.json());
+    } catch { /* silent */ }
+    finally { setLoading(false); setRefreshing(false); }
+  }, []);
 
-  const CardComponent = ({ dashboard, isCommunity = false }) => (
-    <div
-      onClick={() => dashboard.url && window.open(dashboard.url, '_blank')}
-      onMouseEnter={() => setHoveredCard(dashboard.id)}
-      onMouseLeave={() => setHoveredCard(null)}
-      style={{
-        padding: isMobile ? '18px' : '24px',
-        borderRadius: '16px',
-        backgroundColor: hoveredCard === dashboard.id && dashboard.url ? 'rgba(30, 30, 30, 0.95)' : 'rgba(17, 17, 17, 0.7)',
-        border: `1px solid ${hoveredCard === dashboard.id && dashboard.url ? dashboard.signalColor + '50' : 'rgba(55, 65, 81, 0.3)'}`,
-        cursor: dashboard.url ? 'pointer' : 'default',
-        opacity: dashboard.url ? 1 : 0.45,
-        transition: 'all 0.25s ease',
-        transform: hoveredCard === dashboard.id && dashboard.url ? 'translateY(-2px)' : 'translateY(0)',
-        boxShadow: hoveredCard === dashboard.id && dashboard.url ? `0 8px 32px ${dashboard.signalColor}15` : 'none'
-      }}
-    >
-      {/* Card Header */}
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(() => fetchData(true), 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [fetchData]);
+
+  // Greeting based on time
+  const hour = now.getHours();
+  const greeting = hour < 12 ? 'Buenos días' : hour < 18 ? 'Buenas tardes' : 'Buenas noches';
+  const dateStr = now.toLocaleDateString('es-CO', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+  if (loading && !data) {
+    return (
       <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: '12px',
-        gap: '12px',
+        minHeight: '100vh', backgroundColor: '#0a0a0a', color: '#e2e8f0',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        fontFamily: sans, gap: '16px',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '12px', minWidth: 0, flex: 1 }}>
-          <span style={{ fontSize: isMobile ? '28px' : '36px', flexShrink: 0 }}>{dashboard.icon}</span>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: isMobile ? '15px' : '18px', fontWeight: '700' }}>{dashboard.title}</span>
-              <span style={{
-                padding: '3px 8px',
-                borderRadius: '6px',
-                fontSize: '9px',
-                fontWeight: '700',
-                letterSpacing: '0.5px',
-                backgroundColor: dashboard.signalColor + '20',
-                color: dashboard.signalColor,
-                whiteSpace: 'nowrap',
-              }}>
-                {dashboard.signal}
-              </span>
-            </div>
-            <p style={{ fontSize: '11px', color: '#9ca3af', margin: '4px 0 0 0' }}>{dashboard.tagline}</p>
-          </div>
-        </div>
-
-        {/* Metric */}
-        {dashboard.metric && (
-          <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{
-              fontSize: isMobile ? '20px' : '28px',
-              fontWeight: '700',
-              color: dashboard.url ? dashboard.signalColor : '#4b5563',
-              lineHeight: 1
-            }}>
-              {dashboard.metric}
-            </div>
-            <div style={{
-              fontSize: '9px',
-              color: '#6b7280',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              marginTop: '4px'
-            }}>
-              {dashboard.metricLabel}
-            </div>
-          </div>
-        )}
+        <img src="/logo.jpg" alt="10AMPRO" style={{ width: '64px', height: '64px', borderRadius: '50%', opacity: 0.8 }} />
+        <Loader2 style={{ width: '20px', height: '20px', color: '#34d399', animation: 'spin 1s linear infinite' }} />
+        <span style={{ fontSize: '12px', fontFamily: mono, color: '#6b7280', letterSpacing: '1px' }}>LOADING BRIEFING...</span>
       </div>
+    );
+  }
 
-      {/* Description */}
-      <p style={{
-        fontSize: isMobile ? '12px' : '13px',
-        color: '#9ca3af',
-        margin: '0 0 14px 0',
-        lineHeight: '1.5'
-      }}>
-        {dashboard.description}
-      </p>
+  const d = data || {};
+  const sig = signalColors[d.signal] || signalColors['NEUTRAL'];
+  const fed = d.fed || {};
+  const mkt = d.market || {};
+  const crypto = d.crypto || {};
+  const calendar = d.calendar || [];
+  const earnings = (d.earnings || []).filter((e) => e.date);
+  const nextEarning = earnings[0];
 
-      {/* What was learned - Community builds only */}
-      {isCommunity && dashboard.learned && (
-        <div style={{
-          padding: '10px 14px',
-          borderRadius: '10px',
-          backgroundColor: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.06)',
-          marginBottom: '14px',
-        }}>
-          <div style={{
-            fontSize: '9px',
-            fontWeight: '700',
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            color: dashboard.signalColor,
-            marginBottom: '6px',
-          }}>
-            🧠 Lo que se aprendió
-          </div>
-          <p style={{
-            fontSize: '12px',
-            color: '#6b7280',
-            margin: 0,
-            lineHeight: '1.5'
-          }}>
-            {dashboard.learned}
-          </p>
-        </div>
-      )}
-
-      {/* Highlights + CTA */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        gap: '8px',
-      }}>
-        {dashboard.highlights.length > 0 && (
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', flex: 1 }}>
-            {dashboard.highlights.map((highlight, idx) => (
-              <span
-                key={idx}
-                style={{
-                  padding: '4px 10px',
-                  borderRadius: '20px',
-                  fontSize: '10px',
-                  fontWeight: '500',
-                  backgroundColor: 'rgba(255,255,255,0.05)',
-                  color: '#9ca3af',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {highlight}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {dashboard.url && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            color: dashboard.signalColor,
-            fontSize: '12px',
-            fontWeight: '600',
-            flexShrink: 0,
-          }}>
-            <span>Open</span>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              style={{
-                transform: hoveredCard === dashboard.id ? 'translateX(4px)' : 'translateX(0)',
-                transition: 'transform 0.2s ease'
-              }}
-            >
-              <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+  // Days until
+  const daysUntil = (dateStr) => {
+    if (!dateStr) return null;
+    return Math.ceil((new Date(dateStr) - now) / (1000 * 60 * 60 * 24));
+  };
 
   return (
     <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#000000',
-      color: '#ffffff',
-      padding: isMobile ? '24px 16px' : '40px 24px',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
+      minHeight: '100vh', backgroundColor: '#0a0a0a', color: '#e2e8f0',
+      fontFamily: sans,
     }}>
-      {/* Header */}
-      <header style={{
-        maxWidth: '1100px',
-        margin: isMobile ? '0 auto 32px auto' : '0 auto 48px auto',
-        textAlign: 'center'
+      <div style={{
+        maxWidth: '900px', margin: '0 auto',
+        padding: isMobile ? '16px' : '24px 24px 48px',
       }}>
-        <img
-          src="/logo.jpg"
-          alt="10AMPRO"
-          style={{
-            width: isMobile ? '72px' : '100px',
-            height: isMobile ? '72px' : '100px',
-            borderRadius: '50%',
-            margin: '0 auto 16px auto',
-            display: 'block'
-          }}
-        />
-        <h1 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: '600', margin: '0 0 8px 0' }}>Command Center</h1>
-        <p style={{ fontSize: '13px', color: '#6b7280', margin: 0 }}>Your Financial Intelligence Hub</p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginTop: '16px', fontSize: '12px' }}>
-          <a href="https://10am.substack.com" target="_blank" style={{ color: '#6b7280', textDecoration: 'none' }}>10am.pro</a>
-          <a href="https://x.com/holdmybirra" target="_blank" style={{ color: '#10b981', textDecoration: 'none' }}>@holdmybirra</a>
-        </div>
-      </header>
 
-      <main style={{ maxWidth: '1100px', margin: '0 auto' }}>
-        {/* Main Dashboards */}
+        {/* ============================================================ */}
+        {/* HEADER */}
+        {/* ============================================================ */}
+        <header style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+          marginBottom: '24px', flexWrap: 'wrap', gap: '12px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <img src="/logo.jpg" alt="" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: 800, letterSpacing: '-0.5px' }}>10AM Briefing</span>
+                <Pulse color={sig.text} />
+              </div>
+              <div style={{ fontSize: '11px', color: '#6b7280', fontFamily: mono }}>
+                {greeting} · {dateStr}
+              </div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button
+              onClick={() => fetchData(true)}
+              disabled={refreshing}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '4px',
+                padding: '6px 12px', borderRadius: '6px', fontSize: '11px',
+                fontFamily: mono, fontWeight: 500, cursor: 'pointer',
+                border: '1px solid rgba(255,255,255,0.08)',
+                backgroundColor: 'rgba(255,255,255,0.03)', color: '#9ca3af',
+              }}
+            >
+              {refreshing ? <Loader2 style={{ width: '12px', height: '12px', animation: 'spin 1s linear infinite' }} /> : <RefreshCw style={{ width: '12px', height: '12px' }} />}
+              {refreshing ? '...' : 'Refresh'}
+            </button>
+            <a href="https://10am.substack.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#6b7280', textDecoration: 'none', fontFamily: mono }}>
+              10am.pro →
+            </a>
+          </div>
+        </header>
+
+        {/* ============================================================ */}
+        {/* HERO SIGNAL */}
+        {/* ============================================================ */}
+        <div style={{
+          padding: isMobile ? '16px' : '20px 24px',
+          borderRadius: '12px', marginBottom: '16px',
+          backgroundColor: sig.bg,
+          border: `1px solid ${sig.border}40`,
+          boxShadow: sig.glow,
+        }}>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            flexWrap: 'wrap', gap: '12px',
+          }}>
+            <div>
+              <div style={{
+                fontSize: isMobile ? '28px' : '36px', fontWeight: 800,
+                fontFamily: mono, color: sig.text, letterSpacing: '-1px',
+                lineHeight: 1,
+              }}>
+                {d.signal || 'LOADING'}
+              </div>
+              <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
+                {d.bullish || 0} bullish · {d.caution || 0} caution · {d.bearish || 0} bearish
+              </div>
+            </div>
+            <div style={{
+              display: 'flex', gap: isMobile ? '12px' : '20px', fontFamily: mono, flexWrap: 'wrap',
+            }}>
+              {/* Net Liquidity */}
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '10px', color: '#6b7280', letterSpacing: '0.5px' }}>NET LIQUIDITY</div>
+                <div style={{ fontSize: '18px', fontWeight: 700, color: '#22d3ee' }}>
+                  ${fed.netLiquidity?.toFixed(2) || '—'}T
+                </div>
+              </div>
+              {/* BTC */}
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '10px', color: '#6b7280', letterSpacing: '0.5px' }}>BTC</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', justifyContent: 'flex-end' }}>
+                  <span style={{ fontSize: '18px', fontWeight: 700, color: '#f7931a' }}>
+                    ${crypto.btcPrice?.toLocaleString(undefined, { maximumFractionDigits: 0 }) || '—'}
+                  </span>
+                  <Delta value={crypto.btcChange} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ============================================================ */}
+        {/* MARKET TICKER ROW */}
+        {/* ============================================================ */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
-          gap: isMobile ? '14px' : '20px',
+          gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(6, 1fr)',
+          gap: '8px', marginBottom: '20px',
         }}>
-          {dashboards.map((dashboard) => (
-            <CardComponent key={dashboard.id} dashboard={dashboard} />
+          {[
+            { label: 'S&P 500', value: mkt.sp500?.toLocaleString(undefined, { maximumFractionDigits: 0 }), change: mkt.sp500Change },
+            { label: 'NASDAQ', value: mkt.nasdaq?.toLocaleString(undefined, { maximumFractionDigits: 0 }), change: mkt.nasdaqChange },
+            { label: 'VIX', value: mkt.vix?.toFixed(1), change: mkt.vixChange },
+            { label: 'DXY', value: mkt.dxy?.toFixed(2), change: mkt.dxyChange },
+            { label: 'GOLD', value: `$${mkt.gold?.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, change: mkt.goldChange },
+            { label: 'SOL', value: `$${crypto.solPrice?.toFixed(0) || '—'}`, change: crypto.solChange },
+          ].map((item, i) => (
+            <div key={i} style={{
+              padding: '10px 12px', borderRadius: '8px',
+              backgroundColor: 'rgba(255,255,255,0.02)',
+              border: '1px solid rgba(255,255,255,0.04)',
+            }}>
+              <div style={{ fontSize: '9px', fontFamily: mono, color: '#6b7280', letterSpacing: '1px', marginBottom: '4px' }}>
+                {item.label}
+              </div>
+              <div style={{ fontSize: '14px', fontWeight: 700, fontFamily: mono, color: '#e2e8f0' }}>
+                {item.value || '—'}
+              </div>
+              <Delta value={item.change} />
+            </div>
           ))}
         </div>
 
-        {/* Community Builds Section */}
-        <div style={{ marginTop: isMobile ? '40px' : '64px' }}>
+        {/* ============================================================ */}
+        {/* TWO COLUMN: ECONOMIC CALENDAR + EARNINGS */}
+        {/* ============================================================ */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+          gap: '16px', marginBottom: '20px',
+        }}>
+
+          {/* Economic Calendar */}
           <div style={{
-            textAlign: 'center',
-            marginBottom: isMobile ? '24px' : '32px',
+            padding: '16px', borderRadius: '12px',
+            backgroundColor: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(255,255,255,0.05)',
           }}>
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '6px 16px',
-              borderRadius: '20px',
-              backgroundColor: 'rgba(139, 92, 246, 0.1)',
-              border: '1px solid rgba(139, 92, 246, 0.2)',
-              marginBottom: '16px',
-            }}>
-              <span style={{ fontSize: '12px' }}>🧪</span>
-              <span style={{
-                fontSize: '10px',
-                fontWeight: '700',
-                letterSpacing: '1.5px',
-                textTransform: 'uppercase',
-                color: '#8b5cf6',
-              }}>
-                Community Builds
-              </span>
-            </div>
-            <h2 style={{
-              fontSize: isMobile ? '17px' : '20px',
-              fontWeight: '600',
-              margin: '0 0 6px 0',
-              color: '#ffffff',
-            }}>
-              Lo que se aprende en 10AMPRO
-            </h2>
-            <p style={{ fontSize: '12px', color: '#6b7280', margin: 0 }}>
-              Experimentos y proyectos construidos por miembros de la comunidad
-            </p>
+            <SectionHeader icon={Calendar} label="Economic Calendar" color="#60a5fa" />
+            {calendar.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {calendar.map((event, i) => {
+                  const eventDate = new Date(event.date);
+                  const isToday = eventDate.toDateString() === now.toDateString();
+                  return (
+                    <div key={i} style={{
+                      display: 'flex', alignItems: 'center', gap: '10px',
+                      padding: '8px 10px', borderRadius: '6px',
+                      backgroundColor: isToday ? 'rgba(96, 165, 250, 0.08)' : 'transparent',
+                      border: isToday ? '1px solid rgba(96, 165, 250, 0.15)' : '1px solid transparent',
+                    }}>
+                      <div style={{
+                        fontSize: '10px', fontFamily: mono, color: isToday ? '#60a5fa' : '#6b7280',
+                        minWidth: '44px', fontWeight: isToday ? 700 : 400,
+                      }}>
+                        {isToday ? 'HOY' : eventDate.toLocaleDateString('es', { month: 'short', day: 'numeric' })}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontSize: '12px', fontWeight: 600, color: '#d1d5db',
+                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                        }}>
+                          {event.event}
+                        </div>
+                        <div style={{ fontSize: '10px', fontFamily: mono, color: '#6b7280' }}>
+                          {event.estimate != null && `Est: ${event.estimate}`}
+                          {event.previous != null && ` · Prev: ${event.previous}`}
+                          {event.actual != null && (
+                            <span style={{ color: '#34d399', fontWeight: 700 }}> · Actual: {event.actual}</span>
+                          )}
+                        </div>
+                      </div>
+                      <div style={{
+                        width: '6px', height: '6px', borderRadius: '50%',
+                        backgroundColor: '#ef4444', flexShrink: 0,
+                      }} title="High Impact" />
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div style={{ fontSize: '12px', color: '#4b5563', fontStyle: 'italic', padding: '12px 0' }}>
+                No high-impact US events this week
+              </div>
+            )}
+            <a
+              href="https://tradingeconomics.com/calendar"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex', alignItems: 'center', gap: '4px',
+                marginTop: '10px', fontSize: '10px', color: '#4b5563',
+                textDecoration: 'none', fontFamily: mono,
+              }}
+            >
+              Full calendar → tradingeconomics.com
+              <ExternalLink style={{ width: '10px', height: '10px' }} />
+            </a>
           </div>
 
+          {/* Earnings Radar */}
           <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
-            gap: isMobile ? '14px' : '20px',
+            padding: '16px', borderRadius: '12px',
+            backgroundColor: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(255,255,255,0.05)',
           }}>
-            {communityBuilds.map((build) => (
-              <CardComponent key={build.id} dashboard={build} isCommunity={true} />
-            ))}
+            <SectionHeader icon={BarChart3} label="Earnings Radar" color="#a78bfa" />
+            {nextEarning && (
+              <div style={{
+                padding: '12px', borderRadius: '8px', marginBottom: '10px',
+                backgroundColor: 'rgba(167, 139, 250, 0.08)',
+                border: '1px solid rgba(167, 139, 250, 0.15)',
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <span style={{ fontSize: '16px', marginRight: '6px' }}>{nextEarning.emoji}</span>
+                    <span style={{ fontSize: '14px', fontWeight: 700, fontFamily: mono, color: '#e2e8f0' }}>
+                      {nextEarning.ticker}
+                    </span>
+                    <span style={{ fontSize: '12px', color: '#9ca3af', marginLeft: '6px' }}>{nextEarning.name}</span>
+                  </div>
+                  <Badge color="#a78bfa">NEXT UP</Badge>
+                </div>
+                <div style={{ fontSize: '11px', fontFamily: mono, color: '#6b7280', marginTop: '6px' }}>
+                  {new Date(nextEarning.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  {' · '}{daysUntil(nextEarning.date)}d away
+                  {nextEarning.quarter && ` · ${nextEarning.quarter}`}
+                </div>
+              </div>
+            )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {earnings.slice(nextEarning ? 1 : 0, 6).map((e, i) => (
+                <a key={i} href={e.ir} target="_blank" rel="noopener noreferrer" style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '6px 10px', borderRadius: '6px', textDecoration: 'none',
+                  transition: 'background 0.15s',
+                }}
+                onMouseEnter={(ev) => ev.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)'}
+                onMouseLeave={(ev) => ev.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '13px' }}>{e.emoji}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 600, fontFamily: mono, color: '#d1d5db' }}>{e.ticker}</span>
+                    <span style={{ fontSize: '11px', color: '#6b7280' }}>{e.name}</span>
+                  </div>
+                  <div style={{ fontSize: '11px', fontFamily: mono, color: '#6b7280' }}>
+                    {new Date(e.date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}
+                    <span style={{ color: '#4b5563' }}> · {daysUntil(e.date)}d</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+            <a
+              href="https://earningswatch.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex', alignItems: 'center', gap: '4px',
+                marginTop: '10px', fontSize: '10px', color: '#4b5563',
+                textDecoration: 'none', fontFamily: mono,
+              }}
+            >
+              Full earnings calendar →
+              <ExternalLink style={{ width: '10px', height: '10px' }} />
+            </a>
           </div>
         </div>
-      </main>
 
-      {/* Footer */}
-      <footer style={{
-        maxWidth: '1100px',
-        margin: '48px auto 0 auto',
-        paddingTop: '24px',
-        borderTop: '1px solid rgba(55, 65, 81, 0.2)',
-        display: 'flex',
-        flexDirection: isMobile ? 'column' : 'row',
-        justifyContent: 'space-between',
-        alignItems: isMobile ? 'center' : 'flex-start',
-        gap: isMobile ? '8px' : '0',
-        fontSize: '11px',
-        color: '#4b5563',
-        textAlign: isMobile ? 'center' : 'left',
-      }}>
-        <span>Built for the 10AMPRO community</span>
-        <span style={{ fontStyle: 'italic' }}>"Calm mind, fit body, house full of love"</span>
-      </footer>
+        {/* ============================================================ */}
+        {/* MACRO GRID — Liquidity + Key Indicators */}
+        {/* ============================================================ */}
+        <div style={{
+          padding: '16px', borderRadius: '12px', marginBottom: '20px',
+          backgroundColor: 'rgba(255,255,255,0.02)',
+          border: '1px solid rgba(255,255,255,0.05)',
+        }}>
+          <SectionHeader icon={Activity} label="Liquidity & Macro" color="#22d3ee" />
+
+          {/* Net Liquidity Formula */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '12px',
+            padding: '12px 16px', borderRadius: '8px', marginBottom: '14px',
+            backgroundColor: 'rgba(34, 211, 238, 0.06)',
+            border: '1px solid rgba(34, 211, 238, 0.12)',
+            flexWrap: 'wrap', fontFamily: mono, fontSize: '13px',
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: '#22d3ee' }}>${fed.fedBalance?.toFixed(2)}T</div>
+              <div style={{ fontSize: '9px', color: '#6b7280' }}>FED BAL</div>
+            </div>
+            <span style={{ color: '#ef4444', fontSize: '18px' }}>−</span>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: '#fbbf24' }}>${fed.tga?.toFixed(3)}T</div>
+              <div style={{ fontSize: '9px', color: '#6b7280' }}>TGA</div>
+            </div>
+            <span style={{ color: '#ef4444', fontSize: '18px' }}>−</span>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: '#a78bfa' }}>${fed.rrp?.toFixed(3)}T</div>
+              <div style={{ fontSize: '9px', color: '#6b7280' }}>RRP</div>
+            </div>
+            <span style={{ color: '#22d3ee', fontSize: '18px' }}>=</span>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '20px', fontWeight: 800, color: '#34d399' }}>${fed.netLiquidity?.toFixed(2)}T</div>
+              <div style={{ fontSize: '9px', color: '#6b7280' }}>NET LIQ</div>
+            </div>
+          </div>
+
+          {/* Key metrics grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+            gap: '8px',
+          }}>
+            {[
+              { label: 'TGA', value: `$${((fed.tga || 0) * 1000).toFixed(0)}B`, status: (fed.tga || 0) > 0.65 ? 'caution' : 'bullish', note: (fed.tga || 0) > 0.65 ? 'Draining liquidity' : 'Below stress' },
+              { label: 'RRP', value: `$${((fed.rrp || 0) * 1000).toFixed(0)}B`, status: (fed.rrp || 0) < 0.1 ? 'bullish' : 'caution', note: (fed.rrp || 0) < 0.1 ? 'Fully drained' : 'Still active' },
+              { label: 'US 10Y', value: `${(mkt.us10y || 0).toFixed(2)}%`, status: (mkt.us10y || 0) > 5 ? 'bearish' : (mkt.us10y || 0) > 4.5 ? 'caution' : 'neutral', note: 'Treasury yield' },
+              { label: 'WTI', value: `$${(mkt.wti || 0).toFixed(2)}`, status: (mkt.wti || 0) < 80 ? 'bullish' : 'bearish', note: (mkt.wti || 0) < 80 ? 'Under control' : 'Inflation risk' },
+            ].map((item, i) => {
+              const colors = {
+                bullish: '#34d399', bearish: '#f87171', caution: '#fbbf24', neutral: '#94a3b8',
+              };
+              const c = colors[item.status];
+              return (
+                <div key={i} style={{
+                  padding: '10px 12px', borderRadius: '8px',
+                  backgroundColor: `${c}08`, border: `1px solid ${c}20`,
+                }}>
+                  <div style={{ fontSize: '9px', fontFamily: mono, color: '#6b7280', letterSpacing: '1px', marginBottom: '4px' }}>
+                    {item.label}
+                  </div>
+                  <div style={{ fontSize: '16px', fontWeight: 700, fontFamily: mono, color: c }}>
+                    {item.value}
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#6b7280', marginTop: '2px' }}>{item.note}</div>
+                </div>
+              );
+            })}
+          </div>
+
+          <a
+            href="https://liquidityflow-five.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex', alignItems: 'center', gap: '4px',
+              marginTop: '12px', fontSize: '10px', color: '#4b5563',
+              textDecoration: 'none', fontFamily: mono,
+            }}
+          >
+            Full liquidity dashboard →
+            <ExternalLink style={{ width: '10px', height: '10px' }} />
+          </a>
+        </div>
+
+        {/* ============================================================ */}
+        {/* CONTENT — "Lo que escribimos sobre esto" */}
+        {/* ============================================================ */}
+        <div style={{
+          padding: '16px', borderRadius: '12px', marginBottom: '20px',
+          backgroundColor: 'rgba(255,255,255,0.02)',
+          border: '1px solid rgba(255,255,255,0.05)',
+        }}>
+          <SectionHeader icon={BookOpen} label="Lo que escribimos sobre esto" color="#f59e0b" />
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+            gap: '8px',
+          }}>
+            <div>
+              <div style={{ fontSize: '9px', fontFamily: mono, color: '#6b7280', letterSpacing: '1px', marginBottom: '8px', paddingLeft: '4px' }}>
+                MACRO & LIQUIDEZ
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {CONTENT_MAP.liquidity.map((item, i) => <ContentLink key={i} item={item} />)}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '9px', fontFamily: mono, color: '#6b7280', letterSpacing: '1px', marginBottom: '8px', paddingLeft: '4px' }}>
+                CRYPTO & TECH
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {CONTENT_MAP.crypto.map((item, i) => <ContentLink key={i} item={item} />)}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '9px', fontFamily: mono, color: '#6b7280', letterSpacing: '1px', marginBottom: '8px', paddingLeft: '4px' }}>
+                EARNINGS & ANÁLISIS
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {CONTENT_MAP.earnings.map((item, i) => <ContentLink key={i} item={item} />)}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '9px', fontFamily: mono, color: '#6b7280', letterSpacing: '1px', marginBottom: '8px', paddingLeft: '4px' }}>
+                TESIS & IDEAS
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {CONTENT_MAP.macro.map((item, i) => <ContentLink key={i} item={item} />)}
+              </div>
+            </div>
+          </div>
+          <a
+            href="https://10am.substack.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex', alignItems: 'center', gap: '4px',
+              marginTop: '12px', fontSize: '10px', color: '#4b5563',
+              textDecoration: 'none', fontFamily: mono,
+            }}
+          >
+            All articles & episodes →
+            <ExternalLink style={{ width: '10px', height: '10px' }} />
+          </a>
+        </div>
+
+        {/* ============================================================ */}
+        {/* TOOLS — Links to other dashboards */}
+        {/* ============================================================ */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+          gap: '8px', marginBottom: '24px',
+        }}>
+          {[
+            { label: 'LiquidityFlow', url: 'https://liquidityflow-five.vercel.app', icon: '💧', color: '#22d3ee' },
+            { label: 'Race to Target', url: 'https://forecast2026.vercel.app', icon: '🏇', color: '#a855f7' },
+            { label: 'EarningsWatch', url: 'https://earningswatch.vercel.app', icon: '📅', color: '#10b981' },
+            { label: 'Info Diet', url: 'https://info-diet.vercel.app', icon: '📓', color: '#ef4444' },
+          ].map((tool, i) => (
+            <a key={i} href={tool.url} target="_blank" rel="noopener noreferrer" style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '10px 12px', borderRadius: '8px', textDecoration: 'none',
+              backgroundColor: 'rgba(255,255,255,0.02)',
+              border: '1px solid rgba(255,255,255,0.04)',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+              e.currentTarget.style.borderColor = `${tool.color}30`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)';
+            }}
+            >
+              <span style={{ fontSize: '16px' }}>{tool.icon}</span>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: '#9ca3af' }}>{tool.label}</span>
+              <ChevronRight style={{ width: '10px', height: '10px', color: '#4b5563', marginLeft: 'auto' }} />
+            </a>
+          ))}
+        </div>
+
+        {/* ============================================================ */}
+        {/* FOOTER */}
+        {/* ============================================================ */}
+        <footer style={{
+          textAlign: 'center', paddingTop: '16px',
+          borderTop: '1px solid rgba(255,255,255,0.04)',
+          fontSize: '11px', color: '#4b5563',
+        }}>
+          <p style={{ margin: '0 0 4px', fontStyle: 'italic', fontFamily: sans }}>
+            &quot;Calm mind, fit body, house full of love&quot;
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '8px' }}>
+            <a href="https://10am.substack.com" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', textDecoration: 'none', fontFamily: mono, fontSize: '10px' }}>10am.pro</a>
+            <a href="https://x.com/holdmybirra" target="_blank" rel="noopener noreferrer" style={{ color: '#10b981', textDecoration: 'none', fontFamily: mono, fontSize: '10px' }}>@holdmybirra</a>
+          </div>
+          <div style={{ marginTop: '8px', fontFamily: mono, fontSize: '9px', color: '#374151' }}>
+            {d.timestamp && `Last fetch: ${new Date(d.timestamp).toLocaleTimeString()}`}
+          </div>
+        </footer>
+      </div>
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.3; }
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        * { box-sizing: border-box; }
+        body { -webkit-font-smoothing: antialiased; }
+      `}</style>
     </div>
   );
-};
-
-export default CommandCenter;
+}

@@ -221,12 +221,15 @@ export default function Briefing() {
           marginBottom: '24px', flexWrap: 'wrap', gap: '12px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <img src="/logo.jpg" alt="" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
+            <img src="/logo.jpg" alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(212,168,67,0.2)' }} />
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: 800, letterSpacing: '-0.5px' }}>10AM Briefing</span>
+                <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: isMobile ? '18px' : '20px', letterSpacing: '-0.03em' }}>
+                  <span style={{ color: '#D4A843' }}>10</span><span style={{ color: '#22C55E' }}>AM</span><span style={{ color: '#3F3F46' }}>PRO</span>
+                </span>
                 <Pulse color={sig.text} />
               </div>
+              <div style={{ fontSize: '8px', color: '#27272A', letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: '-2px', fontFamily: mono }}>Daily Briefing</div>
               <div style={{ fontSize: '11px', color: '#6b7280', fontFamily: mono }}>
                 {greeting} · {dateStr}
               </div>

@@ -140,6 +140,10 @@ export default function Briefing() {
   const [refreshing, setRefreshing] = useState(false);
   const [now, setNow] = useState(new Date());
   const [isMobile, setIsMobile] = useState(false);
+  const [watchlist, setWatchlist] = useState([]);
+  const [wlLoading, setWlLoading] = useState(true);
+  const [wlSort, setWlSort] = useState({ key: 'change', dir: 'desc' });
+  const [wlFilter, setWlFilter] = useState('all');
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -168,6 +172,37 @@ export default function Briefing() {
     const interval = setInterval(() => fetchData(true), 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [fetchData]);
+
+  // Watchlist fetch
+  useEffect(() => {
+    const fetchWl = async () => {
+      setWlLoading(true);
+      try {
+        const res = await fetch('/api/watchlist');
+        if (res.ok) {
+          const json = await res.json();
+          setWatchlist(json.assets || []);
+        }
+      } catch { /* silent */ }
+      setWlLoading(false);
+    };
+    fetchWl();
+    const interval = setInterval(fetchWl, 2 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const sortedWatchlist = (() => {
+    let items = wlFilter === 'all' ? watchlist : watchlist.filter(a => a.type === wlFilter);
+    return [...items].sort((a, b) => {
+      const av = a[wlSort.key] ?? -Infinity;
+      const bv = b[wlSort.key] ?? -Infinity;
+      return wlSort.dir === 'desc' ? bv - av : av - bv;
+    });
+  })();
+
+  const toggleWlSort = (key) => {
+    setWlSort(prev => ({ key, dir: prev.key === key && prev.dir === 'desc' ? 'asc' : 'desc' }));
+  };
 
   // Greeting based on time
   const hour = now.getHours();

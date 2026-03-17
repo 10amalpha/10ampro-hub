@@ -705,20 +705,20 @@ export default function Briefing() {
         </div>
 
         {/* ============================================================ */}
-        {/* WATCHLIST */}
+        {/* WATCHLIST — compact grid */}
         {/* ============================================================ */}
         <div style={{ marginTop: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <BarChart3 style={{ width: '16px', height: '16px', color: '#10b981' }} />
-              <span style={{ fontFamily: sans, fontWeight: 700, fontSize: '14px', color: '#e5e7eb' }}>Watchlist</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <BarChart3 style={{ width: '14px', height: '14px', color: '#10b981' }} />
+              <span style={{ fontFamily: sans, fontWeight: 700, fontSize: '13px', color: '#e5e7eb' }}>Watchlist</span>
             </div>
-            <div style={{ display: 'flex', gap: '4px' }}>
+            <div style={{ display: 'flex', gap: '3px' }}>
               {['all', 'stock', 'crypto', 'fx'].map(f => (
                 <button key={f} onClick={() => setWlFilter(f)} style={{
-                  padding: '2px 8px', borderRadius: '4px', border: 'none', cursor: 'pointer',
-                  fontFamily: mono, fontSize: '9px', textTransform: 'uppercase',
-                  backgroundColor: wlFilter === f ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.04)',
+                  padding: '1px 6px', borderRadius: '3px', border: 'none', cursor: 'pointer',
+                  fontFamily: mono, fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.05em',
+                  backgroundColor: wlFilter === f ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.03)',
                   color: wlFilter === f ? '#34d399' : '#6b7280',
                 }}>{f}</button>
               ))}
@@ -726,63 +726,47 @@ export default function Briefing() {
           </div>
 
           {wlLoading ? (
-            <div style={{ textAlign: 'center', padding: '40px 0', color: '#6b7280', fontFamily: mono, fontSize: '11px' }}>
-              <Loader2 style={{ width: '16px', height: '16px', animation: 'spin 1s linear infinite', margin: '0 auto 8px' }} />
-              Fetching watchlist...
+            <div style={{ textAlign: 'center', padding: '24px 0', color: '#6b7280', fontFamily: mono, fontSize: '10px' }}>
+              <Loader2 style={{ width: '14px', height: '14px', animation: 'spin 1s linear infinite', margin: '0 auto 6px' }} />
+              Loading...
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: mono, fontSize: '11px' }}>
-                <thead>
-                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                    {[
-                      { key: 'ticker', label: 'Ticker' },
-                      { key: 'price', label: 'Price' },
-                      { key: 'change', label: '24h %' },
-                      ...(!isMobile ? [{ key: 'marketCap', label: 'Mkt Cap' }] : []),
-                    ].map(col => (
-                      <th key={col.key} onClick={() => toggleWlSort(col.key)} style={{
-                        padding: '6px 8px', textAlign: col.key === 'ticker' ? 'left' : 'right',
-                        color: wlSort.key === col.key ? '#34d399' : '#6b7280',
-                        cursor: 'pointer', fontWeight: 600, fontSize: '9px', textTransform: 'uppercase',
-                        userSelect: 'none', whiteSpace: 'nowrap',
-                      }}>
-                        {col.label} {wlSort.key === col.key ? (wlSort.dir === 'desc' ? '↓' : '↑') : ''}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedWatchlist.map((a, i) => (
-                    <tr key={a.ticker} style={{
-                      borderBottom: '1px solid rgba(255,255,255,0.03)',
-                      backgroundColor: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)',
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(5, 1fr)',
+              gap: '4px',
+            }}>
+              {sortedWatchlist.map(a => {
+                const up = a.change > 0;
+                const down = a.change < 0;
+                const borderColor = up ? 'rgba(52,211,153,0.25)' : down ? 'rgba(248,113,113,0.25)' : 'rgba(255,255,255,0.06)';
+                return (
+                  <div key={a.ticker} style={{
+                    padding: '6px 8px', borderRadius: '6px',
+                    backgroundColor: 'rgba(255,255,255,0.02)',
+                    border: `1px solid ${borderColor}`,
+                    fontFamily: mono,
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                      <span style={{ fontSize: '10px', fontWeight: 700, color: '#e5e7eb', letterSpacing: '0.02em' }}>{a.ticker}</span>
+                      <span style={{
+                        fontSize: '8px', padding: '0 3px', borderRadius: '2px',
+                        backgroundColor: a.type === 'stock' ? 'rgba(59,130,246,0.15)' : a.type === 'crypto' ? 'rgba(245,158,11,0.15)' : 'rgba(139,92,246,0.15)',
+                        color: a.type === 'stock' ? '#60a5fa' : a.type === 'crypto' ? '#fbbf24' : '#a78bfa',
+                      }}>{a.type === 'stock' ? 'S' : a.type === 'crypto' ? 'C' : 'FX'}</span>
+                    </div>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: '#d1d5db', marginBottom: '1px' }}>
+                      {a.price != null ? (a.price >= 1 ? `$${a.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : `$${a.price.toFixed(4)}`) : '—'}
+                    </div>
+                    <div style={{
+                      fontSize: '10px', fontWeight: 700,
+                      color: up ? '#34d399' : down ? '#f87171' : '#6b7280',
                     }}>
-                      <td style={{ padding: '6px 8px', color: '#e5e7eb', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        <span style={{
-                          display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', marginRight: '6px',
-                          backgroundColor: a.type === 'stock' ? '#3b82f6' : a.type === 'crypto' ? '#f59e0b' : '#8b5cf6',
-                        }} />
-                        {a.ticker}
-                      </td>
-                      <td style={{ padding: '6px 8px', textAlign: 'right', color: '#d1d5db' }}>
-                        {a.price != null ? (a.price >= 1 ? `$${a.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : `$${a.price.toFixed(6)}`) : '—'}
-                      </td>
-                      <td style={{
-                        padding: '6px 8px', textAlign: 'right', fontWeight: 600,
-                        color: a.change > 0 ? '#34d399' : a.change < 0 ? '#f87171' : '#6b7280',
-                      }}>
-                        {a.change != null ? `${a.change > 0 ? '+' : ''}${a.change.toFixed(2)}%` : '—'}
-                      </td>
-                      {!isMobile && (
-                        <td style={{ padding: '6px 8px', textAlign: 'right', color: '#9ca3af', fontSize: '10px' }}>
-                          {a.marketCap != null ? (a.marketCap >= 1e12 ? `$${(a.marketCap / 1e12).toFixed(1)}T` : a.marketCap >= 1e9 ? `$${(a.marketCap / 1e9).toFixed(1)}B` : a.marketCap >= 1e6 ? `$${(a.marketCap / 1e6).toFixed(0)}M` : '—') : '—'}
-                        </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      {a.change != null ? `${up ? '▲' : down ? '▼' : ''}${Math.abs(a.change).toFixed(2)}%` : '—'}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

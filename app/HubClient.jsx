@@ -61,17 +61,34 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
       <div style={{ maxWidth: 920, margin: '0 auto', padding: mb ? '6px 8px' : '10px 20px' }}>
 
         {/* ═══ HEADER ═══ */}
-        <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #27272a', paddingBottom: 5, marginBottom: 0 }}>
-          <span style={{ fontWeight: 800, fontSize: 13, letterSpacing: '-0.5px', marginRight: 10 }}>
-            <span style={{ color: '#D4A843' }}>10</span><span style={{ color: '#22C55E' }}>AM</span><span style={{ color: '#3f3f46' }}>PRO</span>
-          </span>
-          <span style={{ color: '#27272a', marginRight: 8 }}>│</span>
-          <span style={{ fontSize: 9, color: '#a1a1aa' }}>{now.toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
-          <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#22C55E', display: 'inline-block', animation: 'p 2s infinite' }} />
-            <a href="https://10am.pro" target="_blank" rel="noopener" style={{ fontSize: 9, color: '#71717a', textDecoration: 'none' }}>10am.pro →</a>
-          </span>
-        </div>
+        <header style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '10px 0', marginBottom: 12,
+          borderBottom: '1px solid rgba(255,255,255,0.04)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <img
+              src="/logo.jpg" alt="10AMPRO"
+              style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid rgba(212,168,67,0.2)' }}
+            />
+            <div>
+              <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: 18, lineHeight: 1 }}>
+                <span style={{ color: '#D4A843' }}>10</span>
+                <span style={{ color: '#22C55E' }}>AM</span>
+                <span style={{ color: '#3F3F46' }}>PRO</span>
+              </div>
+              <div style={{ fontSize: 8, letterSpacing: '0.2em', color: '#27272A', textTransform: 'uppercase' }}>
+                MORNING INTELLIGENCE TERMINAL
+              </div>
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 10, color: '#71717a' }}>
+              {now.toLocaleString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })} COT
+            </div>
+            <div style={{ fontSize: 9, color: '#3f3f46' }}>ISR 5min</div>
+          </div>
+        </header>
 
         {/* ═══ SIGNAL + MACRO BAR ═══ */}
         <div style={{ borderLeft: '1px solid #27272a', borderRight: '1px solid #27272a', borderBottom: '1px solid #27272a', marginBottom: 6, overflow: 'hidden' }}>

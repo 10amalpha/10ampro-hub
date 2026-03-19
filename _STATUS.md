@@ -1,5 +1,5 @@
 # 10AMPRO Hub — _STATUS.md
-**Last updated:** March 19, 2026 (session 2)
+**Last updated:** March 19, 2026 (session 2, final)
 **Live URL:** https://10ampro-hub.vercel.app
 **Repo:** 10amalpha/10ampro-hub
 **Vercel Project ID:** prj_lKkui80lHh4x3Fietp6nC4CRfupB
@@ -9,150 +9,111 @@
 ## Architecture
 
 - **Framework:** Next.js 14.0.4 (App Router)
-- **page.jsx** — Server component, fetches Yahoo/CoinGecko directly + calls `/api/briefing` for FRED data. `force-dynamic` with ISR revalidate 300s.
+- **page.jsx** — Server component, fetches Yahoo/CoinGecko directly + calls `/api/briefing` for FRED + FMP + Finnhub data. `force-dynamic` with ISR revalidate 300s.
 - **HubClient.jsx** — Client component (`'use client'`), receives all data as props, handles interactivity (watchlist filters, comment expand/collapse, responsive breakpoints).
 - **API Routes** (all `force-dynamic`):
-  - `/api/briefing` — FRED (WALCL, WDTGAL, RRPONTSYD, WRESBAL, M2SL, MYAGM2CNM189N) + Yahoo Finance + CoinGecko + Finnhub calendar + Finnhub earnings
+  - `/api/briefing` — FRED (6 series) + FMP economic calendar + Yahoo Finance + CoinGecko + Finnhub earnings
   - `/api/watchlist` — Yahoo Finance stocks + CoinGecko crypto + USD/COP (legacy, not used by page)
-  - `/api/debug` — Shows env var status (can delete later)
+  - `/api/debug` — Shows env var status (can delete when stable)
 
 ## Env Variables (Vercel)
 
-| Variable | Status |
-|---|---|
-| `FRED_API_KEY` | ✅ Set (was `Fred_api_key` — case-sensitive fix applied Mar 19) |
-| `FINNHUB_API_KEY` | ✅ Set |
+| Variable | Status | Used by |
+|---|---|---|
+| `FRED_API_KEY` | ✅ Set | NET LIQ, US M2, CN M2 |
+| `FINNHUB_API_KEY` | ✅ Set | Earnings calendar |
+| `FMP_API_KEY` | ✅ Set (paid plan, annual) | Economic calendar (HOY/MAÑANA) |
 
-## Section Status (top to bottom, per v5p design)
+## Section Status
 
 ### 1. HEADER ✅ COMPLETE
-- Logo (`/logo.jpg`) + 10AMPRO brand (Space Grotesk) + "MORNING INTELLIGENCE TERMINAL" subtitle
-- Date/time in COT timezone + ISR 5min badge
-- **Do NOT change** — this is the standard header
+- Logo + 10AMPRO brand + "MORNING INTELLIGENCE TERMINAL" + date/COT + ISR 5min
+- **Do NOT change**
 
 ### 2. SIGNAL + MACRO BAR ✅ COMPLETE — LIVE DATA
-**MKT Row (6 cells) — Yahoo Finance, refreshes 5 min:**
-- S&P 500 (`^GSPC`), VIX (`^VIX`, turns red >25), DXY (`DX-Y.NYB`), WTI (`CL=F`), USD/JPY (`JPY=X`), USD/COP (`COP=X`)
+**MKT Row (6 cells) — Yahoo Finance, 5 min refresh:**
+- S&P 500, VIX (red >25), DXY, WTI, USD/JPY, USD/COP
 
 **LIQ Row (5 cells):**
-- NET LIQ — FRED via `/api/briefing` (WALCL−TGA−RRP), updates weekly Wed
-- US M2 — FRED `M2SL` (billions → displayed as trillions + MoM%), updates monthly
-- CN M2 — FRED `MYAGM2CNM189N` (yuan ÷ 1e12 → displayed as ¥194T + MoM%), updates monthly
-- US 10Y — Yahoo `^TNX`, refreshes 5 min
-- US 2Y — Yahoo `^IRX`, refreshes 5 min
+- NET LIQ — FRED (WALCL−TGA−RRP), weekly Wed
+- US M2 — FRED M2SL, monthly
+- CN M2 — FRED MYAGM2CNM189N (yuan ÷ 1e12), monthly
+- US 10Y, US 2Y — Yahoo, 5 min
 
-**Signal Logic:**
-- RISK ON/MIXED/RISK OFF: VIX level + DXY % change + S&P % change (score-based)
-- EXPANDING/NEUTRAL/TIGHTENING: US 10Y yield (<4.0% expanding, >4.5% tightening)
+**Signals:** RISK ON/MIXED/RISK OFF + EXPANDING/NEUTRAL/TIGHTENING
+**Layout:** MKT=6col grid, LIQ=5col grid, signal boxes 120px, labels 20px, aligned.
 
-**Layout:** Both rows use CSS grid (MKT=6col, LIQ=5col). Signal boxes fixed `width: 120px`, MKT/LIQ vertical labels fixed `width: 20px`. Both aligned.
-
-### 3. CALENDAR 🔶 LAYOUT DONE — DATA PARTIAL
-- HOY/MAÑANA split working
-- Data comes from `/api/briefing` → Finnhub economic calendar
-- Currently shows "Sin eventos de alto impacto hoy" — Finnhub only returns high-impact US events, may be empty on quiet days
-- **TODO:** Verify Finnhub returns low-impact events too (briefing route filters `impact === 3` only). Need to also return impact 1-2 for the "low impact" section below the separator in HOY.
+### 3. CALENDAR ✅ COMPLETE — LIVE DATA (FMP)
+- **Source:** Financial Modeling Prep (FMP) stable endpoint `/stable/economic-calendar`
+- **Refresh:** Every 1 hour (FMP updates every 15 min on their side)
+- HOY split into high-impact (blue times, red dots, blue bg) + low-impact (muted, below separator)
+- MAÑANA shows all next-day US events with yellow times
+- Times converted to ET timezone
+- Estimates + previous values displayed
+- US events only (filtered by `country === 'US'` or `currency === 'USD'`)
 
 ### 4. WATCHLIST ✅ COMPLETE — LIVE DATA (30 tickers)
-**Stocks (16) — Yahoo Finance, refreshes 5 min:**
-- PLTR, HOOD, TSLA, HIMS, QSI, DUOL, STKE, MP, OKLO, AMD, NVDA, MSTR, BE, IBIT, STRC
+**Stocks (15) — Yahoo Finance, 5 min refresh:**
+PLTR, HOOD, TSLA, HIMS, QSI, DUOL, STKE, MP, OKLO, AMD, NVDA, MSTR, BE, IBIT, STRC
 
-**Crypto (15) — CoinGecko, refreshes 2 min:**
-- BTC, SOL, SUI, ETH, JUP, NOS, JTO, SHDW, 2Z, MET, HNT, ZEC, JITOSOL, XRP, JLP
-- 2Z fetched by Solana contract address: `J6pQQ3FAcJQeWPPGppWRb4nM8jU3wLyYbRrLh7feMfvd`
-- All others fetched by CoinGecko ID
+**Crypto (15) — CoinGecko, 2 min refresh:**
+BTC, SOL, SUI, ETH, JUP, NOS, JTO, SHDW, 2Z, MET, HNT, ZEC, JITOSOL, XRP, JLP
+
+**2Z** fetched via Solana contract address: `J6pQQ3FAcJQeWPPGppWRb4nM8jU3wLyYbRrLh7feMfvd`
 
 **CoinGecko ID Map:**
 ```
 BTC: bitcoin, SOL: solana, SUI: sui, ETH: ethereum,
 JUP: jupiter-exchange-solana, NOS: nosana,
 JTO: jito-governance-token, SHDW: genesysgo-shadow,
-2Z: 2z-protocol (via contract address), MET: metaplex,
+2Z: 2z-protocol (contract addr), MET: metaplex,
 HNT: helium, ZEC: zcash, JITOSOL: jito-staked-sol,
 XRP: ripple, JLP: jupiter-perpetuals-liquidity-provider-token
 ```
 
-**Features:**
-- 7-col desktop / 3-col mobile grid
-- Green/red cell backgrounds by % magnitude
-- ALL/STK/CRY filters working
-- 💬 comment dots + expandable comment cards working
-- Movers summary line (top 3 by magnitude) working
-- **Comments are hardcoded** in page.jsx (PLTR, TSLA, STKE, BE). TODO: move to CMS/Supabase.
+**Features:** 7→3 col responsive, green/red bg by magnitude, ALL/STK/CRY filters, 💬 comments (hardcoded), movers line.
 
 ### 5. INFO DIET + EARNINGS RADAR 🔶 LAYOUT DONE — DATA MIXED
-**Info Diet (left column):**
-- Layout matches v5p: thumbnail (source initials in brand color), title, source, who shared, time ago, tag
-- **Data is hardcoded** (5 placeholder articles). TODO: wire to info-diet.vercel.app data source or Supabase.
-- No exit links (hub is the anchor) ✅
-
-**Earnings Radar (right column):**
-- NEXT UP highlighted with purple badge ✅
-- Compact list with emoji + ticker + name + date + days countdown ✅
-- **Data is LIVE from Finnhub** via `/api/briefing` → earnings calendar
-- No exit links ✅
+**Info Diet:** Hardcoded 5 placeholder articles. TODO: wire to data source.
+**Earnings Radar:** ✅ LIVE from Finnhub. NEXT UP badge + days countdown.
 
 ### 6. EDITORIAL INSIGHTS 🔶 LAYOUT DONE — DATA HARDCODED
-- 6 mini-explainers with colored tags (MACRO, TSLA, RISK, LIQ, BE, COP)
-- Left border colored by tag ✅
-- Plus Jakarta Sans editorial text ✅
-- Optional 📎 Substack deep dive links ✅
-- CTA "Más análisis y deep dives en 10am.pro →" ✅
-- **All content is hardcoded** in page.jsx. TODO: move to CMS (Supabase table or Google Doc).
+6 mini-explainers, colored tags, Substack links. TODO: CMS.
 
 ### 7. FOOTER ✅ COMPLETE
-- Substack + @holdmybirra + Cerebro links
-- No exit links except those three ✅
 
 ---
 
-## Data Flow Summary
-
-```
-page.jsx (Server Component, force-dynamic)
-├── fetchYahoo() — direct, crumb-based auth
-│   ├── Macro: ^GSPC, ^VIX, DX-Y.NYB, CL=F, JPY=X, COP=X, ^TNX, ^IRX
-│   └── Watchlist: PLTR, HOOD, TSLA, HIMS, QSI, DUOL, STKE, MP, OKLO, AMD, NVDA, MSTR, BE, IBIT, STRC
-├── fetchCrypto() — CoinGecko direct (IDs) + contract address (2Z)
-│   └── BTC, SOL, SUI, ETH, JUP, NOS, JTO, SHDW, 2Z, MET, HNT, ZEC, JITOSOL, XRP, JLP
-├── fetchBriefing() — calls /api/briefing internally
-│   ├── FRED: WALCL, WDTGAL, RRPONTSYD, WRESBAL, M2SL, MYAGM2CNM189N
-│   ├── Finnhub: economic calendar (US events, 3 days)
-│   └── Finnhub: earnings (13 tickers, 90-day window)
-└── Passes all data as props to HubClient.jsx
-```
-
 ## Data Refresh Rates
 
-| Cell/Section | Source | Refresh | Updates when |
+| Data | Source | Refresh | Updates when |
 |---|---|---|---|
-| S&P, VIX, DXY, WTI, JPY, COP | Yahoo | 5 min | Market hours Mon-Fri |
+| MKT row (S&P, VIX, DXY, WTI, JPY, COP) | Yahoo | 5 min | Market hours Mon-Fri |
 | US 10Y, US 2Y | Yahoo | 5 min | Market hours |
-| NET LIQ | FRED (WALCL−TGA−RRP) | 1 hour | Wednesdays (weekly) |
+| NET LIQ | FRED | 1 hour | Wednesdays (weekly) |
 | US M2 | FRED M2SL | 1 hour | ~4th Tuesday monthly |
 | CN M2 | FRED MYAGM2CNM189N | 1 hour | Monthly (IMF, ~2mo lag) |
-| Watchlist stocks (16) | Yahoo | 5 min | Market hours Mon-Fri |
+| Calendar (HOY/MAÑANA) | FMP | 1 hour | Continuous (FMP updates 15 min) |
+| Watchlist stocks (15) | Yahoo | 5 min | Market hours Mon-Fri |
 | Watchlist crypto (15) | CoinGecko | 2 min | 24/7 |
-| Calendar | Finnhub | 1 hour | Daily |
 | Earnings | Finnhub | 6 hours | As companies announce |
 
-## Key Lessons Learned (for next sessions)
+## Key Lessons Learned
 
 1. **Env vars are case-sensitive** on Vercel. `Fred_api_key` ≠ `FRED_API_KEY`.
-2. **Static pages can't read env vars at runtime.** Must use `export const dynamic = 'force-dynamic'` on both page and API routes.
-3. **Yahoo Finance v7 API requires crumb auth.** The `getYahooCrumb()` function in page.jsx handles cookie → crumb → authenticated fetch.
-4. **FRED series units:** WALCL, WDTGAL, RRPONTSYD are all in **millions USD**. M2SL is in **billions USD**. MYAGM2CNM189N (CN M2) is in **yuan** (divide by 1e12 for trillions).
-5. **Don't change the header.** Logo + brand + subtitle + date/COT + ISR badge is the standard.
-6. **Work in chunks.** Complete one section fully before moving to next.
-7. **`/api/debug` route exists** — hit it to verify env vars. Delete when no longer needed.
-8. **2Z token** uses CoinGecko's `/simple/token_price/solana?contract_addresses=` endpoint, not the standard ID lookup. Contract: `J6pQQ3FAcJQeWPPGppWRb4nM8jU3wLyYbRrLh7feMfvd`.
+2. **Static pages can't read env vars at runtime.** Use `export const dynamic = 'force-dynamic'`.
+3. **Yahoo v7 requires crumb auth.** `getYahooCrumb()` handles cookie→crumb flow.
+4. **FRED units:** WALCL/WDTGAL/RRPONTSYD = millions. M2SL = billions. CN M2 = yuan (÷1e12).
+5. **Don't change the header.**
+6. **Work in chunks.** One section at a time.
+7. **FMP v3 endpoints are legacy** (blocked for new accounts after Aug 2025). Use `/stable/` prefix.
+8. **2Z token** uses CoinGecko contract address endpoint, not standard ID lookup.
 
 ## Next Steps (priority order)
 
-1. **Calendar:** Fix Finnhub to return all impact levels, split high/low in HOY
-2. **Watchlist comments:** Move from hardcoded to Supabase or editable JSON
-3. **Info Diet:** Wire to actual data source (check info-diet repo for how data is stored)
-4. **Editorial Insights:** Decide CMS approach (Supabase table vs Google Doc)
-5. **Delete `/api/debug`** route once stable
-6. **Mobile testing** — verify 700px breakpoint on all sections
-7. **Clean up dead code** — `fetchCalendar()` and `fetchEarnings()` functions in page.jsx are unused (data comes from briefing now)
+1. **Watchlist comments:** Move from hardcoded to Supabase or editable JSON
+2. **Info Diet:** Wire to actual data source (check info-diet repo)
+3. **Editorial Insights:** Decide CMS approach (Supabase table vs Google Doc)
+4. **Delete `/api/debug`** route once stable
+5. **Mobile testing** — verify 700px breakpoint on all sections
+6. **Clean up dead code** — `fetchCalendar()` and `fetchEarnings()` in page.jsx are unused

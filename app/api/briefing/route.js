@@ -111,36 +111,38 @@ async function getBtcData() {
 }
 
 // ============================================================
-// ECONOMIC CALENDAR — Finnhub
+// ECONOMIC CALENDAR — Financial Modeling Prep (FMP)
 // ============================================================
 async function getEconomicCalendar() {
-  const apiKey = process.env.FINNHUB_API_KEY;
-  if (!apiKey) { console.error('Calendar: no FINNHUB key'); return []; }
+  const apiKey = process.env.FMP_API_KEY;
+  if (!apiKey) { console.error('Calendar: no FMP_API_KEY'); return []; }
   try {
     const today = new Date();
     const from = today.toISOString().split('T')[0];
-    const to = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    const url = `https://finnhub.io/api/v1/calendar/economic?from=${from}&to=${to}&token=${apiKey}`;
-    console.log('Finnhub calendar URL:', url.replace(apiKey, '***'));
-    const res = await fetch(url, { cache: 'no-store' });
-    if (!res.ok) { console.error('Finnhub calendar HTTP:', res.status); return []; }
+    const toDate = new Date(today.getTime() + 3 * 86400000);
+    const to = toDate.toISOString().split('T')[0];
+    const url = `https://financialmodelingprep.com/api/v3/economic_calendar?from=${from}&to=${to}&apikey=${apiKey}`;
+    const res = await fetch(url, { next: { revalidate: 3600 } });
+    if (!res.ok) { console.error('FMP calendar HTTP:', res.status); return []; }
     const data = await res.json();
-    const events = data.economicCalendar || [];
-    console.log(`Finnhub calendar: ${events.length} total events, ${events.filter(e => e.country === 'US').length} US events`);
-    // Return ALL US events with impact level
-    return events
+    if (!Array.isArray(data)) { console.error('FMP calendar: unexpected response'); return []; }
+    console.log(`FMP calendar: ${data.length} total events`);
+    // FMP returns: { date, country, event, currency, previous, estimate, actual, change, impact, unit }
+    // impact: "Low", "Medium", "High"
+    // Filter US events only
+    return data
       .filter((e) => e.country === 'US')
       .map((e) => ({
         event: e.event,
-        date: e.time,
+        date: e.date,
         actual: e.actual,
         estimate: e.estimate,
-        previous: e.prev,
-        impact: e.impact,
-        unit: e.unit,
+        previous: e.previous,
+        impact: e.impact === 'High' ? 3 : e.impact === 'Medium' ? 2 : 1,
+        unit: e.unit || '',
       }));
   } catch (err) {
-    console.error('Finnhub calendar error:', err.message);
+    console.error('FMP calendar error:', err.message);
     return [];
   }
 }

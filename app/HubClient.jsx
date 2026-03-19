@@ -25,11 +25,12 @@ const cC = (c) => c > 0 ? '#4ade80' : c < 0 ? '#fca5a5' : '#71717a';
 const sigCl = (s) => s === 'RISK ON' || s === 'EXPANDING' ? '#4ade80' : s === 'RISK OFF' || s === 'TIGHTENING' ? '#f87171' : '#facc15';
 
 // ─── Macro cell subcomponent ────────────────────────────────
-function MC({ m, bd = true, mb }) {
+function MC({ m, bd = true, mb, span = 1 }) {
   return (
     <div style={{
-      flex: 1, padding: '5px 6px', borderRight: bd ? '1px solid #1e1e22' : 'none',
+      padding: '5px 6px', borderRight: bd ? '1px solid #1e1e22' : 'none',
       textAlign: 'center', background: '#111113', minWidth: 0,
+      gridColumn: span > 1 ? `span ${span}` : undefined,
     }}>
       <div style={{ fontSize: 6, color: '#71717a', letterSpacing: '0.6px', textTransform: 'uppercase', lineHeight: 1 }}>{m.l}</div>
       <div style={{ fontSize: mb ? 11 : 14, fontWeight: 700, color: m.cl || '#e4e4e7', lineHeight: 1.2, marginTop: 2 }}>{m.v}</div>
@@ -103,10 +104,12 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
               <div style={{ fontSize: mb ? 16 : 22, fontWeight: 800, color: mktC, letterSpacing: '-1px', lineHeight: 1 }}>{signal.risk}</div>
             </div>
             <div style={{ display: 'flex', flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', padding: '0 5px', borderRight: '1px solid #1e1e22' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', borderRight: '1px solid #1e1e22', flexShrink: 0 }}>
                 <span style={{ fontSize: 7, color: '#52525b', writingMode: mb ? 'horizontal-tb' : 'vertical-rl', transform: mb ? 'none' : 'rotate(180deg)', letterSpacing: '0.5px' }}>MKT</span>
               </div>
-              {mkt.map((m, i) => <MC key={i} m={m} bd={i < mkt.length - 1} mb={mb} />)}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', flex: 1 }}>
+                {mkt.map((m, i) => <MC key={i} m={m} bd={i < mkt.length - 1} mb={mb} />)}
+              </div>
             </div>
           </div>
           {/* LIQ Row */}
@@ -120,10 +123,12 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
               <div style={{ fontSize: mb ? 12 : 16, fontWeight: 800, color: liqC, letterSpacing: '-0.5px', lineHeight: 1 }}>{signal.liq}</div>
             </div>
             <div style={{ display: 'flex', flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', padding: '0 5px', borderRight: '1px solid #1e1e22' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', borderRight: '1px solid #1e1e22', flexShrink: 0 }}>
                 <span style={{ fontSize: 7, color: '#52525b', writingMode: mb ? 'horizontal-tb' : 'vertical-rl', transform: mb ? 'none' : 'rotate(180deg)', letterSpacing: '0.5px' }}>LIQ</span>
               </div>
-              {liq.map((m, i) => <MC key={i} m={m} bd={i < liq.length - 1} mb={mb} />)}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', flex: 1 }}>
+                {liq.map((m, i) => <MC key={i} m={m} bd={i < liq.length - 1} mb={mb} span={i === liq.length - 1 ? 2 : 1} />)}
+              </div>
             </div>
           </div>
         </div>

@@ -78,7 +78,7 @@ async function fetchCrypto() {
     const ids = [
       'bitcoin','solana','sui','ethereum','jupiter-exchange-solana','nosana',
       'jito-governance-token','genesysgo-shadow','helium','zcash',
-      'jito-staked-sol','bonk','pump-fun','ripple',
+      'jito-staked-sol','ripple',
       'metaplex','jupiter-perpetuals-liquidity-provider-token'
     ].join(',');
 
@@ -147,7 +147,6 @@ const WATCHLIST_META = {
   OKLO: { n: 'Oklo', e: '⚛️' }, AMD: { n: 'AMD', e: '🔺' },
   NVDA: { n: 'NVIDIA', e: '💚' }, MSTR: { n: 'Strategy', e: '₿' },
   BE: { n: 'Bloom Energy', e: '🔋' }, IBIT: { n: 'iShares BTC', e: '🪙' },
-  DNA: { n: 'Ginkgo Bio', e: '🧬' },
 };
 
 async function fetchEarnings() {
@@ -158,7 +157,7 @@ async function fetchEarnings() {
   const toDate = new Date(today.getTime() + 90 * 86400000);
   const to = toDate.toISOString().split('T')[0];
   const results = [];
-  const earningsTickers = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','DNA'];
+  const earningsTickers = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE'];
   for (const ticker of earningsTickers) {
     try {
       const res = await fetch(
@@ -268,7 +267,7 @@ export default async function HubPage() {
     fetchYahoo(['^GSPC', '^VIX', 'DX-Y.NYB', 'CL=F', 'JPY=X', 'COP=X', '^TNX', '^IRX']),
     fetchCrypto(),
     fetchBriefing(),
-    fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','DNA','STRC']),
+    fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC']),
   ]);
 
   // ─── Parse earnings from briefing ───
@@ -377,13 +376,13 @@ export default async function HubPage() {
   const calTomorrow = tmrwEvents.map(formatCalEvent);
 
   // ─── Watchlist ───
-  const STOCK_TICKERS = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','DNA','STRC'];
+  const STOCK_TICKERS = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC'];
   const CRYPTO_MAP = {
     BTC: 'bitcoin', SOL: 'solana', SUI: 'sui', ETH: 'ethereum',
     JUP: 'jupiter-exchange-solana', NOS: 'nosana',
     JTO: 'jito-governance-token', SHDW: 'genesysgo-shadow',
     '2Z': '2z-protocol', MET: 'metaplex', HNT: 'helium', ZEC: 'zcash',
-    JITOSOL: 'jito-staked-sol', BONK: 'bonk', PUMP: 'pump-fun',
+    JITOSOL: 'jito-staked-sol',
     XRP: 'ripple', JLP: 'jupiter-perpetuals-liquidity-provider-token',
   };
 

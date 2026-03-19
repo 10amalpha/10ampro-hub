@@ -98,13 +98,13 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
             <div style={{
               padding: mb ? '8px 10px' : '8px 14px', background: `${mktC}08`, borderRight: `1px solid ${mktC}20`,
               display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-              minWidth: mb ? 70 : 100, flexShrink: 0,
+              width: mb ? 90 : 120, flexShrink: 0,
             }}>
               <div style={{ fontSize: 7, color: '#a1a1aa', letterSpacing: '1px', marginBottom: 1 }}>RISK</div>
-              <div style={{ fontSize: mb ? 16 : 22, fontWeight: 800, color: mktC, letterSpacing: '-1px', lineHeight: 1 }}>{signal.risk}</div>
+              <div style={{ fontSize: mb ? 14 : 18, fontWeight: 800, color: mktC, letterSpacing: '-1px', lineHeight: 1 }}>{signal.risk}</div>
             </div>
             <div style={{ display: 'flex', flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', borderRight: '1px solid #1e1e22', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', borderRight: '1px solid #1e1e22', flexShrink: 0, width: 20 }}>
                 <span style={{ fontSize: 7, color: '#52525b', writingMode: mb ? 'horizontal-tb' : 'vertical-rl', transform: mb ? 'none' : 'rotate(180deg)', letterSpacing: '0.5px' }}>MKT</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', flex: 1 }}>
@@ -115,15 +115,15 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
           {/* LIQ Row */}
           <div style={{ display: 'flex', alignItems: 'stretch' }}>
             <div style={{
-              padding: mb ? '6px 10px' : '8px 14px', background: `${liqC}08`, borderRight: `1px solid ${liqC}20`,
+              padding: mb ? '8px 10px' : '8px 14px', background: `${liqC}08`, borderRight: `1px solid ${liqC}20`,
               display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-              minWidth: mb ? 70 : 100, flexShrink: 0,
+              width: mb ? 90 : 120, flexShrink: 0,
             }}>
               <div style={{ fontSize: 7, color: '#a1a1aa', letterSpacing: '1px', marginBottom: 1 }}>LIQUIDITY</div>
-              <div style={{ fontSize: mb ? 12 : 16, fontWeight: 800, color: liqC, letterSpacing: '-0.5px', lineHeight: 1 }}>{signal.liq}</div>
+              <div style={{ fontSize: mb ? 14 : 18, fontWeight: 800, color: liqC, letterSpacing: '-0.5px', lineHeight: 1 }}>{signal.liq}</div>
             </div>
             <div style={{ display: 'flex', flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', borderRight: '1px solid #1e1e22', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', borderRight: '1px solid #1e1e22', flexShrink: 0, width: 20 }}>
                 <span style={{ fontSize: 7, color: '#52525b', writingMode: mb ? 'horizontal-tb' : 'vertical-rl', transform: mb ? 'none' : 'rotate(180deg)', letterSpacing: '0.5px' }}>LIQ</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', flex: 1 }}>

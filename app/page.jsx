@@ -75,7 +75,12 @@ async function fetchYahoo(symbols) {
 // ─── CoinGecko ──────────────────────────────────────────────
 async function fetchCrypto() {
   try {
-    const ids = 'bitcoin,solana,sui,ethereum,jupiter-exchange-solana,nosana';
+    const ids = [
+      'bitcoin','solana','sui','ethereum','jupiter-exchange-solana','nosana',
+      'jito-governance-token','genesysgo-shadow','helium','zcash',
+      'jito-staked-sol','bonk','pump-fun','ripple',
+      'metaplex','jupiter-perpetuals-liquidity-provider-token'
+    ].join(',');
     const res = await fetch(
       `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`,
       { next: { revalidate: 120 } }
@@ -356,7 +361,14 @@ export default async function HubPage() {
 
   // ─── Watchlist ───
   const STOCK_TICKERS = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','DNA'];
-  const CRYPTO_MAP = { BTC: 'bitcoin', SOL: 'solana', SUI: 'sui', ETH: 'ethereum', JUP: 'jupiter-exchange-solana', NOS: 'nosana' };
+  const CRYPTO_MAP = {
+    BTC: 'bitcoin', SOL: 'solana', SUI: 'sui', ETH: 'ethereum',
+    JUP: 'jupiter-exchange-solana', NOS: 'nosana',
+    JTO: 'jito-governance-token', SHDW: 'genesysgo-shadow',
+    MET: 'metaplex', HNT: 'helium', ZEC: 'zcash',
+    JITOSOL: 'jito-staked-sol', BONK: 'bonk', PUMP: 'pump-fun',
+    XRP: 'ripple', JLP: 'jupiter-perpetuals-liquidity-provider-token',
+  };
 
   const wl = [
     ...STOCK_TICKERS.map(t => {

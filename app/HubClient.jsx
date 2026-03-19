@@ -126,8 +126,8 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', borderRight: '1px solid #1e1e22', flexShrink: 0, width: 20 }}>
                 <span style={{ fontSize: 7, color: '#52525b', writingMode: mb ? 'horizontal-tb' : 'vertical-rl', transform: mb ? 'none' : 'rotate(180deg)', letterSpacing: '0.5px' }}>LIQ</span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', flex: 1 }}>
-                {liq.map((m, i) => <MC key={i} m={m} bd={i < liq.length - 1} mb={mb} span={i === liq.length - 1 ? 2 : 1} />)}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', flex: 1 }}>
+                {liq.map((m, i) => <MC key={i} m={m} bd={i < liq.length - 1} mb={mb} />)}
               </div>
             </div>
           </div>

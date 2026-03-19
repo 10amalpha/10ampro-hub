@@ -1,5 +1,5 @@
 # 10AMPRO Hub — _STATUS.md
-**Last updated:** March 19, 2026
+**Last updated:** March 19, 2026 (session 2)
 **Live URL:** https://10ampro-hub.vercel.app
 **Repo:** 10amalpha/10ampro-hub
 **Vercel Project ID:** prj_lKkui80lHh4x3Fietp6nC4CRfupB
@@ -13,7 +13,7 @@
 - **HubClient.jsx** — Client component (`'use client'`), receives all data as props, handles interactivity (watchlist filters, comment expand/collapse, responsive breakpoints).
 - **API Routes** (all `force-dynamic`):
   - `/api/briefing` — FRED (WALCL, WDTGAL, RRPONTSYD, WRESBAL, M2SL, MYAGM2CNM189N) + Yahoo Finance + CoinGecko + Finnhub calendar + Finnhub earnings
-  - `/api/watchlist` — Yahoo Finance stocks + CoinGecko crypto + USD/COP
+  - `/api/watchlist` — Yahoo Finance stocks + CoinGecko crypto + USD/COP (legacy, not used by page)
   - `/api/debug` — Shows env var status (can delete later)
 
 ## Env Variables (Vercel)
@@ -36,8 +36,8 @@
 
 **LIQ Row (5 cells):**
 - NET LIQ — FRED via `/api/briefing` (WALCL−TGA−RRP), updates weekly Wed
-- US M2 — FRED `M2SL` (billions → displayed as trillions), updates monthly
-- CN M2 — FRED `MYAGM2CNM189N` (yuan → divided by 1T, displayed as ¥194T), updates monthly
+- US M2 — FRED `M2SL` (billions → displayed as trillions + MoM%), updates monthly
+- CN M2 — FRED `MYAGM2CNM189N` (yuan ÷ 1e12 → displayed as ¥194T + MoM%), updates monthly
 - US 10Y — Yahoo `^TNX`, refreshes 5 min
 - US 2Y — Yahoo `^IRX`, refreshes 5 min
 
@@ -53,10 +53,26 @@
 - Currently shows "Sin eventos de alto impacto hoy" — Finnhub only returns high-impact US events, may be empty on quiet days
 - **TODO:** Verify Finnhub returns low-impact events too (briefing route filters `impact === 3` only). Need to also return impact 1-2 for the "low impact" section below the separator in HOY.
 
-### 4. WATCHLIST 🔶 LAYOUT DONE — DATA LIVE
-- 21-ticker Bloomberg grid: 15 stocks (Yahoo) + 6 crypto (CoinGecko)
-- Stocks: PLTR, HOOD, TSLA, HIMS, QSI, DUOL, STKE, MP, OKLO, AMD, NVDA, MSTR, BE, IBIT, DNA
-- Crypto: BTC, SOL, SUI, ETH, JUP, NOS
+### 4. WATCHLIST ✅ COMPLETE — LIVE DATA (30 tickers)
+**Stocks (16) — Yahoo Finance, refreshes 5 min:**
+- PLTR, HOOD, TSLA, HIMS, QSI, DUOL, STKE, MP, OKLO, AMD, NVDA, MSTR, BE, IBIT, STRC
+
+**Crypto (15) — CoinGecko, refreshes 2 min:**
+- BTC, SOL, SUI, ETH, JUP, NOS, JTO, SHDW, 2Z, MET, HNT, ZEC, JITOSOL, XRP, JLP
+- 2Z fetched by Solana contract address: `J6pQQ3FAcJQeWPPGppWRb4nM8jU3wLyYbRrLh7feMfvd`
+- All others fetched by CoinGecko ID
+
+**CoinGecko ID Map:**
+```
+BTC: bitcoin, SOL: solana, SUI: sui, ETH: ethereum,
+JUP: jupiter-exchange-solana, NOS: nosana,
+JTO: jito-governance-token, SHDW: genesysgo-shadow,
+2Z: 2z-protocol (via contract address), MET: metaplex,
+HNT: helium, ZEC: zcash, JITOSOL: jito-staked-sol,
+XRP: ripple, JLP: jupiter-perpetuals-liquidity-provider-token
+```
+
+**Features:**
 - 7-col desktop / 3-col mobile grid
 - Green/red cell backgrounds by % magnitude
 - ALL/STK/CRY filters working
@@ -96,15 +112,29 @@
 page.jsx (Server Component, force-dynamic)
 ├── fetchYahoo() — direct, crumb-based auth
 │   ├── Macro: ^GSPC, ^VIX, DX-Y.NYB, CL=F, JPY=X, COP=X, ^TNX, ^IRX
-│   └── Watchlist: PLTR, HOOD, TSLA, ... (15 stocks)
-├── fetchCrypto() — CoinGecko direct
-│   └── BTC, SOL, SUI, ETH, JUP, NOS
+│   └── Watchlist: PLTR, HOOD, TSLA, HIMS, QSI, DUOL, STKE, MP, OKLO, AMD, NVDA, MSTR, BE, IBIT, STRC
+├── fetchCrypto() — CoinGecko direct (IDs) + contract address (2Z)
+│   └── BTC, SOL, SUI, ETH, JUP, NOS, JTO, SHDW, 2Z, MET, HNT, ZEC, JITOSOL, XRP, JLP
 ├── fetchBriefing() — calls /api/briefing internally
 │   ├── FRED: WALCL, WDTGAL, RRPONTSYD, WRESBAL, M2SL, MYAGM2CNM189N
 │   ├── Finnhub: economic calendar (US events, 3 days)
-│   └── Finnhub: earnings (14 tickers, 90-day window)
+│   └── Finnhub: earnings (13 tickers, 90-day window)
 └── Passes all data as props to HubClient.jsx
 ```
+
+## Data Refresh Rates
+
+| Cell/Section | Source | Refresh | Updates when |
+|---|---|---|---|
+| S&P, VIX, DXY, WTI, JPY, COP | Yahoo | 5 min | Market hours Mon-Fri |
+| US 10Y, US 2Y | Yahoo | 5 min | Market hours |
+| NET LIQ | FRED (WALCL−TGA−RRP) | 1 hour | Wednesdays (weekly) |
+| US M2 | FRED M2SL | 1 hour | ~4th Tuesday monthly |
+| CN M2 | FRED MYAGM2CNM189N | 1 hour | Monthly (IMF, ~2mo lag) |
+| Watchlist stocks (16) | Yahoo | 5 min | Market hours Mon-Fri |
+| Watchlist crypto (15) | CoinGecko | 2 min | 24/7 |
+| Calendar | Finnhub | 1 hour | Daily |
+| Earnings | Finnhub | 6 hours | As companies announce |
 
 ## Key Lessons Learned (for next sessions)
 
@@ -115,6 +145,7 @@ page.jsx (Server Component, force-dynamic)
 5. **Don't change the header.** Logo + brand + subtitle + date/COT + ISR badge is the standard.
 6. **Work in chunks.** Complete one section fully before moving to next.
 7. **`/api/debug` route exists** — hit it to verify env vars. Delete when no longer needed.
+8. **2Z token** uses CoinGecko's `/simple/token_price/solana?contract_addresses=` endpoint, not the standard ID lookup. Contract: `J6pQQ3FAcJQeWPPGppWRb4nM8jU3wLyYbRrLh7feMfvd`.
 
 ## Next Steps (priority order)
 

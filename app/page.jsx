@@ -268,7 +268,7 @@ export default async function HubPage() {
     fetchYahoo(['^GSPC', '^VIX', 'DX-Y.NYB', 'CL=F', 'JPY=X', 'COP=X', '^TNX', '^IRX']),
     fetchCrypto(),
     fetchBriefing(),
-    fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','DNA']),
+    fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','DNA','STRC']),
   ]);
 
   // ─── Parse earnings from briefing ───
@@ -377,7 +377,7 @@ export default async function HubPage() {
   const calTomorrow = tmrwEvents.map(formatCalEvent);
 
   // ─── Watchlist ───
-  const STOCK_TICKERS = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','DNA'];
+  const STOCK_TICKERS = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','DNA','STRC'];
   const CRYPTO_MAP = {
     BTC: 'bitcoin', SOL: 'solana', SUI: 'sui', ETH: 'ethereum',
     JUP: 'jupiter-exchange-solana', NOS: 'nosana',

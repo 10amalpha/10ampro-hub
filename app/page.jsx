@@ -3,6 +3,11 @@
 // Server Component: fetches all data, passes to HubClient
 // ============================================================
 
+// Force dynamic rendering — env vars (FRED_API_KEY, FINNHUB_API_KEY) 
+// must be read at runtime, not during static build
+export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: regenerate every 5 minutes
+
 import HubClient from './HubClient';
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';

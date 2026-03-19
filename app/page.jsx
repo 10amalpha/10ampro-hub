@@ -83,19 +83,19 @@ async function fetchCrypto() {
 // ─── FRED ───────────────────────────────────────────────────
 async function fetchFRED(seriesId) {
   const key = process.env.FRED_API_KEY;
-  if (!key) return null;
+  if (!key) { console.error('FRED: no API key'); return null; }
   try {
-    const res = await fetch(
-      `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&sort_order=desc&limit=2&api_key=${key}&file_type=json`,
-      { next: { revalidate: 3600 } }
-    );
-    if (!res.ok) return null;
+    const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&sort_order=desc&limit=2&api_key=${key}&file_type=json`;
+    const res = await fetch(url, { next: { revalidate: 3600 } });
+    if (!res.ok) { console.error(`FRED ${seriesId}: HTTP ${res.status}`); return null; }
     const data = await res.json();
     const obs = data.observations || [];
+    if (!obs.length) { console.error(`FRED ${seriesId}: no observations`); return null; }
     const latest = parseFloat(obs[0]?.value);
     const prev = obs[1] ? parseFloat(obs[1]?.value) : null;
+    console.log(`FRED ${seriesId}: latest=${latest}, prev=${prev}`);
     return { value: latest, prev };
-  } catch { return null; }
+  } catch (e) { console.error(`FRED ${seriesId} error:`, e.message); return null; }
 }
 
 // ─── Finnhub Calendar ───────────────────────────────────────
@@ -270,27 +270,27 @@ export default async function HubPage() {
   ];
 
   // ─── LIQ row ───
+  // WALCL, WDTGAL, RRPONTSYD are ALL in millions USD
   const walcl = fredWALCL?.value || 0;
   const tga = fredTGA?.value || 0;
   const rrp = fredRRP?.value || 0;
-  // WALCL in millions, WDTGAL in millions, RRPONTSYD in billions
-  const netLiqT = (walcl - tga) / 1e6 - rrp / 1e3;
+  const netLiqT = (walcl - tga - rrp) / 1e6; // convert millions to trillions
   const netLiqDisplay = netLiqT > 0 ? '$' + netLiqT.toFixed(2) + 'T' : '—';
 
+  // M2SL is in billions USD
   const m2Val = fredM2?.value;
   const m2Prev = fredM2?.prev;
   const m2Chg = (m2Val && m2Prev) ? ((m2Val - m2Prev) / m2Prev * 100) : null;
   const m2Display = m2Val ? '$' + (m2Val / 1000).toFixed(1) + 'T' : '—';
 
+  // MYAGM2CNM189N is China M2 YoY growth rate (%) — not a level
   const cnm2Val = fredCNM2?.value;
-  const cnm2Prev = fredCNM2?.prev;
-  const cnm2Chg = (cnm2Val && cnm2Prev) ? ((cnm2Val - cnm2Prev) / cnm2Prev * 100) : null;
-  const cnm2Display = cnm2Val ? '¥' + Math.round(cnm2Val) + 'T' : '—';
+  const cnm2Display = cnm2Val != null ? cnm2Val.toFixed(1) + '%' : '—';
 
   const liqRow = [
     { l: 'NET LIQ', v: netLiqDisplay, c: null, cl: '#22d3ee' },
     { l: 'US M2', v: m2Display, c: m2Chg, cl: '#34d399' },
-    { l: 'CN M2', v: cnm2Display, c: cnm2Chg, cl: '#ef4444' },
+    { l: 'CN M2', v: cnm2Display, c: null, cl: '#ef4444' },
     { l: 'US 10Y', v: q('^TNX')?.regularMarketPrice != null ? q('^TNX').regularMarketPrice.toFixed(2) + '%' : '—', c: null, cl: '#e879f9' },
     { l: 'US 2Y', v: q('^IRX')?.regularMarketPrice != null ? q('^IRX').regularMarketPrice.toFixed(2) + '%' : '—', c: null, cl: '#c084fc' },
   ];

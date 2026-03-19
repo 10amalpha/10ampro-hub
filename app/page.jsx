@@ -5,14 +5,57 @@
 
 import HubClient from './HubClient';
 
-const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-// ─── Yahoo Finance ──────────────────────────────────────────
+// ─── Yahoo Finance (crumb auth) ─────────────────────────────
+async function getYahooCrumb() {
+  try {
+    // Step 1: hit fc.yahoo.com to get A3 cookie
+    const cookieRes = await fetch('https://fc.yahoo.com', {
+      headers: { 'User-Agent': UA },
+      redirect: 'manual',
+    });
+    const setCookies = cookieRes.headers.getSetCookie?.() || [];
+    const cookieStr = setCookies.map(c => c.split(';')[0]).join('; ');
+    if (!cookieStr) return null;
+
+    // Step 2: get crumb using cookie
+    const crumbRes = await fetch('https://query2.finance.yahoo.com/v1/test/getcrumb', {
+      headers: { 'User-Agent': UA, 'Cookie': cookieStr },
+    });
+    if (!crumbRes.ok) return null;
+    const crumb = await crumbRes.text();
+    if (!crumb || crumb.includes('<')) return null; // HTML error page
+    return { cookie: cookieStr, crumb };
+  } catch (e) {
+    console.error('Yahoo crumb error:', e.message);
+    return null;
+  }
+}
+
 async function fetchYahoo(symbols) {
   const joined = symbols.join(',');
+  const auth = await getYahooCrumb();
+
+  // Try with crumb auth first
+  if (auth) {
+    try {
+      const url = `https://query2.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(joined)}&crumb=${encodeURIComponent(auth.crumb)}`;
+      const res = await fetch(url, {
+        headers: { 'User-Agent': UA, 'Cookie': auth.cookie },
+        next: { revalidate: 300 },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.quoteResponse?.result?.length) return data.quoteResponse.result;
+      }
+    } catch (e) { console.error('Yahoo crumb fetch error:', e.message); }
+  }
+
+  // Fallback: try without crumb on both hosts
   for (const host of ['query2.finance.yahoo.com', 'query1.finance.yahoo.com']) {
     try {
-      const res = await fetch(`https://${host}/v7/finance/quote?symbols=${joined}`, {
+      const res = await fetch(`https://${host}/v7/finance/quote?symbols=${encodeURIComponent(joined)}`, {
         headers: { 'User-Agent': UA },
         next: { revalidate: 300 },
       });

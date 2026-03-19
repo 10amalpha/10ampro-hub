@@ -11,7 +11,7 @@ export async function GET() {
   const toDate = new Date(today.getTime() + 3 * 86400000);
   const to = toDate.toISOString().split('T')[0];
 
-  const url = `https://financialmodelingprep.com/api/v3/economic_calendar?from=${from}&to=${to}&apikey=${apiKey}`;
+  const url = `https://financialmodelingprep.com/stable/economic-calendar?from=${from}&to=${to}&apikey=${apiKey}`;
 
   try {
     const res = await fetch(url);

@@ -121,22 +121,23 @@ async function getEconomicCalendar() {
     const from = today.toISOString().split('T')[0];
     const toDate = new Date(today.getTime() + 3 * 86400000);
     const to = toDate.toISOString().split('T')[0];
-    const url = `https://financialmodelingprep.com/api/v3/economic_calendar?from=${from}&to=${to}&apikey=${apiKey}`;
+    const url = `https://financialmodelingprep.com/stable/economic-calendar?from=${from}&to=${to}&apikey=${apiKey}`;
     const res = await fetch(url, { next: { revalidate: 3600 } });
     if (!res.ok) { console.error('FMP calendar HTTP:', res.status); return []; }
     const data = await res.json();
-    if (!Array.isArray(data)) { console.error('FMP calendar: unexpected response'); return []; }
+    if (!Array.isArray(data)) { console.error('FMP calendar: unexpected response', typeof data, JSON.stringify(data).substring(0, 200)); return []; }
     console.log(`FMP calendar: ${data.length} total events`);
-    // FMP returns: { date, country, event, currency, previous, estimate, actual, change, impact, unit }
+    if (data.length > 0) console.log('FMP first event:', JSON.stringify(data[0]));
+    // FMP stable returns: { date, country, event, currency, previous, estimate, actual, change, impact, unit }
     // impact: "Low", "Medium", "High"
     // Filter US events only
     return data
-      .filter((e) => e.country === 'US')
+      .filter((e) => (e.country === 'US' || e.currency === 'USD'))
       .map((e) => ({
-        event: e.event,
-        date: e.date,
+        event: e.event || e.name || '',
+        date: e.date || e.datetime || '',
         actual: e.actual,
-        estimate: e.estimate,
+        estimate: e.estimate ?? e.consensus ?? null,
         previous: e.previous,
         impact: e.impact === 'High' ? 3 : e.impact === 'Medium' ? 2 : 1,
         unit: e.unit || '',

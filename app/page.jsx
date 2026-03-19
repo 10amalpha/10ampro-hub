@@ -282,10 +282,20 @@ export default async function HubPage() {
   const netLiqT = fed.netLiquidity || 0;
   const netLiqDisplay = netLiqT > 0 ? '$' + netLiqT.toFixed(2) + 'T' : '—';
 
+  // US M2 from FRED (billions) → display as trillions
+  const m2Val = fed.m2;
+  const m2Prev = fed.m2prev;
+  const m2Chg = (m2Val && m2Prev) ? ((m2Val - m2Prev) / m2Prev * 100) : null;
+  const m2Display = m2Val ? '$' + (m2Val / 1000).toFixed(1) + 'T' : '—';
+
+  // CN M2 from FRED — YoY growth rate %
+  const cnm2Val = fed.cnm2;
+  const cnm2Display = cnm2Val ? cnm2Val.toFixed(1) + '%' : '—';
+
   const liqRow = [
     { l: 'NET LIQ', v: netLiqDisplay, c: null, cl: '#22d3ee' },
-    { l: 'US M2', v: '$21.7T', c: 0.34, cl: '#34d399' },   // M2SL updates monthly — will wire to API
-    { l: 'CN M2', v: '7.0%', c: null, cl: '#ef4444' },       // MYAGM2CNM189N updates monthly
+    { l: 'US M2', v: m2Display, c: m2Chg, cl: '#34d399' },
+    { l: 'CN M2', v: cnm2Display, c: null, cl: '#ef4444' },
     { l: 'US 10Y', v: q('^TNX')?.regularMarketPrice != null ? q('^TNX').regularMarketPrice.toFixed(2) + '%' : '—', c: null, cl: '#e879f9' },
     { l: 'US 2Y', v: q('^IRX')?.regularMarketPrice != null ? q('^IRX').regularMarketPrice.toFixed(2) + '%' : '—', c: null, cl: '#c084fc' },
   ];

@@ -51,27 +51,37 @@ async function getMarketData() {
 // ============================================================
 async function getFedData() {
   const apiKey = process.env.FRED_API_KEY;
-  if (!apiKey) return { fedBalance: 6.58, tga: 0.968, rrp: 0.006, bankReserves: 2.99 };
+  if (!apiKey) return { fedBalance: 6.58, tga: 0.968, rrp: 0.006, bankReserves: 2.99, m2: null, cnm2: null };
   try {
-    const series = ['WALCL', 'WDTGAL', 'RRPONTSYD', 'WRESBAL'];
+    const series = ['WALCL', 'WDTGAL', 'RRPONTSYD', 'WRESBAL', 'M2SL', 'MYAGM2CNM189N'];
     const results = await Promise.all(
       series.map(async (id) => {
-        const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${id}&sort_order=desc&limit=1&api_key=${apiKey}&file_type=json`;
+        const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${id}&sort_order=desc&limit=2&api_key=${apiKey}&file_type=json`;
         const res = await fetch(url, { next: { revalidate: 3600 } });
         if (!res.ok) return null;
         const data = await res.json();
-        return { id, value: parseFloat(data.observations?.[0]?.value || '0') };
+        const obs = data.observations || [];
+        return {
+          id,
+          value: parseFloat(obs[0]?.value || '0'),
+          prev: obs[1] ? parseFloat(obs[1]?.value || '0') : null,
+        };
       })
     );
     const val = (id) => results.find((r) => r?.id === id)?.value || 0;
+    const prev = (id) => results.find((r) => r?.id === id)?.prev || null;
+    // WALCL, WDTGAL, RRPONTSYD are all in millions USD
     return {
-      fedBalance: val('WALCL') ? val('WALCL') / 1000000 : 6.58,
-      tga: val('WDTGAL') ? val('WDTGAL') / 1000000 : 0.968,
-      rrp: val('RRPONTSYD') ? val('RRPONTSYD') / 1000 : 0.006,
-      bankReserves: val('WRESBAL') ? val('WRESBAL') / 1000 : 2.99,
+      fedBalance: val('WALCL') / 1000000,       // millions → trillions
+      tga: val('WDTGAL') / 1000000,             // millions → trillions
+      rrp: val('RRPONTSYD') / 1000000,           // millions → trillions
+      bankReserves: val('WRESBAL') / 1000000,    // millions → trillions
+      m2: val('M2SL'),                            // billions USD
+      m2prev: prev('M2SL'),                       // previous month billions
+      cnm2: val('MYAGM2CNM189N'),                 // YoY growth rate %
     };
   } catch {
-    return { fedBalance: 6.58, tga: 0.968, rrp: 0.006, bankReserves: 2.99 };
+    return { fedBalance: 6.58, tga: 0.968, rrp: 0.006, bankReserves: 2.99, m2: null, m2prev: null, cnm2: null };
   }
 }
 

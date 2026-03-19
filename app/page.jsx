@@ -328,13 +328,21 @@ export default async function HubPage() {
 
   // ─── Calendar (from briefing API) ───
   // Briefing returns: { event, date, actual, estimate, previous, impact, unit }
-  const calendarRaw = (briefing?.calendar || []).map(ev => ({
-    time: ev.date || '',
-    event: ev.event || '',
-    estimate: ev.estimate,
-    prev: ev.previous,
-    impact: ev.impact || 3,
-  }));
+  const calendarRaw = (briefing?.calendar || []).map(ev => {
+    // Extract date from various formats: "2026-03-19T12:30:00Z", "2026-03-19", etc
+    const rawDate = ev.date || '';
+    const dateOnly = rawDate.includes('T') ? rawDate.split('T')[0] : rawDate.split(' ')[0];
+    return {
+      time: rawDate,
+      dateOnly,
+      event: ev.event || '',
+      estimate: ev.estimate,
+      prev: ev.previous,
+      impact: ev.impact ?? 1,
+      unit: ev.unit || '',
+    };
+  });
+
   const todayStr = new Date().toISOString().split('T')[0];
   const tmrwDate = new Date(); tmrwDate.setDate(tmrwDate.getDate() + 1);
   const tmrwStr = tmrwDate.toISOString().split('T')[0];
@@ -343,34 +351,35 @@ export default async function HubPage() {
     if (!timeStr) return '';
     try {
       if (timeStr.includes('T')) {
+        // Convert UTC to ET (approximate: UTC-4 or UTC-5)
         const d = new Date(timeStr);
-        const h = d.getUTCHours().toString().padStart(2, '0');
-        const m = d.getUTCMinutes().toString().padStart(2, '0');
-        return h + ':' + m;
+        // Use ET timezone formatting
+        return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/New_York' });
       }
       return timeStr;
     } catch { return timeStr; }
   };
 
+  const fmtEstimate = (val, unit) => {
+    if (val == null) return null;
+    const s = String(val);
+    if (unit === '%') return s + '%';
+    return s;
+  };
+
   const formatCalEvent = (ev) => ({
     t: formatTime(ev.time || ''),
     e: ev.event || '',
-    es: ev.estimate != null ? String(ev.estimate) : null,
-    p: ev.prev != null ? String(ev.prev) : null,
+    es: fmtEstimate(ev.estimate, ev.unit),
+    p: fmtEstimate(ev.prev, ev.unit),
     impact: ev.impact,
   });
 
-  const todayEvents = calendarRaw.filter(ev => {
-    const evDate = (ev.time || '').split('T')[0] || '';
-    return evDate === todayStr;
-  });
-  const tmrwEvents = calendarRaw.filter(ev => {
-    const evDate = (ev.time || '').split('T')[0] || '';
-    return evDate === tmrwStr;
-  });
+  const todayEvents = calendarRaw.filter(ev => ev.dateOnly === todayStr);
+  const tmrwEvents = calendarRaw.filter(ev => ev.dateOnly === tmrwStr);
 
   const calToday = {
-    high: todayEvents.filter(ev => ev.impact === 3).map(formatCalEvent),
+    high: todayEvents.filter(ev => ev.impact >= 3).map(formatCalEvent),
     low: todayEvents.filter(ev => ev.impact < 3).map(formatCalEvent),
   };
   const calTomorrow = tmrwEvents.map(formatCalEvent);

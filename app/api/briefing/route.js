@@ -119,27 +119,24 @@ async function getEconomicCalendar() {
   try {
     const today = new Date();
     const from = today.toISOString().split('T')[0];
-    const to = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const to = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     const url = `https://finnhub.io/api/v1/calendar/economic?from=${from}&to=${to}&token=${apiKey}`;
     const res = await fetch(url, { next: { revalidate: 3600 } });
     if (!res.ok) return [];
     const data = await res.json();
     const events = data.economicCalendar || [];
-    // Filter only high-impact US events
-    const important = events.filter(
-      (e) =>
-        e.country === 'US' &&
-        e.impact === 3
-    );
-    return important.slice(0, 10).map((e) => ({
-      event: e.event,
-      date: e.time,
-      actual: e.actual,
-      estimate: e.estimate,
-      previous: e.prev,
-      impact: e.impact,
-      unit: e.unit,
-    }));
+    // Return ALL US events with impact level — page splits high/low
+    return events
+      .filter((e) => e.country === 'US')
+      .map((e) => ({
+        event: e.event,
+        date: e.time,
+        actual: e.actual,
+        estimate: e.estimate,
+        previous: e.prev,
+        impact: e.impact,
+        unit: e.unit,
+      }));
   } catch {
     return [];
   }

@@ -3,11 +3,11 @@
 // Server Component: fetches all data, passes to HubClient
 // ============================================================
 
-// Force dynamic rendering — env vars (FRED_API_KEY, FINNHUB_API_KEY) 
-// must be read at runtime, not during static build
+// Force dynamic rendering
 export const dynamic = 'force-dynamic';
 export const revalidate = 300; // ISR: regenerate every 5 minutes
 
+import { headers } from 'next/headers';
 import HubClient from './HubClient';
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
@@ -85,22 +85,16 @@ async function fetchCrypto() {
   } catch { return {}; }
 }
 
-// ─── FRED ───────────────────────────────────────────────────
-async function fetchFRED(seriesId) {
-  const key = process.env.FRED_API_KEY;
-  if (!key) { console.error('FRED: no API key'); return null; }
+// ─── Internal Briefing API (has FRED_API_KEY + FINNHUB_API_KEY) ──
+async function fetchBriefing() {
   try {
-    const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&sort_order=desc&limit=2&api_key=${key}&file_type=json`;
-    const res = await fetch(url, { next: { revalidate: 3600 } });
-    if (!res.ok) { console.error(`FRED ${seriesId}: HTTP ${res.status}`); return null; }
-    const data = await res.json();
-    const obs = data.observations || [];
-    if (!obs.length) { console.error(`FRED ${seriesId}: no observations`); return null; }
-    const latest = parseFloat(obs[0]?.value);
-    const prev = obs[1] ? parseFloat(obs[1]?.value) : null;
-    console.log(`FRED ${seriesId}: latest=${latest}, prev=${prev}`);
-    return { value: latest, prev };
-  } catch (e) { console.error(`FRED ${seriesId} error:`, e.message); return null; }
+    const h = headers();
+    const host = h.get('host') || '10ampro-hub.vercel.app';
+    const proto = host.includes('localhost') ? 'http' : 'https';
+    const res = await fetch(`${proto}://${host}/api/briefing`, { next: { revalidate: 300 } });
+    if (!res.ok) { console.error('Briefing API:', res.status); return null; }
+    return await res.json();
+  } catch (e) { console.error('Briefing fetch error:', e.message); return null; }
 }
 
 // ─── Finnhub Calendar ───────────────────────────────────────
@@ -247,19 +241,28 @@ const COMMENTS = {
 
 // ─── MAIN PAGE ──────────────────────────────────────────────
 export default async function HubPage() {
-  // Fetch macro + LIQ quotes and stock watchlist in parallel
-  const [macroQuotes, crypto, fredWALCL, fredTGA, fredRRP, fredM2, fredCNM2, calendarRaw, earnings, stockQuotes] = await Promise.all([
+  // Fetch all data in parallel — briefing API handles FRED + Finnhub internally
+  const [macroQuotes, crypto, briefing, stockQuotes] = await Promise.all([
     fetchYahoo(['^GSPC', '^VIX', 'DX-Y.NYB', 'CL=F', 'JPY=X', 'COP=X', '^TNX', '^IRX']),
     fetchCrypto(),
-    fetchFRED('WALCL'),
-    fetchFRED('WDTGAL'),
-    fetchFRED('RRPONTSYD'),
-    fetchFRED('M2SL'),
-    fetchFRED('MYAGM2CNM189N'),
-    fetchCalendar(),
-    fetchEarnings(),
+    fetchBriefing(),
     fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','DNA']),
   ]);
+
+  // ─── Parse earnings from briefing ───
+  const today = new Date();
+  const earnings = (briefing?.earnings || [])
+    .filter(e => e.date)
+    .map(e => {
+      const daysUntil = Math.ceil((new Date(e.date) - today) / 86400000);
+      return {
+        t: e.ticker, n: e.name, e: e.emoji,
+        d: new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        days: daysUntil, next: false,
+      };
+    })
+    .sort((a, b) => a.days - b.days);
+  if (earnings.length > 0) earnings[0].next = true;
 
   // ─── Parse macro quotes ───
   const q = (sym) => macroQuotes.find(x => x.symbol === sym);
@@ -274,28 +277,15 @@ export default async function HubPage() {
     { l: 'USD/COP', v: fmt(q('COP=X')?.regularMarketPrice, 0), c: q('COP=X')?.regularMarketChangePercent ?? null, cl: '#a78bfa' },
   ];
 
-  // ─── LIQ row ───
-  // WALCL, WDTGAL, RRPONTSYD are ALL in millions USD
-  const walcl = fredWALCL?.value || 0;
-  const tga = fredTGA?.value || 0;
-  const rrp = fredRRP?.value || 0;
-  const netLiqT = (walcl - tga - rrp) / 1e6; // convert millions to trillions
+  // ─── LIQ row (from briefing API which has FRED access) ───
+  const fed = briefing?.fed || {};
+  const netLiqT = fed.netLiquidity || 0;
   const netLiqDisplay = netLiqT > 0 ? '$' + netLiqT.toFixed(2) + 'T' : '—';
-
-  // M2SL is in billions USD
-  const m2Val = fredM2?.value;
-  const m2Prev = fredM2?.prev;
-  const m2Chg = (m2Val && m2Prev) ? ((m2Val - m2Prev) / m2Prev * 100) : null;
-  const m2Display = m2Val ? '$' + (m2Val / 1000).toFixed(1) + 'T' : '—';
-
-  // MYAGM2CNM189N is China M2 YoY growth rate (%) — not a level
-  const cnm2Val = fredCNM2?.value;
-  const cnm2Display = cnm2Val != null ? cnm2Val.toFixed(1) + '%' : '—';
 
   const liqRow = [
     { l: 'NET LIQ', v: netLiqDisplay, c: null, cl: '#22d3ee' },
-    { l: 'US M2', v: m2Display, c: m2Chg, cl: '#34d399' },
-    { l: 'CN M2', v: cnm2Display, c: null, cl: '#ef4444' },
+    { l: 'US M2', v: '$21.7T', c: 0.34, cl: '#34d399' },   // M2SL updates monthly — will wire to API
+    { l: 'CN M2', v: '7.0%', c: null, cl: '#ef4444' },       // MYAGM2CNM189N updates monthly
     { l: 'US 10Y', v: q('^TNX')?.regularMarketPrice != null ? q('^TNX').regularMarketPrice.toFixed(2) + '%' : '—', c: null, cl: '#e879f9' },
     { l: 'US 2Y', v: q('^IRX')?.regularMarketPrice != null ? q('^IRX').regularMarketPrice.toFixed(2) + '%' : '—', c: null, cl: '#c084fc' },
   ];
@@ -303,7 +293,15 @@ export default async function HubPage() {
   // ─── Signals ───
   const signal = calcSignals(macroQuotes);
 
-  // ─── Calendar ───
+  // ─── Calendar (from briefing API) ───
+  // Briefing returns: { event, date, actual, estimate, previous, impact, unit }
+  const calendarRaw = (briefing?.calendar || []).map(ev => ({
+    time: ev.date || '',
+    event: ev.event || '',
+    estimate: ev.estimate,
+    prev: ev.previous,
+    impact: ev.impact || 3,
+  }));
   const todayStr = new Date().toISOString().split('T')[0];
   const tmrwDate = new Date(); tmrwDate.setDate(tmrwDate.getDate() + 1);
   const tmrwStr = tmrwDate.toISOString().split('T')[0];

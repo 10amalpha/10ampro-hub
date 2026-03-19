@@ -115,17 +115,19 @@ async function getBtcData() {
 // ============================================================
 async function getEconomicCalendar() {
   const apiKey = process.env.FINNHUB_API_KEY;
-  if (!apiKey) return [];
+  if (!apiKey) { console.error('Calendar: no FINNHUB key'); return []; }
   try {
     const today = new Date();
     const from = today.toISOString().split('T')[0];
-    const to = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const to = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     const url = `https://finnhub.io/api/v1/calendar/economic?from=${from}&to=${to}&token=${apiKey}`;
-    const res = await fetch(url, { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
+    console.log('Finnhub calendar URL:', url.replace(apiKey, '***'));
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) { console.error('Finnhub calendar HTTP:', res.status); return []; }
     const data = await res.json();
     const events = data.economicCalendar || [];
-    // Return ALL US events with impact level — page splits high/low
+    console.log(`Finnhub calendar: ${events.length} total events, ${events.filter(e => e.country === 'US').length} US events`);
+    // Return ALL US events with impact level
     return events
       .filter((e) => e.country === 'US')
       .map((e) => ({
@@ -137,7 +139,8 @@ async function getEconomicCalendar() {
         impact: e.impact,
         unit: e.unit,
       }));
-  } catch {
+  } catch (err) {
+    console.error('Finnhub calendar error:', err.message);
     return [];
   }
 }

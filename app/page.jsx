@@ -81,12 +81,29 @@ async function fetchCrypto() {
       'jito-staked-sol','bonk','pump-fun','ripple',
       'metaplex','jupiter-perpetuals-liquidity-provider-token'
     ].join(',');
-    const res = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`,
-      { next: { revalidate: 120 } }
-    );
-    if (!res.ok) return {};
-    return await res.json();
+
+    // Fetch listed tokens + 2Z by contract address in parallel
+    const [mainRes, tzRes] = await Promise.all([
+      fetch(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`,
+        { next: { revalidate: 120 } }
+      ),
+      fetch(
+        `https://api.coingecko.com/api/v3/simple/token_price/solana?contract_addresses=J6pQQ3FAcJQeWPPGppWRb4nM8jU3wLyYbRrLh7feMfvd&vs_currencies=usd&include_24hr_change=true`,
+        { next: { revalidate: 120 } }
+      ),
+    ]);
+
+    const data = mainRes.ok ? await mainRes.json() : {};
+
+    // Merge 2Z data under a synthetic key
+    if (tzRes.ok) {
+      const tzData = await tzRes.json();
+      const tzToken = tzData['J6pQQ3FAcJQeWPPGppWRb4nM8jU3wLyYbRrLh7feMfvd'.toLowerCase()] || tzData['J6pQQ3FAcJQeWPPGppWRb4nM8jU3wLyYbRrLh7feMfvd'];
+      if (tzToken) data['2z-protocol'] = tzToken;
+    }
+
+    return data;
   } catch { return {}; }
 }
 
@@ -365,7 +382,7 @@ export default async function HubPage() {
     BTC: 'bitcoin', SOL: 'solana', SUI: 'sui', ETH: 'ethereum',
     JUP: 'jupiter-exchange-solana', NOS: 'nosana',
     JTO: 'jito-governance-token', SHDW: 'genesysgo-shadow',
-    MET: 'metaplex', HNT: 'helium', ZEC: 'zcash',
+    '2Z': '2z-protocol', MET: 'metaplex', HNT: 'helium', ZEC: 'zcash',
     JITOSOL: 'jito-staked-sol', BONK: 'bonk', PUMP: 'pump-fun',
     XRP: 'ripple', JLP: 'jupiter-perpetuals-liquidity-provider-token',
   };

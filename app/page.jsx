@@ -288,14 +288,16 @@ export default async function HubPage() {
   const m2Chg = (m2Val && m2Prev) ? ((m2Val - m2Prev) / m2Prev * 100) : null;
   const m2Display = m2Val ? '$' + (m2Val / 1000).toFixed(1) + 'T' : '—';
 
-  // CN M2 from FRED — YoY growth rate %
+  // CN M2 from FRED — raw yuan value, divide by 1 trillion
   const cnm2Val = fed.cnm2;
-  const cnm2Display = cnm2Val ? cnm2Val.toFixed(1) + '%' : '—';
+  const cnm2Prev = fed.cnm2prev;
+  const cnm2Chg = (cnm2Val && cnm2Prev) ? ((cnm2Val - cnm2Prev) / cnm2Prev * 100) : null;
+  const cnm2Display = cnm2Val ? '¥' + (cnm2Val / 1e12).toFixed(0) + 'T' : '—';
 
   const liqRow = [
     { l: 'NET LIQ', v: netLiqDisplay, c: null, cl: '#22d3ee' },
     { l: 'US M2', v: m2Display, c: m2Chg, cl: '#34d399' },
-    { l: 'CN M2', v: cnm2Display, c: null, cl: '#ef4444' },
+    { l: 'CN M2', v: cnm2Display, c: cnm2Chg, cl: '#ef4444' },
     { l: 'US 10Y', v: q('^TNX')?.regularMarketPrice != null ? q('^TNX').regularMarketPrice.toFixed(2) + '%' : '—', c: null, cl: '#e879f9' },
     { l: 'US 2Y', v: q('^IRX')?.regularMarketPrice != null ? q('^IRX').regularMarketPrice.toFixed(2) + '%' : '—', c: null, cl: '#c084fc' },
   ];

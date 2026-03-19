@@ -81,10 +81,11 @@ async function getFedData() {
       bankReserves: val('WRESBAL') / 1000000,    // millions → trillions
       m2: val('M2SL'),                            // billions USD
       m2prev: prev('M2SL'),                       // previous month billions
-      cnm2: val('MYAGM2CNM189N'),                 // YoY growth rate %
+      cnm2: val('MYAGM2CNM189N'),                 // yuan level
+      cnm2prev: prev('MYAGM2CNM189N'),            // previous month yuan
     };
   } catch {
-    return { fedBalance: 6.58, tga: 0.968, rrp: 0.006, bankReserves: 2.99, m2: null, m2prev: null, cnm2: null };
+    return { fedBalance: 6.58, tga: 0.968, rrp: 0.006, bankReserves: 2.99, m2: null, m2prev: null, cnm2: null, cnm2prev: null };
   }
 }
 

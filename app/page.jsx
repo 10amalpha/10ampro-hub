@@ -1,809 +1,318 @@
-'use client';
-import { useState, useEffect, useCallback } from 'react';
-import {
-  Activity, TrendingUp, TrendingDown, DollarSign, Zap, Globe,
-  Clock, RefreshCw, Loader2, Calendar, ExternalLink, ChevronRight,
-  Radio, BookOpen, Mic, AlertTriangle, Shield, Fuel, BarChart3
-} from 'lucide-react';
-
 // ============================================================
-// CONTENT MAP — Links macro themes to Substack content
+// 10AMPRO HUB v5p — Bloomberg Terminal Aesthetic
+// Bloque 1: Header + Signal Banner + Macro Bar
+// Pure Server Component — zero client JS
 // ============================================================
-const CONTENT_MAP = {
-  liquidity: [
-    { title: 'El Hombre que Está Reprogramando la Economía de EEUU', type: 'article', url: 'https://10am.substack.com/p/el-hombre-que-esta-reprogramando', tag: 'Bessent / Treasury' },
-    { title: 'E190: Forecast 2026', type: 'podcast', url: 'https://10am.substack.com/p/e190-forecast-2026', tag: 'Macro / Liquidez' },
-    { title: 'Los Dashboards de 10am', type: 'article', url: 'https://10am.substack.com/p/los-dashboards-de-10am', tag: 'Herramientas' },
-  ],
-  earnings: [
-    { title: 'Robinhood: El Puente se Construye', type: 'article', url: 'https://10am.substack.com/p/robinhood-el-puente-se-construye', tag: 'HOOD Earnings', tickers: ['HOOD'] },
-    { title: 'Palantir: La Empresa Que No Necesita Explicarse', type: 'article', url: 'https://10am.substack.com/p/palantir-la-empresa', tag: 'PLTR Analysis', tickers: ['PLTR'] },
-  ],
-  crypto: [
-    { title: 'Firedancer: La Infraestructura Invisible', type: 'article', url: 'https://10am.substack.com/p/firedancer-la-infraestructura', tag: 'Solana / Firedancer' },
-    { title: 'E189: La Oportunidad Única Colombia-Venezuela', type: 'podcast', url: 'https://10am.substack.com/p/e189-la-oportunidad-unica', tag: 'Macro / LATAM' },
-  ],
-  macro: [
-    { title: 'E191: Las 5 Señales del Cambio de Era', type: 'podcast', url: 'https://10am.substack.com/p/e191-las-5-senales', tag: 'Macro Thesis' },
-    { title: 'Buena Vista Social Club, AI y Mis Amigos de Mas de 50', type: 'article', url: 'https://10am.substack.com/p/buena-vista-social-club-ai', tag: 'AI / Culture' },
-    { title: 'SpaceX + xAI: La Convergencia del Trillón', type: 'article', url: 'https://10am.substack.com/p/spacex-xai-convergencia', tag: 'xAI / SpaceX' },
-  ],
-};
 
-// ============================================================
-// STYLES
-// ============================================================
-const mono = "'JetBrains Mono', monospace";
-const sans = "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif";
+const YAHOO_SYMBOLS = ['%5EGSPC','%5EVIX','DX-Y.NYB','CL%3DF','JPY%3DX','COP%3DX'];
+const YAHOO_LABELS = { '%5EGSPC':'S&P 500','%5EVIX':'VIX','DX-Y.NYB':'DXY','CL%3DF':'WTI','JPY%3DX':'USD/JPY','COP%3DX':'USD/COP' };
+const YAHOO_SHORT  = { '%5EGSPC':'S&P','%5EVIX':'VIX','DX-Y.NYB':'DXY','CL%3DF':'WTI','JPY%3DX':'JPY','COP%3DX':'COP' };
 
-const signalColors = {
-  'RISK ON': { bg: 'rgba(16, 185, 129, 0.12)', border: '#10b981', text: '#34d399', glow: '0 0 40px rgba(16, 185, 129, 0.15)' },
-  'RISK OFF': { bg: 'rgba(239, 68, 68, 0.12)', border: '#ef4444', text: '#f87171', glow: '0 0 40px rgba(239, 68, 68, 0.15)' },
-  'CAUTION': { bg: 'rgba(245, 158, 11, 0.12)', border: '#f59e0b', text: '#fbbf24', glow: '0 0 40px rgba(245, 158, 11, 0.15)' },
-  'NEUTRAL': { bg: 'rgba(100, 116, 139, 0.12)', border: '#64748b', text: '#94a3b8', glow: 'none' },
-};
+// LIQ row symbols
+const LIQ_SYMBOLS = ['%5ETNX','%5EIRX'];
+const LIQ_LABELS = { '%5ETNX':'US 10Y','%5EIRX':'US 2Y' };
+const LIQ_SHORT  = { '%5ETNX':'US10Y','%5EIRX':'US2Y' };
 
-// ============================================================
-// HELPER COMPONENTS
-// ============================================================
-const Badge = ({ children, color = '#6b7280' }) => (
-  <span style={{
-    display: 'inline-flex', alignItems: 'center', gap: '4px',
-    padding: '2px 8px', borderRadius: '4px', fontSize: '10px',
-    fontWeight: 600, fontFamily: mono, letterSpacing: '0.5px',
-    backgroundColor: `${color}18`, color, border: `1px solid ${color}30`,
-    textTransform: 'uppercase',
-  }}>
-    {children}
-  </span>
-);
-
-const Delta = ({ value, suffix = '%' }) => {
-  if (value == null) return null;
-  const positive = value >= 0;
-  return (
-    <span style={{
-      fontSize: '11px', fontFamily: mono, fontWeight: 600,
-      color: positive ? '#34d399' : '#f87171',
-    }}>
-      {positive ? '▲' : '▼'} {Math.abs(value).toFixed(1)}{suffix}
-    </span>
-  );
-};
-
-const Pulse = ({ color = '#34d399' }) => (
-  <span style={{
-    display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%',
-    backgroundColor: color, animation: 'pulse 2s infinite',
-  }} />
-);
-
-const SectionHeader = ({ icon: Icon, label, color = '#94a3b8' }) => (
-  <div style={{
-    display: 'flex', alignItems: 'center', gap: '8px',
-    marginBottom: '12px', paddingBottom: '8px',
-    borderBottom: '1px solid rgba(255,255,255,0.06)',
-  }}>
-    <Icon style={{ width: '14px', height: '14px', color }} />
-    <span style={{
-      fontSize: '10px', fontWeight: 700, fontFamily: mono,
-      letterSpacing: '1.5px', textTransform: 'uppercase', color,
-    }}>
-      {label}
-    </span>
-  </div>
-);
-
-const ContentLink = ({ item }) => (
-  <a
-    href={item.url}
-    target="_blank"
-    rel="noopener noreferrer"
-    style={{
-      display: 'flex', alignItems: 'center', gap: '10px',
-      padding: '8px 12px', borderRadius: '8px', textDecoration: 'none',
-      backgroundColor: 'rgba(255,255,255,0.02)',
-      border: '1px solid rgba(255,255,255,0.04)',
-      transition: 'all 0.2s',
-    }}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
-      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)';
-      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)';
-    }}
-  >
-    <span style={{ fontSize: '14px' }}>
-      {item.type === 'podcast' ? '🎙️' : '📝'}
-    </span>
-    <div style={{ flex: 1, minWidth: 0 }}>
-      <div style={{
-        fontSize: '12px', fontWeight: 600, color: '#d1d5db',
-        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-      }}>
-        {item.title}
-      </div>
-      <div style={{ fontSize: '10px', color: '#6b7280' }}>{item.tag}</div>
-    </div>
-    <ChevronRight style={{ width: '12px', height: '12px', color: '#4b5563', flexShrink: 0 }} />
-  </a>
-);
-
-// ============================================================
-// MAIN COMPONENT
-// ============================================================
-export default function Briefing() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [now, setNow] = useState(new Date());
-  const [isMobile, setIsMobile] = useState(false);
-  const [watchlist, setWatchlist] = useState([]);
-  const [wlLoading, setWlLoading] = useState(true);
-  const [wlSort, setWlSort] = useState({ key: 'change', dir: 'desc' });
-  const [wlFilter, setWlFilter] = useState('all');
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
-
-  useEffect(() => {
-    const t = setInterval(() => setNow(new Date()), 60000);
-    return () => clearInterval(t);
-  }, []);
-
-  const fetchData = useCallback(async (isRefresh = false) => {
-    if (isRefresh) setRefreshing(true);
-    else setLoading(true);
+async function fetchYahoo(symbols) {
+  const joined = symbols.join(',');
+  const urls = [
+    `https://query2.finance.yahoo.com/v7/finance/quote?symbols=${joined}`,
+    `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${joined}`,
+  ];
+  for (const url of urls) {
     try {
-      const res = await fetch('/api/briefing');
-      if (res.ok) setData(await res.json());
-    } catch { /* silent */ }
-    finally { setLoading(false); setRefreshing(false); }
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-    const interval = setInterval(() => fetchData(true), 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [fetchData]);
-
-  // Watchlist fetch
-  useEffect(() => {
-    const fetchWl = async () => {
-      setWlLoading(true);
-      try {
-        const res = await fetch('/api/watchlist');
-        if (res.ok) {
-          const json = await res.json();
-          setWatchlist(json.assets || []);
-        }
-      } catch { /* silent */ }
-      setWlLoading(false);
-    };
-    fetchWl();
-    const interval = setInterval(fetchWl, 2 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const sortedWatchlist = (() => {
-    let items = wlFilter === 'all' ? watchlist : watchlist.filter(a => a.type === wlFilter);
-    return [...items].sort((a, b) => {
-      const av = a[wlSort.key] ?? -Infinity;
-      const bv = b[wlSort.key] ?? -Infinity;
-      return wlSort.dir === 'desc' ? bv - av : av - bv;
-    });
-  })();
-
-  const toggleWlSort = (key) => {
-    setWlSort(prev => ({ key, dir: prev.key === key && prev.dir === 'desc' ? 'asc' : 'desc' }));
-  };
-
-  // Greeting based on time
-  const hour = now.getHours();
-  const greeting = hour < 12 ? 'Buenos días' : hour < 18 ? 'Buenas tardes' : 'Buenas noches';
-  const dateStr = now.toLocaleDateString('es-CO', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-
-  if (loading && !data) {
-    return (
-      <div style={{
-        minHeight: '100vh', backgroundColor: '#0a0a0a', color: '#e2e8f0',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        fontFamily: sans, gap: '16px',
-      }}>
-        <img src="/logo.jpg" alt="10AMPRO" style={{ width: '64px', height: '64px', borderRadius: '50%', opacity: 0.8 }} />
-        <Loader2 style={{ width: '20px', height: '20px', color: '#34d399', animation: 'spin 1s linear infinite' }} />
-        <span style={{ fontSize: '12px', fontFamily: mono, color: '#6b7280', letterSpacing: '1px' }}>LOADING BRIEFING...</span>
-      </div>
-    );
+      const res = await fetch(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+        next: { revalidate: 300 },
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data?.quoteResponse?.result?.length) return data.quoteResponse.result;
+    } catch { continue; }
   }
+  return [];
+}
 
-  const d = data || {};
-  const sig = signalColors[d.signal] || signalColors['NEUTRAL'];
-  const fed = d.fed || {};
-  const mkt = d.market || {};
-  const crypto = d.crypto || {};
-  const calendar = d.calendar || [];
-  const earnings = (d.earnings || []).filter((e) => e.date);
-  const nextEarning = earnings[0];
+async function fetchCrypto() {
+  try {
+    const res = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,solana&vs_currencies=usd&include_24hr_change=true',
+      { next: { revalidate: 120 } }
+    );
+    if (!res.ok) return null;
+    return await res.json();
+  } catch { return null; }
+}
 
-  // Days until
-  const daysUntil = (dateStr) => {
-    if (!dateStr) return null;
-    return Math.ceil((new Date(dateStr) - now) / (1000 * 60 * 60 * 24));
+function fmt(n, decimals = 2) {
+  if (n == null || isNaN(n)) return '—';
+  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (Math.abs(n) >= 1e4) return n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  return n.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+
+function pct(n) {
+  if (n == null || isNaN(n)) return '—';
+  const s = n >= 0 ? '+' : '';
+  return s + n.toFixed(2) + '%';
+}
+
+function cellColor(val) {
+  if (val == null || isNaN(val)) return {};
+  if (val > 0) return { background: '#052e16', color: '#22c55e' };
+  if (val < 0) return { background: '#1c0a0a', color: '#ef4444' };
+  return { background: '#111114', color: '#a1a1aa' };
+}
+
+// Determine risk signal from market data
+function calcSignal(quotes) {
+  if (!quotes.length) return { risk: 'MIXED', liq: 'NEUTRAL' };
+  const find = (sym) => quotes.find(q => q.symbol === sym.replace(/%5E/g, '^').replace(/%3D/g, '=').replace(/%3DF/g, '=F'));
+  
+  const vix = find('%5EVIX');
+  const dxy = find('DX-Y.NYB');
+  const sp = find('%5EGSPC');
+  
+  let riskScore = 0;
+  if (vix?.regularMarketPrice < 18) riskScore += 2;
+  else if (vix?.regularMarketPrice < 22) riskScore += 1;
+  else if (vix?.regularMarketPrice > 28) riskScore -= 2;
+  else if (vix?.regularMarketPrice > 22) riskScore -= 1;
+
+  if (dxy?.regularMarketChangePercent < -0.3) riskScore += 1;
+  if (dxy?.regularMarketChangePercent > 0.5) riskScore -= 1;
+
+  if (sp?.regularMarketChangePercent > 0.5) riskScore += 1;
+  if (sp?.regularMarketChangePercent < -0.5) riskScore -= 1;
+
+  let risk = 'MIXED';
+  if (riskScore >= 2) risk = 'RISK ON';
+  if (riskScore <= -2) risk = 'RISK OFF';
+
+  // Liquidity signal from yields
+  const us10 = find('%5ETNX');
+  let liq = 'NEUTRAL';
+  if (us10?.regularMarketPrice < 4.0) liq = 'EXPANDING';
+  if (us10?.regularMarketPrice > 4.5) liq = 'TIGHTENING';
+
+  return { risk, liq };
+}
+
+function SignalBadge({ label, value, type }) {
+  const colors = {
+    'RISK ON': { bg: 'rgba(34,197,94,0.1)', border: 'rgba(34,197,94,0.3)', color: '#22c55e' },
+    'RISK OFF': { bg: 'rgba(239,68,68,0.1)', border: 'rgba(239,68,68,0.3)', color: '#ef4444' },
+    'MIXED': { bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.3)', color: '#f59e0b' },
+    'EXPANDING': { bg: 'rgba(34,197,94,0.1)', border: 'rgba(34,197,94,0.3)', color: '#22c55e' },
+    'TIGHTENING': { bg: 'rgba(239,68,68,0.1)', border: 'rgba(239,68,68,0.3)', color: '#ef4444' },
+    'NEUTRAL': { bg: 'rgba(161,161,170,0.1)', border: 'rgba(161,161,170,0.3)', color: '#a1a1aa' },
   };
+  const c = colors[value] || colors['NEUTRAL'];
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <span style={{ fontSize: 10, color: '#71717a', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{label}</span>
+      <span style={{
+        padding: '3px 10px', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em',
+        borderRadius: 4, background: c.bg, border: `1px solid ${c.border}`, color: c.color,
+      }}>{value}</span>
+    </div>
+  );
+}
+
+function MacroCell({ label, price, change, isVix, isCop }) {
+  // VIX: invert color logic (high VIX = red, low = green)
+  let changeVal = change;
+  let displayChange = pct(change);
+  let colorStyle = cellColor(isVix ? -change : change);
+
+  // COP: format as integer, invert (COP up = bad for LatAm)
+  let displayPrice = isCop ? fmt(price, 0) : fmt(price);
 
   return (
     <div style={{
-      minHeight: '100vh', backgroundColor: '#0a0a0a', color: '#e2e8f0',
-      fontFamily: sans,
+      padding: '6px 10px', borderRadius: 4, textAlign: 'center', minWidth: 0,
+      ...colorStyle,
     }}>
-      <div style={{
-        maxWidth: '900px', margin: '0 auto',
-        padding: isMobile ? '16px' : '24px 24px 48px',
+      <div style={{ fontSize: 9, color: '#71717a', letterSpacing: '0.1em', marginBottom: 2, textTransform: 'uppercase' }}>
+        {label}
+      </div>
+      <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.2 }}>
+        {displayPrice}
+      </div>
+      <div style={{ fontSize: 10, opacity: 0.8 }}>
+        {displayChange}
+      </div>
+    </div>
+  );
+}
+
+export default async function HubPage() {
+  // Fetch all Yahoo data in parallel
+  const allSymbols = [...YAHOO_SYMBOLS, ...LIQ_SYMBOLS];
+  const [quotes, crypto] = await Promise.all([
+    fetchYahoo(allSymbols),
+    fetchCrypto(),
+  ]);
+
+  const signal = calcSignal(quotes);
+
+  // Parse market data
+  const findQuote = (sym) => {
+    const clean = sym.replace(/%5E/g, '^').replace(/%3D/g, '=').replace(/%3DF/g, '=F');
+    return quotes.find(q => q.symbol === clean);
+  };
+
+  // BTC + SOL from CoinGecko
+  const btcPrice = crypto?.bitcoin?.usd;
+  const btcChange = crypto?.bitcoin?.usd_24h_change;
+  const solPrice = crypto?.solana?.usd;
+  const solChange = crypto?.solana?.usd_24h_change;
+
+  const now = new Date();
+  const timeStr = now.toLocaleString('es-CO', { 
+    timeZone: 'America/Bogota', 
+    hour: '2-digit', minute: '2-digit', 
+    day: 'numeric', month: 'short' 
+  });
+
+  return (
+    <main style={{ maxWidth: 960, margin: '0 auto', padding: '16px 12px' }}>
+      {/* ═══ HEADER ═══ */}
+      <header style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '10px 0', marginBottom: 12,
+        borderBottom: '1px solid rgba(255,255,255,0.04)',
       }}>
-
-        {/* ============================================================ */}
-        {/* HEADER */}
-        {/* ============================================================ */}
-        <header style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
-          marginBottom: '24px', flexWrap: 'wrap', gap: '12px',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <img src="/logo.jpg" alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(212,168,67,0.2)' }} />
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: isMobile ? '18px' : '20px', letterSpacing: '-0.03em' }}>
-                  <span style={{ color: '#D4A843' }}>10</span><span style={{ color: '#22C55E' }}>AM</span><span style={{ color: '#3F3F46' }}>PRO</span>
-                </span>
-                <Pulse color={sig.text} />
-              </div>
-              <div style={{ fontSize: '8px', color: '#27272A', letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: '-2px', fontFamily: mono }}>Daily Briefing</div>
-              <div style={{ fontSize: '11px', color: '#6b7280', fontFamily: mono }}>
-                {greeting} · {dateStr}
-              </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <img
+            src="/logo.jpg" alt="10AMPRO"
+            style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid rgba(212,168,67,0.2)' }}
+          />
+          <div>
+            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: 18, lineHeight: 1 }}>
+              <span style={{ color: '#D4A843' }}>10</span>
+              <span style={{ color: '#22C55E' }}>AM</span>
+              <span style={{ color: '#3F3F46' }}>PRO</span>
             </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <button
-              onClick={() => fetchData(true)}
-              disabled={refreshing}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '4px',
-                padding: '6px 12px', borderRadius: '6px', fontSize: '11px',
-                fontFamily: mono, fontWeight: 500, cursor: 'pointer',
-                border: '1px solid rgba(255,255,255,0.08)',
-                backgroundColor: 'rgba(255,255,255,0.03)', color: '#9ca3af',
-              }}
-            >
-              {refreshing ? <Loader2 style={{ width: '12px', height: '12px', animation: 'spin 1s linear infinite' }} /> : <RefreshCw style={{ width: '12px', height: '12px' }} />}
-              {refreshing ? '...' : 'Refresh'}
-            </button>
-            <a href="https://10am.substack.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#6b7280', textDecoration: 'none', fontFamily: mono }}>
-              10am.pro →
-            </a>
-          </div>
-        </header>
-
-        {/* ============================================================ */}
-        {/* HERO SIGNAL */}
-        {/* ============================================================ */}
-        <div style={{
-          padding: isMobile ? '16px' : '20px 24px',
-          borderRadius: '12px', marginBottom: '16px',
-          backgroundColor: sig.bg,
-          border: `1px solid ${sig.border}40`,
-          boxShadow: sig.glow,
-        }}>
-          <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            flexWrap: 'wrap', gap: '12px',
-          }}>
-            <div>
-              <div style={{
-                fontSize: isMobile ? '28px' : '36px', fontWeight: 800,
-                fontFamily: mono, color: sig.text, letterSpacing: '-1px',
-                lineHeight: 1,
-              }}>
-                {d.signal || 'LOADING'}
-              </div>
-              <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
-                {d.bullish || 0} bullish · {d.caution || 0} caution · {d.bearish || 0} bearish
-              </div>
-            </div>
-            <div style={{
-              display: 'flex', gap: isMobile ? '12px' : '20px', fontFamily: mono, flexWrap: 'wrap',
-            }}>
-              {/* Net Liquidity */}
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '10px', color: '#6b7280', letterSpacing: '0.5px' }}>NET LIQUIDITY</div>
-                <div style={{ fontSize: '18px', fontWeight: 700, color: '#22d3ee' }}>
-                  ${fed.netLiquidity?.toFixed(2) || '—'}T
-                </div>
-              </div>
-              {/* BTC */}
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '10px', color: '#6b7280', letterSpacing: '0.5px' }}>BTC</div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', justifyContent: 'flex-end' }}>
-                  <span style={{ fontSize: '18px', fontWeight: 700, color: '#f7931a' }}>
-                    ${crypto.btcPrice?.toLocaleString(undefined, { maximumFractionDigits: 0 }) || '—'}
-                  </span>
-                  <Delta value={crypto.btcChange} />
-                </div>
-              </div>
+            <div style={{ fontSize: 8, letterSpacing: '0.2em', color: '#27272A', textTransform: 'uppercase' }}>
+              MORNING INTELLIGENCE TERMINAL
             </div>
           </div>
         </div>
-
-        {/* ============================================================ */}
-        {/* MARKET TICKER ROW */}
-        {/* ============================================================ */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(6, 1fr)',
-          gap: '8px', marginBottom: '20px',
-        }}>
-          {[
-            { label: 'S&P 500', value: mkt.sp500?.toLocaleString(undefined, { maximumFractionDigits: 0 }), change: mkt.sp500Change },
-            { label: 'NASDAQ', value: mkt.nasdaq?.toLocaleString(undefined, { maximumFractionDigits: 0 }), change: mkt.nasdaqChange },
-            { label: 'VIX', value: mkt.vix?.toFixed(1), change: mkt.vixChange },
-            { label: 'DXY', value: mkt.dxy?.toFixed(2), change: mkt.dxyChange },
-            { label: 'GOLD', value: `$${mkt.gold?.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, change: mkt.goldChange },
-            { label: 'SOL', value: `$${crypto.solPrice?.toFixed(0) || '—'}`, change: crypto.solChange },
-          ].map((item, i) => (
-            <div key={i} style={{
-              padding: '10px 12px', borderRadius: '8px',
-              backgroundColor: 'rgba(255,255,255,0.02)',
-              border: '1px solid rgba(255,255,255,0.04)',
-            }}>
-              <div style={{ fontSize: '9px', fontFamily: mono, color: '#6b7280', letterSpacing: '1px', marginBottom: '4px' }}>
-                {item.label}
-              </div>
-              <div style={{ fontSize: '14px', fontWeight: 700, fontFamily: mono, color: '#e2e8f0' }}>
-                {item.value || '—'}
-              </div>
-              <Delta value={item.change} />
-            </div>
-          ))}
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ fontSize: 10, color: '#71717a' }}>{timeStr} COT</div>
+          <div style={{ fontSize: 9, color: '#3f3f46' }}>ISR 5min</div>
         </div>
+      </header>
 
-        {/* ============================================================ */}
-        {/* TWO COLUMN: ECONOMIC CALENDAR + EARNINGS */}
-        {/* ============================================================ */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-          gap: '16px', marginBottom: '20px',
-        }}>
-
-          {/* Economic Calendar */}
-          <div style={{
-            padding: '16px', borderRadius: '12px',
-            backgroundColor: 'rgba(255,255,255,0.02)',
-            border: '1px solid rgba(255,255,255,0.05)',
-          }}>
-            <SectionHeader icon={Calendar} label="Economic Calendar" color="#60a5fa" />
-            {calendar.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {calendar.map((event, i) => {
-                  const eventDate = new Date(event.date);
-                  const isToday = eventDate.toDateString() === now.toDateString();
-                  return (
-                    <div key={i} style={{
-                      display: 'flex', alignItems: 'center', gap: '10px',
-                      padding: '8px 10px', borderRadius: '6px',
-                      backgroundColor: isToday ? 'rgba(96, 165, 250, 0.08)' : 'transparent',
-                      border: isToday ? '1px solid rgba(96, 165, 250, 0.15)' : '1px solid transparent',
-                    }}>
-                      <div style={{
-                        fontSize: '10px', fontFamily: mono, color: isToday ? '#60a5fa' : '#6b7280',
-                        minWidth: '44px', fontWeight: isToday ? 700 : 400,
-                      }}>
-                        {isToday ? 'HOY' : eventDate.toLocaleDateString('es', { month: 'short', day: 'numeric' })}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{
-                          fontSize: '12px', fontWeight: 600, color: '#d1d5db',
-                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                        }}>
-                          {event.event}
-                        </div>
-                        <div style={{ fontSize: '10px', fontFamily: mono, color: '#6b7280' }}>
-                          {event.estimate != null && `Est: ${event.estimate}`}
-                          {event.previous != null && ` · Prev: ${event.previous}`}
-                          {event.actual != null && (
-                            <span style={{ color: '#34d399', fontWeight: 700 }}> · Actual: {event.actual}</span>
-                          )}
-                        </div>
-                      </div>
-                      <div style={{
-                        width: '6px', height: '6px', borderRadius: '50%',
-                        backgroundColor: '#ef4444', flexShrink: 0,
-                      }} title="High Impact" />
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div style={{ fontSize: '12px', color: '#4b5563', fontStyle: 'italic', padding: '12px 0' }}>
-                No high-impact US events this week
-              </div>
-            )}
-            <a
-              href="https://tradingeconomics.com/calendar"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'flex', alignItems: 'center', gap: '4px',
-                marginTop: '10px', fontSize: '10px', color: '#4b5563',
-                textDecoration: 'none', fontFamily: mono,
-              }}
-            >
-              Full calendar → tradingeconomics.com
-              <ExternalLink style={{ width: '10px', height: '10px' }} />
-            </a>
-          </div>
-
-          {/* Earnings Radar */}
-          <div style={{
-            padding: '16px', borderRadius: '12px',
-            backgroundColor: 'rgba(255,255,255,0.02)',
-            border: '1px solid rgba(255,255,255,0.05)',
-          }}>
-            <SectionHeader icon={BarChart3} label="Earnings Radar" color="#a78bfa" />
-            {nextEarning && (
-              <div style={{
-                padding: '12px', borderRadius: '8px', marginBottom: '10px',
-                backgroundColor: 'rgba(167, 139, 250, 0.08)',
-                border: '1px solid rgba(167, 139, 250, 0.15)',
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <span style={{ fontSize: '16px', marginRight: '6px' }}>{nextEarning.emoji}</span>
-                    <span style={{ fontSize: '14px', fontWeight: 700, fontFamily: mono, color: '#e2e8f0' }}>
-                      {nextEarning.ticker}
-                    </span>
-                    <span style={{ fontSize: '12px', color: '#9ca3af', marginLeft: '6px' }}>{nextEarning.name}</span>
-                  </div>
-                  <Badge color="#a78bfa">NEXT UP</Badge>
-                </div>
-                <div style={{ fontSize: '11px', fontFamily: mono, color: '#6b7280', marginTop: '6px' }}>
-                  {new Date(nextEarning.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  {' · '}{daysUntil(nextEarning.date)}d away
-                  {nextEarning.quarter && ` · ${nextEarning.quarter}`}
-                </div>
-              </div>
-            )}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              {earnings.slice(nextEarning ? 1 : 0, 6).map((e, i) => (
-                <a key={i} href={e.ir} target="_blank" rel="noopener noreferrer" style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '6px 10px', borderRadius: '6px', textDecoration: 'none',
-                  transition: 'background 0.15s',
-                }}
-                onMouseEnter={(ev) => ev.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)'}
-                onMouseLeave={(ev) => ev.currentTarget.style.backgroundColor = 'transparent'}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '13px' }}>{e.emoji}</span>
-                    <span style={{ fontSize: '12px', fontWeight: 600, fontFamily: mono, color: '#d1d5db' }}>{e.ticker}</span>
-                    <span style={{ fontSize: '11px', color: '#6b7280' }}>{e.name}</span>
-                  </div>
-                  <div style={{ fontSize: '11px', fontFamily: mono, color: '#6b7280' }}>
-                    {new Date(e.date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}
-                    <span style={{ color: '#4b5563' }}> · {daysUntil(e.date)}d</span>
-                  </div>
-                </a>
-              ))}
-            </div>
-            <a
-              href="https://earningswatch.vercel.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'flex', alignItems: 'center', gap: '4px',
-                marginTop: '10px', fontSize: '10px', color: '#4b5563',
-                textDecoration: 'none', fontFamily: mono,
-              }}
-            >
-              Full earnings calendar →
-              <ExternalLink style={{ width: '10px', height: '10px' }} />
-            </a>
-          </div>
+      {/* ═══ SIGNAL BANNER ═══ */}
+      <section style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '10px 14px', marginBottom: 12,
+        background: 'var(--surface)', borderRadius: 6,
+        border: '1px solid var(--border-subtle)',
+        flexWrap: 'wrap', gap: 8,
+      }}>
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+          <SignalBadge label="MKT" value={signal.risk} />
+          <SignalBadge label="LIQ" value={signal.liq} />
         </div>
-
-        {/* ============================================================ */}
-        {/* MACRO GRID — Liquidity + Key Indicators */}
-        {/* ============================================================ */}
-        <div style={{
-          padding: '16px', borderRadius: '12px', marginBottom: '20px',
-          backgroundColor: 'rgba(255,255,255,0.02)',
-          border: '1px solid rgba(255,255,255,0.05)',
-        }}>
-          <SectionHeader icon={Activity} label="Liquidity & Macro" color="#22d3ee" />
-
-          {/* Net Liquidity Formula */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '12px',
-            padding: '12px 16px', borderRadius: '8px', marginBottom: '14px',
-            backgroundColor: 'rgba(34, 211, 238, 0.06)',
-            border: '1px solid rgba(34, 211, 238, 0.12)',
-            flexWrap: 'wrap', fontFamily: mono, fontSize: '13px',
-          }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '16px', fontWeight: 700, color: '#22d3ee' }}>${fed.fedBalance?.toFixed(2)}T</div>
-              <div style={{ fontSize: '9px', color: '#6b7280' }}>FED BAL</div>
-            </div>
-            <span style={{ color: '#ef4444', fontSize: '18px' }}>−</span>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '16px', fontWeight: 700, color: '#fbbf24' }}>${fed.tga?.toFixed(3)}T</div>
-              <div style={{ fontSize: '9px', color: '#6b7280' }}>TGA</div>
-            </div>
-            <span style={{ color: '#ef4444', fontSize: '18px' }}>−</span>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '16px', fontWeight: 700, color: '#a78bfa' }}>${fed.rrp?.toFixed(3)}T</div>
-              <div style={{ fontSize: '9px', color: '#6b7280' }}>RRP</div>
-            </div>
-            <span style={{ color: '#22d3ee', fontSize: '18px' }}>=</span>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '20px', fontWeight: 800, color: '#34d399' }}>${fed.netLiquidity?.toFixed(2)}T</div>
-              <div style={{ fontSize: '9px', color: '#6b7280' }}>NET LIQ</div>
-            </div>
-          </div>
-
-          {/* Key metrics grid */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
-            gap: '8px',
-          }}>
-            {[
-              { label: 'TGA', value: `$${((fed.tga || 0) * 1000).toFixed(0)}B`, status: (fed.tga || 0) > 0.65 ? 'caution' : 'bullish', note: (fed.tga || 0) > 0.65 ? 'Draining liquidity' : 'Below stress' },
-              { label: 'RRP', value: `$${((fed.rrp || 0) * 1000).toFixed(0)}B`, status: (fed.rrp || 0) < 0.1 ? 'bullish' : 'caution', note: (fed.rrp || 0) < 0.1 ? 'Fully drained' : 'Still active' },
-              { label: 'US 10Y', value: `${(mkt.us10y || 0).toFixed(2)}%`, status: (mkt.us10y || 0) > 5 ? 'bearish' : (mkt.us10y || 0) > 4.5 ? 'caution' : 'neutral', note: 'Treasury yield' },
-              { label: 'WTI', value: `$${(mkt.wti || 0).toFixed(2)}`, status: (mkt.wti || 0) < 80 ? 'bullish' : 'bearish', note: (mkt.wti || 0) < 80 ? 'Under control' : 'Inflation risk' },
-            ].map((item, i) => {
-              const colors = {
-                bullish: '#34d399', bearish: '#f87171', caution: '#fbbf24', neutral: '#94a3b8',
-              };
-              const c = colors[item.status];
-              return (
-                <div key={i} style={{
-                  padding: '10px 12px', borderRadius: '8px',
-                  backgroundColor: `${c}08`, border: `1px solid ${c}20`,
-                }}>
-                  <div style={{ fontSize: '9px', fontFamily: mono, color: '#6b7280', letterSpacing: '1px', marginBottom: '4px' }}>
-                    {item.label}
-                  </div>
-                  <div style={{ fontSize: '16px', fontWeight: 700, fontFamily: mono, color: c }}>
-                    {item.value}
-                  </div>
-                  <div style={{ fontSize: '10px', color: '#6b7280', marginTop: '2px' }}>{item.note}</div>
-                </div>
-              );
-            })}
-          </div>
-
-          <a
-            href="https://liquidityflow-five.vercel.app"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'flex', alignItems: 'center', gap: '4px',
-              marginTop: '12px', fontSize: '10px', color: '#4b5563',
-              textDecoration: 'none', fontFamily: mono,
-            }}
-          >
-            Full liquidity dashboard →
-            <ExternalLink style={{ width: '10px', height: '10px' }} />
-          </a>
-        </div>
-
-        {/* ============================================================ */}
-        {/* CONTENT — "Lo que escribimos sobre esto" */}
-        {/* ============================================================ */}
-        <div style={{
-          padding: '16px', borderRadius: '12px', marginBottom: '20px',
-          backgroundColor: 'rgba(255,255,255,0.02)',
-          border: '1px solid rgba(255,255,255,0.05)',
-        }}>
-          <SectionHeader icon={BookOpen} label="Lo que escribimos sobre esto" color="#f59e0b" />
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-            gap: '8px',
-          }}>
-            <div>
-              <div style={{ fontSize: '9px', fontFamily: mono, color: '#6b7280', letterSpacing: '1px', marginBottom: '8px', paddingLeft: '4px' }}>
-                MACRO & LIQUIDEZ
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {CONTENT_MAP.liquidity.map((item, i) => <ContentLink key={i} item={item} />)}
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '9px', fontFamily: mono, color: '#6b7280', letterSpacing: '1px', marginBottom: '8px', paddingLeft: '4px' }}>
-                CRYPTO & TECH
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {CONTENT_MAP.crypto.map((item, i) => <ContentLink key={i} item={item} />)}
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '9px', fontFamily: mono, color: '#6b7280', letterSpacing: '1px', marginBottom: '8px', paddingLeft: '4px' }}>
-                EARNINGS & ANÁLISIS
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {CONTENT_MAP.earnings.map((item, i) => <ContentLink key={i} item={item} />)}
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '9px', fontFamily: mono, color: '#6b7280', letterSpacing: '1px', marginBottom: '8px', paddingLeft: '4px' }}>
-                TESIS & IDEAS
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {CONTENT_MAP.macro.map((item, i) => <ContentLink key={i} item={item} />)}
-              </div>
-            </div>
-          </div>
-          <a
-            href="https://10am.substack.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'flex', alignItems: 'center', gap: '4px',
-              marginTop: '12px', fontSize: '10px', color: '#4b5563',
-              textDecoration: 'none', fontFamily: mono,
-            }}
-          >
-            All articles & episodes →
-            <ExternalLink style={{ width: '10px', height: '10px' }} />
-          </a>
-        </div>
-
-        {/* ============================================================ */}
-        {/* TOOLS — Links to other dashboards */}
-        {/* ============================================================ */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
-          gap: '8px', marginBottom: '24px',
-        }}>
-          {[
-            { label: 'LiquidityFlow', url: 'https://liquidityflow-five.vercel.app', icon: '💧', color: '#22d3ee' },
-            { label: 'Race to Target', url: 'https://forecast2026.vercel.app', icon: '🏇', color: '#a855f7' },
-            { label: 'EarningsWatch', url: 'https://earningswatch.vercel.app', icon: '📅', color: '#10b981' },
-            { label: 'Info Diet', url: 'https://info-diet.vercel.app', icon: '📓', color: '#ef4444' },
-          ].map((tool, i) => (
-            <a key={i} href={tool.url} target="_blank" rel="noopener noreferrer" style={{
-              display: 'flex', alignItems: 'center', gap: '8px',
-              padding: '10px 12px', borderRadius: '8px', textDecoration: 'none',
-              backgroundColor: 'rgba(255,255,255,0.02)',
-              border: '1px solid rgba(255,255,255,0.04)',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
-              e.currentTarget.style.borderColor = `${tool.color}30`;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)';
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)';
-            }}
-            >
-              <span style={{ fontSize: '16px' }}>{tool.icon}</span>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: '#9ca3af' }}>{tool.label}</span>
-              <ChevronRight style={{ width: '10px', height: '10px', color: '#4b5563', marginLeft: 'auto' }} />
-            </a>
-          ))}
-        </div>
-
-        {/* ============================================================ */}
-        {/* WATCHLIST — compact grid */}
-        {/* ============================================================ */}
-        <div style={{ marginTop: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <BarChart3 style={{ width: '14px', height: '14px', color: '#10b981' }} />
-              <span style={{ fontFamily: sans, fontWeight: 700, fontSize: '13px', color: '#e5e7eb' }}>Watchlist</span>
-            </div>
-            <div style={{ display: 'flex', gap: '3px' }}>
-              {['all', 'stock', 'crypto', 'fx'].map(f => (
-                <button key={f} onClick={() => setWlFilter(f)} style={{
-                  padding: '1px 6px', borderRadius: '3px', border: 'none', cursor: 'pointer',
-                  fontFamily: mono, fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.05em',
-                  backgroundColor: wlFilter === f ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.03)',
-                  color: wlFilter === f ? '#34d399' : '#6b7280',
-                }}>{f}</button>
-              ))}
-            </div>
-          </div>
-
-          {wlLoading ? (
-            <div style={{ textAlign: 'center', padding: '24px 0', color: '#6b7280', fontFamily: mono, fontSize: '10px' }}>
-              <Loader2 style={{ width: '14px', height: '14px', animation: 'spin 1s linear infinite', margin: '0 auto 6px' }} />
-              Loading...
-            </div>
-          ) : (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(5, 1fr)',
-              gap: '4px',
-            }}>
-              {sortedWatchlist.map(a => {
-                const up = a.change > 0;
-                const down = a.change < 0;
-                const borderColor = up ? 'rgba(52,211,153,0.25)' : down ? 'rgba(248,113,113,0.25)' : 'rgba(255,255,255,0.06)';
-                return (
-                  <div key={a.ticker} style={{
-                    padding: '6px 8px', borderRadius: '6px',
-                    backgroundColor: 'rgba(255,255,255,0.02)',
-                    border: `1px solid ${borderColor}`,
-                    fontFamily: mono,
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
-                      <span style={{ fontSize: '10px', fontWeight: 700, color: '#e5e7eb', letterSpacing: '0.02em' }}>{a.ticker}</span>
-                      <span style={{
-                        fontSize: '8px', padding: '0 3px', borderRadius: '2px',
-                        backgroundColor: a.type === 'stock' ? 'rgba(59,130,246,0.15)' : a.type === 'crypto' ? 'rgba(245,158,11,0.15)' : 'rgba(139,92,246,0.15)',
-                        color: a.type === 'stock' ? '#60a5fa' : a.type === 'crypto' ? '#fbbf24' : '#a78bfa',
-                      }}>{a.type === 'stock' ? 'S' : a.type === 'crypto' ? 'C' : 'FX'}</span>
-                    </div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, color: '#d1d5db', marginBottom: '1px' }}>
-                      {a.price != null ? (a.price >= 1 ? `$${a.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : `$${a.price.toFixed(4)}`) : '—'}
-                    </div>
-                    <div style={{
-                      fontSize: '10px', fontWeight: 700,
-                      color: up ? '#34d399' : down ? '#f87171' : '#6b7280',
-                    }}>
-                      {a.change != null ? `${up ? '▲' : down ? '▼' : ''}${Math.abs(a.change).toFixed(2)}%` : '—'}
-                    </div>
-                  </div>
-                );
-              })}
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+          {btcPrice && (
+            <div style={{ textAlign: 'right' }}>
+              <span style={{ fontSize: 10, color: '#71717a', marginRight: 6 }}>BTC</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: btcChange >= 0 ? '#22c55e' : '#ef4444' }}>
+                ${fmt(btcPrice, 0)}
+              </span>
+              <span style={{ fontSize: 10, marginLeft: 4, color: btcChange >= 0 ? '#22c55e' : '#ef4444' }}>
+                {pct(btcChange)}
+              </span>
             </div>
           )}
         </div>
+      </section>
 
-        {/* ============================================================ */}
-        {/* FOOTER */}
-        {/* ============================================================ */}
-        <footer style={{
-          textAlign: 'center', paddingTop: '16px',
-          borderTop: '1px solid rgba(255,255,255,0.04)',
-          fontSize: '11px', color: '#4b5563',
-        }}>
-          <p style={{ margin: '0 0 4px', fontStyle: 'italic', fontFamily: sans }}>
-            &quot;Calm mind, fit body, house full of love&quot;
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '8px' }}>
-            <a href="https://10am.substack.com" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', textDecoration: 'none', fontFamily: mono, fontSize: '10px' }}>10am.pro</a>
-            <a href="https://x.com/holdmybirra" target="_blank" rel="noopener noreferrer" style={{ color: '#10b981', textDecoration: 'none', fontFamily: mono, fontSize: '10px' }}>@holdmybirra</a>
+      {/* ═══ MACRO BAR — MKT Row ═══ */}
+      <section style={{ marginBottom: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+          <span style={{
+            fontSize: 9, fontWeight: 700, letterSpacing: '0.15em', color: '#3f3f46',
+            padding: '2px 6px', background: 'rgba(63,63,70,0.15)', borderRadius: 3,
+          }}>MKT</span>
+          <div className="macro-grid" style={{
+            display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 4, flex: 1,
+          }}>
+            {YAHOO_SYMBOLS.map(sym => {
+              const q = findQuote(sym);
+              return (
+                <MacroCell
+                  key={sym}
+                  label={YAHOO_SHORT[sym]}
+                  price={q?.regularMarketPrice}
+                  change={q?.regularMarketChangePercent}
+                  isVix={sym === '%5EVIX'}
+                  isCop={sym === 'COP%3DX'}
+                />
+              );
+            })}
           </div>
-          <div style={{ marginTop: '8px', fontFamily: mono, fontSize: '9px', color: '#374151' }}>
-            {d.timestamp && `Last fetch: ${new Date(d.timestamp).toLocaleTimeString()}`}
-          </div>
-        </footer>
-      </div>
+        </div>
 
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.3; }
-        }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        * { box-sizing: border-box; }
-        body { -webkit-font-smoothing: antialiased; }
-      `}</style>
-    </div>
+        {/* ═══ MACRO BAR — LIQ Row ═══ */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{
+            fontSize: 9, fontWeight: 700, letterSpacing: '0.15em', color: '#3f3f46',
+            padding: '2px 6px', background: 'rgba(63,63,70,0.15)', borderRadius: 3,
+          }}>LIQ</span>
+          <div className="macro-grid" style={{
+            display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 4, flex: 1,
+          }}>
+            {/* NET LIQ placeholder */}
+            <MacroCell label="NET LIQ" price={null} change={null} />
+            {/* US M2 placeholder */}
+            <MacroCell label="US M2" price={null} change={null} />
+            {/* CN M2 placeholder */}
+            <MacroCell label="CN M2" price={null} change={null} />
+            {/* US 10Y */}
+            {LIQ_SYMBOLS.map(sym => {
+              const q = findQuote(sym);
+              return (
+                <MacroCell
+                  key={sym}
+                  label={LIQ_SHORT[sym]}
+                  price={q?.regularMarketPrice}
+                  change={q?.regularMarketChangePercent}
+                />
+              );
+            })}
+            {/* SOL */}
+            {solPrice && (
+              <MacroCell label="SOL" price={solPrice} change={solChange} />
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ PLACEHOLDER for bloques 2-5 ═══ */}
+      <section style={{
+        marginTop: 24, padding: 20, textAlign: 'center',
+        border: '1px dashed var(--border)', borderRadius: 6,
+        color: '#3f3f46', fontSize: 11,
+      }}>
+        BLOQUES 2–5 COMING: Calendar · Watchlist · Info Diet + Earnings · Editorial
+      </section>
+
+      {/* ═══ FOOTER ═══ */}
+      <footer style={{
+        marginTop: 24, padding: '12px 0', borderTop: '1px solid var(--border-subtle)',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        fontSize: 10, color: '#3f3f46',
+      }}>
+        <span>© 2026 10AMPRO</span>
+        <a href="https://forecast2026.vercel.app" style={{ color: '#71717a', fontSize: 10 }}>
+          forecast2026 →
+        </a>
+      </footer>
+    </main>
   );
 }

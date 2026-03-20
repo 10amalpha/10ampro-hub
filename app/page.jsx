@@ -295,13 +295,25 @@ async function fetchInfoDiet() {
     const data = await res.json();
     console.log(`Info Diet: ${data.length} items fetched`);
     if (data.length > 0) console.log('Info Diet first:', JSON.stringify(data[0]).substring(0, 200));
+// Category → badge icon + color
+const CAT_BADGES = {
+  Macro:       { icon: '📊', color: '#22c55e' },
+  Crypto:      { icon: '₿',  color: '#f59e0b' },
+  AI:          { icon: '🤖', color: '#a78bfa' },
+  Tech:        { icon: '⚡', color: '#60a5fa' },
+  Markets:     { icon: '📈', color: '#4ade80' },
+  Geopolitics: { icon: '🌍', color: '#ef4444' },
+};
+const DEFAULT_BADGE = { icon: '📡', color: '#71717a' };
+
     return data.map((it, i) => {
       const src = extractSource(it.content || '');
+      const badge = CAT_BADGES[it.category] || DEFAULT_BADGE;
       return {
         title: it.take || '',
         src,
-        abbr: makeAbbr(src),
-        color: SRC_COLORS[i % SRC_COLORS.length],
+        abbr: badge.icon,
+        color: badge.color,
         who: null,
         ago: timeAgo(parseInt(it.id) || Date.now()),
         url: it.content || '#',

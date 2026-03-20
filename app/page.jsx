@@ -375,14 +375,46 @@ export default async function HubPage() {
     impact: ev.impact,
   });
 
-  const todayEvents = calendarRaw.filter(ev => ev.dateOnly === todayStr);
-  const tmrwEvents = calendarRaw.filter(ev => ev.dateOnly === tmrwStr);
+  // ─── Calendar filtering: remove noise, keep market-moving data ───
+  const BLOCK_KEYWORDS = ['CFTC', 'Speculative net positions', 'Speculative Net Positions',
+    'Bill Auction', 'Bond Auction', 'Note Auction', 'TIPS Auction', 'FRN Auction'];
+  const isBlocked = (name) => BLOCK_KEYWORDS.some(kw => name.includes(kw));
 
-  const calToday = {
-    high: todayEvents.filter(ev => ev.impact >= 3).map(formatCalEvent),
-    low: todayEvents.filter(ev => ev.impact < 3).map(formatCalEvent),
+  // Tier 1: always show (market-moving)
+  const TIER1_KEYWORDS = ['Fed ', 'FOMC', 'Nonfarm', 'NFP', 'Jobless Claims', 'Unemployment',
+    'CPI', 'PPI', 'PCE', 'GDP', 'Retail Sales', 'ISM ', 'Consumer Confidence', 'Michigan',
+    'Home Sales', 'Balance of Trade', 'Interest Rate', 'Powell'];
+  const isTier1 = (name) => TIER1_KEYWORDS.some(kw => name.includes(kw));
+
+  // Tier 2: useful context (shown in HOY only, or as filler)
+  const TIER2_KEYWORDS = ['Mortgage Rate', 'Wholesale', 'EIA ', 'Housing Starts',
+    'Building Permits', 'Durable Goods', 'Industrial Production', 'Capacity Utilization',
+    'Fed Balance Sheet', 'Crude Oil', 'Natural Gas Stocks'];
+  const isTier2 = (name) => TIER2_KEYWORDS.some(kw => name.includes(kw));
+
+  const filterCalendarEvents = (events, minCount = 0) => {
+    const tier1 = events.filter(ev => !isBlocked(ev.event) && isTier1(ev.event));
+    const tier2 = events.filter(ev => !isBlocked(ev.event) && isTier2(ev.event));
+    const rest = events.filter(ev => !isBlocked(ev.event) && !isTier1(ev.event) && !isTier2(ev.event));
+    let result = [...tier1, ...tier2];
+    // If below minimum, pull from remaining non-blocked events
+    if (result.length < minCount) {
+      result = [...result, ...rest.slice(0, minCount - result.length)];
+    }
+    return result;
   };
-  const calTomorrow = tmrwEvents.map(formatCalEvent);
+
+  const todayEventsRaw = calendarRaw.filter(ev => ev.dateOnly === todayStr);
+  const tmrwEventsRaw = calendarRaw.filter(ev => ev.dateOnly === tmrwStr);
+
+  // HOY: min 5 events guaranteed
+  const todayFiltered = filterCalendarEvents(todayEventsRaw, 5);
+  const calToday = {
+    high: todayFiltered.filter(ev => ev.impact >= 3).map(formatCalEvent),
+    low: todayFiltered.filter(ev => ev.impact < 3).map(formatCalEvent),
+  };
+  // MAÑANA: no minimum, just filter noise
+  const calTomorrow = filterCalendarEvents(tmrwEventsRaw, 0).map(formatCalEvent);
 
   // ─── Watchlist ───
   const STOCK_TICKERS = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC'];

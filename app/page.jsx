@@ -289,6 +289,7 @@ export default async function HubPage() {
         d: new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
         days: daysUntil, next: false,
         eps: e.epsEstimate,
+        time: e.time === 'amc' ? 'AMC' : e.time === 'bmo' ? 'BMO' : null,
       };
     })
     .sort((a, b) => a.days - b.days);

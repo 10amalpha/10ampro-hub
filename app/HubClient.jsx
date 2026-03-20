@@ -255,7 +255,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
                   width: 36, height: 36, borderRadius: 3, background: `${d.color}15`,
                   border: `1px solid ${d.color}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>
-                  <span style={{ fontSize: 10, fontWeight: 800, color: d.color, letterSpacing: '-0.5px' }}>{d.abbr}</span>
+                  <span style={{ fontSize: 18, lineHeight: 1 }}>{d.abbr}</span>
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{

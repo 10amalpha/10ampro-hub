@@ -1,5 +1,5 @@
 # 10AMPRO Hub — _STATUS.md
-**Last updated:** March 19, 2026 (session 2, final)
+**Last updated:** March 20, 2026
 **Live URL:** https://10ampro-hub.vercel.app
 **Repo:** 10amalpha/10ampro-hub
 **Vercel Project ID:** prj_lKkui80lHh4x3Fietp6nC4CRfupB
@@ -27,7 +27,8 @@
 ## Section Status
 
 ### 1. HEADER ✅ COMPLETE
-- Logo + 10AMPRO brand + "MORNING INTELLIGENCE TERMINAL" + date/COT + ISR 5min
+- Logo + 10AMPRO brand + "BRIEFING DIARIO" subtitle (gold sutil rgba(212,168,67,0.4)) + date/COT + ISR 5min
+- All text grays bumped to #71717a for readability (PRO brand color #3F3F46 preserved)
 - **Do NOT change**
 
 ### 2. SIGNAL + MACRO BAR ✅ COMPLETE — LIVE DATA
@@ -111,6 +112,7 @@ XRP: ripple, JLP: jupiter-perpetuals-liquidity-provider-token
 | Watchlist stocks (15) | Yahoo | 5 min | Market hours Mon-Fri |
 | Watchlist crypto (15) | CoinGecko | 2 min | 24/7 |
 | Earnings | Finnhub | 6 hours | As companies announce |
+| Info Diet | Supabase `feed_items` | 5 min | When items added via info-diet app |
 
 ## Key Lessons Learned
 
@@ -122,12 +124,13 @@ XRP: ripple, JLP: jupiter-perpetuals-liquidity-provider-token
 6. **Work in chunks.** One section at a time.
 7. **FMP v3 endpoints are legacy** (blocked for new accounts after Aug 2025). Use `/stable/` prefix.
 8. **2Z token** uses CoinGecko contract address endpoint, not standard ID lookup.
+9. **Supabase anon key** — copy exact from source repo. One-char typo in JWT signature breaks silently (returns empty array, no error).
+10. **Info Diet badges** — use category-based emoji (⚡Tech, 📈Markets, ₿Crypto, 📊Macro, 🤖AI, 🌍Geopolitics) not source-domain abbreviations. 42px box, 22px emoji.
 
 ## Next Steps (priority order)
 
 1. **Watchlist comments:** Move from hardcoded to Supabase or editable JSON
-2. **Info Diet:** Wire to actual data source (check info-diet repo)
-3. **Editorial Insights:** Decide CMS approach (Supabase table vs Google Doc)
-4. **Delete `/api/debug`** route once stable
-5. **Mobile testing** — verify 700px breakpoint on all sections
-6. **Clean up dead code** — `fetchCalendar()` and `fetchEarnings()` in page.jsx are unused
+2. **Editorial Insights:** Decide CMS approach (Supabase table vs Google Doc)
+3. **Delete `/api/debug`** route once stable
+4. **Mobile testing** — verify 700px breakpoint on all sections
+5. **Clean up dead code** — `fetchCalendar()` and `fetchEarnings()` in page.jsx are unused

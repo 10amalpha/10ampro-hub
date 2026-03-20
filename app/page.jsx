@@ -169,15 +169,27 @@ function fmt(n, dec = 2) {
   return n.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
 }
 
-// ─── Editorial data (hardcoded — will move to CMS later) ────
-const INSIGHTS = [
-  { tag: 'MACRO', color: '#60a5fa', text: 'Mercados en modo wait-and-see. La atención está en datos de empleo y las minutas de la Fed. Si el mercado laboral muestra debilidad, la tesis de recortes cobra fuerza. Si no, el escenario de "higher for longer" se consolida.', link: { label: 'El framework macro de 10AMPRO →', url: 'https://10am.substack.com' } },
-  { tag: 'TSLA', color: '#f87171', text: 'Tesla en zona de definición. El mercado está pricing in un Q1 complejo por caída en entregas China/Europa. La pregunta no es revenue — es si Musk confirma timeline de robotaxi. El stock se mueve por narrativa, no por fundamentales.', link: null },
-  { tag: 'RISK', color: '#facc15', text: 'VIX es el termómetro. Debajo de 20 es complacencia, arriba de 30 es miedo. Entre 20-25 es indecisión. DXY debilitándose es la buena noticia para LATAM — dólar débil ayuda a emergentes y a COP.', link: null },
-  { tag: 'LIQ', color: '#22d3ee', text: 'Net Liquidity (FED BAL − TGA − RRP) es el indicador clave. Cuando sube, risk assets suben. M2 global expandiendo es históricamente positivo para BTC y growth stocks en horizontes de 3-6 meses.', link: { label: 'El framework de liquidez de 10AMPRO →', url: 'https://10am.substack.com/p/el-hombre-que-esta-reprogramando' } },
-  { tag: 'BE', color: '#4ade80', text: 'Bloom Energy sigue acumulando contratos con data centers para backup power. La apuesta de hydrogen está dando frutos. Uno de los nombres menos mencionados con más upside en el watchlist.', link: null },
-  { tag: 'COP', color: '#a78bfa', text: 'El peso colombiano se mueve con DXY y riesgo político local. Para los que cobran en USD y gastan en COP, monitorear el nivel de $4,200 como soporte clave. Si DXY sigue cayendo, COP podría fortalecerse.', link: null },
+// ─── Editorial data (AI-generated via /api/insights) ────────
+const INSIGHTS_FALLBACK = [
+  { tag: 'MACRO', color: '#60a5fa', text: 'Cargando insights...', link: null },
 ];
+
+async function fetchInsights() {
+  try {
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/insights`, {
+      next: { revalidate: 28800 }, // 8 hours
+    });
+    if (!res.ok) return INSIGHTS_FALLBACK;
+    const data = await res.json();
+    return data.insights || INSIGHTS_FALLBACK;
+  } catch (e) {
+    console.error('Failed to fetch insights:', e.message);
+    return INSIGHTS_FALLBACK;
+  }
+}
 
 // ─── Info Diet: live from Supabase feed_items ───
 const SUPABASE_URL = 'https://bzpraigsuwgjgpnclcpd.supabase.co';
@@ -270,12 +282,13 @@ const COMMENTS = {
 // ─── MAIN PAGE ──────────────────────────────────────────────
 export default async function HubPage() {
   // Fetch all data in parallel — briefing API handles FRED + Finnhub internally
-  const [macroQuotes, crypto, briefing, stockQuotes, dietData] = await Promise.all([
+  const [macroQuotes, crypto, briefing, stockQuotes, dietData, insightsData] = await Promise.all([
     fetchYahoo(['^GSPC', '^VIX', 'DX-Y.NYB', 'CL=F', 'JPY=X', 'COP=X', '^TNX', '^IRX']),
     fetchCrypto(),
     fetchBriefing(),
     fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC']),
     fetchInfoDiet(),
+    fetchInsights(),
   ]);
 
   // ─── Parse earnings from briefing ───
@@ -457,7 +470,7 @@ export default async function HubPage() {
       calTomorrow={calTomorrow}
       watchlist={wl}
       earnings={earnings}
-      insights={INSIGHTS}
+      insights={insightsData}
       diet={dietData}
     />
   );

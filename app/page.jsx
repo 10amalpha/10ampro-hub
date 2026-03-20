@@ -171,7 +171,12 @@ function fmt(n, dec = 2) {
 
 // ─── Editorial data (AI-generated via /api/insights) ────────
 const INSIGHTS_FALLBACK = [
-  { tag: 'MACRO', color: '#60a5fa', text: 'Cargando insights...', link: null },
+  { tag: 'MACRO', color: '#60a5fa', text: 'Mercados en modo wait-and-see. La atención está en datos de empleo y las minutas de la Fed.', link: { label: 'El framework macro de 10AMPRO →', url: 'https://www.10am.pro' } },
+  { tag: 'RISK', color: '#facc15', text: 'VIX es el termómetro. Debajo de 20 es complacencia, arriba de 30 es miedo.', link: null },
+  { tag: 'LIQ', color: '#22d3ee', text: 'Net Liquidity (FED BAL − TGA − RRP) es el indicador clave. Cuando sube, risk assets suben.', link: { label: 'El framework de liquidez →', url: 'https://www.10am.pro/p/el-hombre-que-esta-reprogramando' } },
+  { tag: 'BTC', color: '#f59e0b', text: 'Bitcoin sigue correlacionado con Net Liquidity. La tesis de largo plazo no cambia.', link: null },
+  { tag: 'COP', color: '#a78bfa', text: 'El peso colombiano se mueve con DXY y riesgo político local.', link: null },
+  { tag: 'AI', color: '#06b6d4', text: 'La carrera de AI sigue acelerando. PLTR para gobierno, NVDA para infra, DUOL para consumer.', link: null },
 ];
 
 async function fetchInsights() {
@@ -180,11 +185,16 @@ async function fetchInsights() {
       ? `https://${process.env.VERCEL_URL}`
       : 'http://localhost:3000';
     const res = await fetch(`${baseUrl}/api/insights`, {
-      next: { revalidate: 28800 }, // 8 hours
+      next: { revalidate: 28800 },
+      headers: { 'Accept': 'application/json' },
     });
-    if (!res.ok) return INSIGHTS_FALLBACK;
+    if (!res.ok) {
+      console.error('Insights fetch failed:', res.status);
+      return INSIGHTS_FALLBACK;
+    }
     const data = await res.json();
-    return data.insights || INSIGHTS_FALLBACK;
+    if (data.insights && data.insights.length > 1) return data.insights;
+    return INSIGHTS_FALLBACK;
   } catch (e) {
     console.error('Failed to fetch insights:', e.message);
     return INSIGHTS_FALLBACK;

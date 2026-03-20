@@ -252,10 +252,10 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
                 onMouseEnter={e => e.currentTarget.style.background = '#ffffff04'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <div style={{
-                  width: 36, height: 36, borderRadius: 3, background: `${d.color}15`,
+                  width: 42, height: 42, borderRadius: 3, background: `${d.color}15`,
                   border: `1px solid ${d.color}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>
-                  <span style={{ fontSize: 18, lineHeight: 1 }}>{d.abbr}</span>
+                  <span style={{ fontSize: 22, lineHeight: 1 }}>{d.abbr}</span>
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{

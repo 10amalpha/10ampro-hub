@@ -247,7 +247,7 @@ const INSIGHTS = [
 
 // ─── Info Diet: live from Supabase feed_items ───
 const SUPABASE_URL = 'https://bzpraigsuwgjgpnclcpd.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6cHJhaWdzdXdnamdwbmNsY3BkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1Mzk2NDEsImV4cCI6MjA4NTExNTY0MX0.tBtsac6Mq05BiG93MhYtn1KV8iOGpEpVdlD3tqShrzE';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6cHJhaWdzdXdnamdwbmNsY3BkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1Mzk2NDEsImV4cCI6MjA4NTExNTY0MX0.tBtsac6Mq65BiG93MhYtn1KV8iOGpEpVdlD3tqShrzE';
 
 // Color palette for source badges (rotates)
 const SRC_COLORS = ['#f5c6aa', '#60a5fa', '#ff6b35', '#a78bfa', '#22c55e', '#fbbf24', '#ef4444', '#06b6d4'];
@@ -281,9 +281,9 @@ function timeAgo(tsMs) {
 
 async function fetchInfoDiet() {
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/feed_items?select=id,take,content,category,type&order=id.desc&limit=5`,
-      {
+    const url = `${SUPABASE_URL}/rest/v1/feed_items?select=id,take,content,category,type&order=id.desc&limit=5`;
+    console.log('Info Diet: fetching from Supabase...');
+    const res = await fetch(url, {
         headers: {
           apikey: SUPABASE_KEY,
           Authorization: `Bearer ${SUPABASE_KEY}`,
@@ -291,8 +291,10 @@ async function fetchInfoDiet() {
         next: { revalidate: 300 },
       }
     );
-    if (!res.ok) return [];
+    if (!res.ok) { console.error('Info Diet HTTP:', res.status, await res.text()); return []; }
     const data = await res.json();
+    console.log(`Info Diet: ${data.length} items fetched`);
+    if (data.length > 0) console.log('Info Diet first:', JSON.stringify(data[0]).substring(0, 200));
     return data.map((it, i) => {
       const src = extractSource(it.content || '');
       return {

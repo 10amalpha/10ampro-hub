@@ -208,7 +208,7 @@ function timeAgo(tsMs) {
 
 async function fetchInfoDiet() {
   try {
-    const url = `${SUPABASE_URL}/rest/v1/feed_items?select=id,take,content,category,type&order=id.desc&limit=5`;
+    const url = `${SUPABASE_URL}/rest/v1/feed_items?select=id,take,content,category,type&order=id.desc&limit=7`;
     console.log('Info Diet: fetching from Supabase...');
     const res = await fetch(url, {
         headers: {

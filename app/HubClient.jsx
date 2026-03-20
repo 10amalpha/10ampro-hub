@@ -242,7 +242,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
           <div style={{ border: '1px solid #27272a', borderRadius: 3, overflow: 'hidden' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 8px', background: '#0f0f12', borderBottom: '1px solid #27272a' }}>
               <span style={{ fontSize: 8, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>📡 INFO DIET</span>
-              <span style={{ fontSize: 7, color: '#71717a' }}>Lo que estamos leyendo</span>
+              <span style={{ fontSize: 7, color: '#71717a' }}>Lo que estamos compartiendo en el chat de 10am.pro</span>
             </div>
             {diet.map((d, i) => (
               <a key={i} href={d.url} target="_blank" rel="noopener" style={{

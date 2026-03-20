@@ -149,59 +149,74 @@ async function getEconomicCalendar() {
 }
 
 // ============================================================
-// EARNINGS — Finnhub (our watchlist)
+// EARNINGS — FMP (our watchlist, single API call)
 // ============================================================
 const WATCHLIST = [
-  { ticker: 'PLTR', name: 'Palantir', emoji: '🚀', ir: 'https://investors.palantir.com' },
-  { ticker: 'HOOD', name: 'Robinhood', emoji: '⚡', ir: 'https://investors.robinhood.com' },
-  { ticker: 'TSLA', name: 'Tesla', emoji: '🎯', ir: 'https://ir.tesla.com' },
-  { ticker: 'STKE', name: 'Sol Strategies', emoji: '☀️', ir: 'https://solstrategies.io/investors' },
-  { ticker: 'QSI', name: 'Quantum-Si', emoji: '🔬', ir: 'https://investors.quantum-si.com' },
-  { ticker: 'MP', name: 'MP Materials', emoji: '⛏️', ir: 'https://investors.mpmaterials.com' },
-  { ticker: 'HIMS', name: 'Hims & Hers', emoji: '💊', ir: 'https://investors.forhims.com' },
-  { ticker: 'OKLO', name: 'Oklo', emoji: '⚛️', ir: 'https://investors.oklo.com' },
-  { ticker: 'AMD', name: 'AMD', emoji: '🔺', ir: 'https://ir.amd.com' },
-  { ticker: 'NVDA', name: 'NVIDIA', emoji: '💚', ir: 'https://investor.nvidia.com' },
-  { ticker: 'DUOL', name: 'Duolingo', emoji: '🦉', ir: 'https://investors.duolingo.com' },
-  { ticker: 'MSTR', name: 'Strategy', emoji: '₿', ir: 'https://www.strategy.com/investor-relations' },
-  { ticker: 'BE', name: 'Bloom Energy', emoji: '🔋', ir: 'https://investor.bloomenergy.com' },
+  { ticker: 'PLTR', name: 'Palantir', emoji: '🚀' },
+  { ticker: 'HOOD', name: 'Robinhood', emoji: '⚡' },
+  { ticker: 'TSLA', name: 'Tesla', emoji: '🎯' },
+  { ticker: 'STKE', name: 'Sol Strategies', emoji: '☀️' },
+  { ticker: 'QSI', name: 'Quantum-Si', emoji: '🔬' },
+  { ticker: 'MP', name: 'MP Materials', emoji: '⛏️' },
+  { ticker: 'HIMS', name: 'Hims & Hers', emoji: '💊' },
+  { ticker: 'OKLO', name: 'Oklo', emoji: '⚛️' },
+  { ticker: 'AMD', name: 'AMD', emoji: '🔺' },
+  { ticker: 'NVDA', name: 'NVIDIA', emoji: '💚' },
+  { ticker: 'DUOL', name: 'Duolingo', emoji: '🦉' },
+  { ticker: 'MSTR', name: 'Strategy', emoji: '₿' },
+  { ticker: 'BE', name: 'Bloom Energy', emoji: '🔋' },
 ];
 
+const WATCHLIST_TICKERS = new Set(WATCHLIST.map(w => w.ticker));
+
 async function getEarnings() {
-  const apiKey = process.env.FINNHUB_API_KEY;
-  if (!apiKey) return [];
+  const apiKey = process.env.FMP_API_KEY;
+  if (!apiKey) { console.error('Earnings: no FMP_API_KEY'); return []; }
   try {
     const today = new Date();
     const from = today.toISOString().split('T')[0];
-    const to = new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    const results = [];
-    for (const item of WATCHLIST) {
-      try {
-        const url = `https://finnhub.io/api/v1/calendar/earnings?symbol=${item.ticker}&from=${from}&to=${to}&token=${apiKey}`;
-        const res = await fetch(url, { next: { revalidate: 21600 } });
-        if (!res.ok) continue;
-        const data = await res.json();
-        const next = (data.earningsCalendar || [])
-          .filter((e) => new Date(e.date) >= today)
-          .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
-        results.push({
-          ...item,
-          date: next?.date || null,
-          time: next?.hour || null,
-          epsEstimate: next?.epsEstimate || null,
-          quarter: next ? `Q${next.quarter} ${next.year}` : null,
-        });
-      } catch {
-        results.push({ ...item, date: null, time: null, epsEstimate: null, quarter: null });
+    const toDate = new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000);
+    const to = toDate.toISOString().split('T')[0];
+    const url = `https://financialmodelingprep.com/stable/earnings-calendar?from=${from}&to=${to}&apikey=${apiKey}`;
+    console.log('Earnings: fetching FMP calendar...');
+    const res = await fetch(url, { next: { revalidate: 21600 } });
+    if (!res.ok) { console.error('Earnings FMP HTTP:', res.status); return []; }
+    const data = await res.json();
+    if (!Array.isArray(data)) { console.error('Earnings FMP: unexpected response'); return []; }
+    console.log(`Earnings FMP: ${data.length} total events, filtering for watchlist`);
+
+    // Filter for our watchlist tickers, get earliest date per ticker
+    const tickerMap = {};
+    for (const ev of data) {
+      if (!WATCHLIST_TICKERS.has(ev.symbol)) continue;
+      const evDate = new Date(ev.date);
+      if (evDate < today) continue;
+      if (!tickerMap[ev.symbol] || evDate < new Date(tickerMap[ev.symbol].date)) {
+        tickerMap[ev.symbol] = ev;
       }
     }
+
+    // Merge with watchlist metadata
+    const results = WATCHLIST.map(item => {
+      const ev = tickerMap[item.ticker];
+      return {
+        ...item,
+        date: ev?.date || null,
+        time: ev?.time || null,
+        epsEstimate: ev?.epsEstimated || null,
+        revenueEstimate: ev?.revenueEstimated || null,
+        quarter: ev ? `Q${ev.fiscalDateEnding ? new Date(ev.fiscalDateEnding).getMonth() < 3 ? 1 : new Date(ev.fiscalDateEnding).getMonth() < 6 ? 2 : new Date(ev.fiscalDateEnding).getMonth() < 9 ? 3 : 4 : '?'} ${ev.fiscalDateEnding ? new Date(ev.fiscalDateEnding).getFullYear() : ''}`.trim() : null,
+      };
+    });
+
     return results.sort((a, b) => {
       if (!a.date && !b.date) return 0;
       if (!a.date) return 1;
       if (!b.date) return -1;
       return new Date(a.date) - new Date(b.date);
     });
-  } catch {
+  } catch (err) {
+    console.error('Earnings FMP error:', err.message);
     return [];
   }
 }

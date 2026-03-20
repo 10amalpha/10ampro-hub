@@ -107,7 +107,7 @@ async function fetchCrypto() {
   } catch { return {}; }
 }
 
-// ─── Internal Briefing API (has FRED_API_KEY + FINNHUB_API_KEY) ──
+// ─── Internal Briefing API (has FRED_API_KEY + FMP_API_KEY) ──
 async function fetchBriefing() {
   try {
     const h = headers();
@@ -117,72 +117,6 @@ async function fetchBriefing() {
     if (!res.ok) { console.error('Briefing API:', res.status); return null; }
     return await res.json();
   } catch (e) { console.error('Briefing fetch error:', e.message); return null; }
-}
-
-// ─── Finnhub Calendar ───────────────────────────────────────
-async function fetchCalendar() {
-  const key = process.env.FINNHUB_API_KEY;
-  if (!key) return [];
-  try {
-    const today = new Date();
-    const from = today.toISOString().split('T')[0];
-    const toDate = new Date(today.getTime() + 3 * 86400000);
-    const to = toDate.toISOString().split('T')[0];
-    const res = await fetch(
-      `https://finnhub.io/api/v1/calendar/economic?from=${from}&to=${to}&token=${key}`,
-      { next: { revalidate: 3600 } }
-    );
-    if (!res.ok) return [];
-    const data = await res.json();
-    return (data.economicCalendar || []).filter(e => e.country === 'US');
-  } catch { return []; }
-}
-
-// ─── Finnhub Earnings ───────────────────────────────────────
-const WATCHLIST_META = {
-  PLTR: { n: 'Palantir', e: '🚀' }, HOOD: { n: 'Robinhood', e: '⚡' },
-  TSLA: { n: 'Tesla', e: '🎯' }, HIMS: { n: 'Hims & Hers', e: '💊' },
-  QSI: { n: 'Quantum-Si', e: '🔬' }, DUOL: { n: 'Duolingo', e: '🦉' },
-  STKE: { n: 'Sol Strategies', e: '☀️' }, MP: { n: 'MP Materials', e: '⛏️' },
-  OKLO: { n: 'Oklo', e: '⚛️' }, AMD: { n: 'AMD', e: '🔺' },
-  NVDA: { n: 'NVIDIA', e: '💚' }, MSTR: { n: 'Strategy', e: '₿' },
-  BE: { n: 'Bloom Energy', e: '🔋' }, IBIT: { n: 'iShares BTC', e: '🪙' },
-};
-
-async function fetchEarnings() {
-  const key = process.env.FINNHUB_API_KEY;
-  if (!key) return [];
-  const today = new Date();
-  const from = today.toISOString().split('T')[0];
-  const toDate = new Date(today.getTime() + 90 * 86400000);
-  const to = toDate.toISOString().split('T')[0];
-  const results = [];
-  const earningsTickers = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE'];
-  for (const ticker of earningsTickers) {
-    try {
-      const res = await fetch(
-        `https://finnhub.io/api/v1/calendar/earnings?symbol=${ticker}&from=${from}&to=${to}&token=${key}`,
-        { next: { revalidate: 21600 } }
-      );
-      if (!res.ok) continue;
-      const data = await res.json();
-      const next = (data.earningsCalendar || [])
-        .filter(e => new Date(e.date) >= today)
-        .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
-      if (next) {
-        const meta = WATCHLIST_META[ticker] || { n: ticker, e: '📊' };
-        const daysUntil = Math.ceil((new Date(next.date) - today) / 86400000);
-        results.push({
-          t: ticker, n: meta.n, e: meta.e,
-          d: new Date(next.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-          days: daysUntil, next: false,
-        });
-      }
-    } catch { continue; }
-  }
-  results.sort((a, b) => a.days - b.days);
-  if (results.length > 0) results[0].next = true;
-  return results;
 }
 
 // ─── Signal Calculation ─────────────────────────────────────

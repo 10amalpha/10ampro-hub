@@ -87,7 +87,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
             <div style={{ fontSize: 10, color: '#71717a' }}>
               {now.toLocaleString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })} COT
             </div>
-            <div style={{ fontSize: 9, color: '#3f3f46' }}>ISR 5min</div>
+            <div style={{ fontSize: 9, color: '#71717a' }}>ISR 5min</div>
           </div>
         </header>
 
@@ -105,7 +105,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
             </div>
             <div style={{ display: 'flex', flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', borderRight: '1px solid #1e1e22', flexShrink: 0, width: 20 }}>
-                <span style={{ fontSize: 7, color: '#52525b', writingMode: mb ? 'horizontal-tb' : 'vertical-rl', transform: mb ? 'none' : 'rotate(180deg)', letterSpacing: '0.5px' }}>MKT</span>
+                <span style={{ fontSize: 7, color: '#71717a', writingMode: mb ? 'horizontal-tb' : 'vertical-rl', transform: mb ? 'none' : 'rotate(180deg)', letterSpacing: '0.5px' }}>MKT</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', flex: 1 }}>
                 {mkt.map((m, i) => <MC key={i} m={m} bd={i < mkt.length - 1} mb={mb} />)}
@@ -124,7 +124,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
             </div>
             <div style={{ display: 'flex', flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', borderRight: '1px solid #1e1e22', flexShrink: 0, width: 20 }}>
-                <span style={{ fontSize: 7, color: '#52525b', writingMode: mb ? 'horizontal-tb' : 'vertical-rl', transform: mb ? 'none' : 'rotate(180deg)', letterSpacing: '0.5px' }}>LIQ</span>
+                <span style={{ fontSize: 7, color: '#71717a', writingMode: mb ? 'horizontal-tb' : 'vertical-rl', transform: mb ? 'none' : 'rotate(180deg)', letterSpacing: '0.5px' }}>LIQ</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', flex: 1 }}>
                 {liq.map((m, i) => <MC key={i} m={m} bd={i < liq.length - 1} mb={mb} />)}
@@ -142,7 +142,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
               <span style={{ fontSize: 8, color: '#a1a1aa' }}>{now.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
             </div>
             {calToday.high.length === 0 && calToday.low.length === 0 && (
-              <div style={{ padding: '8px', fontSize: 9, color: '#52525b', textAlign: 'center' }}>Sin eventos de alto impacto hoy</div>
+              <div style={{ padding: '8px', fontSize: 9, color: '#71717a', textAlign: 'center' }}>Sin eventos de alto impacto hoy</div>
             )}
             {calToday.high.map((ev, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderBottom: i < calToday.high.length - 1 ? '1px solid #ffffff06' : 'none', background: '#60a5fa06' }}>
@@ -168,7 +168,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
               <span style={{ fontSize: 8, color: '#a1a1aa' }}>{tmrw.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
             </div>
             {calTomorrow.length === 0 && (
-              <div style={{ padding: '8px', fontSize: 9, color: '#52525b', textAlign: 'center' }}>Sin eventos programados</div>
+              <div style={{ padding: '8px', fontSize: 9, color: '#71717a', textAlign: 'center' }}>Sin eventos programados</div>
             )}
             {calTomorrow.map((ev, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderBottom: i < calTomorrow.length - 1 ? '1px solid #ffffff06' : 'none' }}>
@@ -265,13 +265,13 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
                   }}>{d.title}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
                     <span style={{ fontSize: 8, color: '#71717a' }}>{d.src}</span>
-                    <span style={{ fontSize: 7, color: '#3f3f46' }}>·</span>
+                    <span style={{ fontSize: 7, color: '#71717a' }}>·</span>
                     <span style={{ fontSize: 8, color: '#22C55E' }}>{d.who}</span>
-                    <span style={{ fontSize: 7, color: '#3f3f46' }}>·</span>
-                    <span style={{ fontSize: 8, color: '#52525b' }}>{d.ago}</span>
+                    <span style={{ fontSize: 7, color: '#71717a' }}>·</span>
+                    <span style={{ fontSize: 8, color: '#71717a' }}>{d.ago}</span>
                   </div>
                 </div>
-                <span style={{ fontSize: 7, color: '#52525b', background: '#ffffff06', padding: '1px 4px', borderRadius: 2, flexShrink: 0 }}>{d.tag}</span>
+                <span style={{ fontSize: 7, color: '#71717a', background: '#ffffff06', padding: '1px 4px', borderRadius: 2, flexShrink: 0 }}>{d.tag}</span>
               </a>
             ))}
           </div>
@@ -313,7 +313,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
               </div>
             ))}
             {earnings.length === 0 && (
-              <div style={{ padding: '8px', fontSize: 9, color: '#52525b', textAlign: 'center' }}>Sin earnings próximos</div>
+              <div style={{ padding: '8px', fontSize: 9, color: '#71717a', textAlign: 'center' }}>Sin earnings próximos</div>
             )}
           </div>
         </div>
@@ -363,7 +363,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
 
         {/* ═══ FOOTER ═══ */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 12, padding: '4px 0', borderTop: '1px solid #18181b' }}>
-          <a href="https://10am.pro" target="_blank" rel="noopener" style={{ fontSize: 8, color: '#52525b', textDecoration: 'none' }}>Substack</a>
+          <a href="https://10am.pro" target="_blank" rel="noopener" style={{ fontSize: 8, color: '#71717a', textDecoration: 'none' }}>Substack</a>
           <a href="https://x.com/holdmybirra" target="_blank" rel="noopener" style={{ fontSize: 8, color: '#22C55E', textDecoration: 'none' }}>@holdmybirra</a>
           <a href="https://cerebro.10am.pro" target="_blank" rel="noopener" style={{ fontSize: 8, color: '#D4A843', textDecoration: 'none' }}>Cerebro</a>
         </div>

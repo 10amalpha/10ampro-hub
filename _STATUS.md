@@ -21,8 +21,8 @@
 | Variable | Status | Used by |
 |---|---|---|
 | `FRED_API_KEY` | ✅ Set | NET LIQ, US M2, CN M2 |
-| `FINNHUB_API_KEY` | ✅ Set | Earnings calendar |
-| `FMP_API_KEY` | ✅ Set (paid plan, annual) | Economic calendar (HOY/MAÑANA) |
+| `FMP_API_KEY` | ✅ Set (paid plan, annual) | Economic calendar (HOY/MAÑANA) + Earnings Radar |
+| `FINNHUB_API_KEY` | ⚠️ No longer needed | Can be removed from Vercel |
 
 ## Section Status
 
@@ -90,7 +90,12 @@ XRP: ripple, JLP: jupiter-perpetuals-liquidity-provider-token
 - No `who` field in Supabase — author line removed from hub display
 - Supabase anon key shared with info-diet app
 
-**Earnings Radar:** ✅ LIVE from Finnhub. NEXT UP badge + days countdown.
+**Earnings Radar:** ✅ LIVE from FMP (migrated from Finnhub Mar 20).
+- Single API call: `/stable/earnings-calendar?from=X&to=Y` (90-day window)
+- Filters for watchlist tickers only (13 stocks, no IBIT/STRC — no earnings)
+- Returns: date, epsEstimated, revenueEstimated, fiscalDateEnding
+- 6-hour ISR cache
+- Finnhub dependency fully removed (dead code cleaned from page.jsx + route.js)
 
 ### 6. EDITORIAL INSIGHTS 🔶 LAYOUT DONE — DATA HARDCODED
 6 mini-explainers, colored tags, Substack links. TODO: CMS.
@@ -111,7 +116,7 @@ XRP: ripple, JLP: jupiter-perpetuals-liquidity-provider-token
 | Calendar (HOY/MAÑANA) | FMP | 1 hour | Continuous (FMP updates 15 min) |
 | Watchlist stocks (15) | Yahoo | 5 min | Market hours Mon-Fri |
 | Watchlist crypto (15) | CoinGecko | 2 min | 24/7 |
-| Earnings | Finnhub | 6 hours | As companies announce |
+| Earnings | FMP `earnings-calendar` | 6 hours | As companies announce |
 | Info Diet | Supabase `feed_items` | 5 min | When items added via info-diet app |
 
 ## Key Lessons Learned
@@ -131,6 +136,6 @@ XRP: ripple, JLP: jupiter-perpetuals-liquidity-provider-token
 
 1. **Watchlist comments:** Move from hardcoded to Supabase or editable JSON
 2. **Editorial Insights:** Decide CMS approach (Supabase table vs Google Doc)
-3. **Delete `/api/debug`** route once stable
-4. **Mobile testing** — verify 700px breakpoint on all sections
-5. **Clean up dead code** — `fetchCalendar()` and `fetchEarnings()` in page.jsx are unused
+3. **Remove `FINNHUB_API_KEY`** from Vercel env vars (no longer used)
+4. **Delete `/api/debug`** route once stable
+5. **Mobile testing** — verify 700px breakpoint on all sections

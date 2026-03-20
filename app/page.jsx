@@ -245,13 +245,72 @@ const INSIGHTS = [
   { tag: 'COP', color: '#a78bfa', text: 'El peso colombiano se mueve con DXY y riesgo político local. Para los que cobran en USD y gastan en COP, monitorear el nivel de $4,200 como soporte clave. Si DXY sigue cayendo, COP podría fortalecerse.', link: null },
 ];
 
-const DIET = [
-  { title: 'Why the Fed Can\'t Cut Yet', src: 'Financial Times', abbr: 'FT', color: '#f5c6aa', who: 'Hernán', ago: '2h', url: '#', tag: 'Macro' },
-  { title: 'NVIDIA\'s Next Moat: Custom Chips for Hyperscalers', src: 'SemiAnalysis', abbr: 'SA', color: '#60a5fa', who: 'Darío', ago: '4h', url: '#', tag: 'Tech' },
-  { title: 'China M2 Hits Record — What It Means for Global Liquidity', src: 'Reuters', abbr: 'R', color: '#ff6b35', who: 'Hernán', ago: '6h', url: '#', tag: 'Liquidez' },
-  { title: 'The Robotaxi Economics Nobody Is Talking About', src: 'ARK Invest', abbr: 'ARK', color: '#ffffff', who: 'Andrés', ago: '8h', url: '#', tag: 'TSLA' },
-  { title: 'Colombia\'s Nearshoring Bet Is Starting to Pay Off', src: 'Bloomberg', abbr: 'BG', color: '#5c33f6', who: 'Guillermo', ago: '1d', url: '#', tag: 'LATAM' },
-];
+// ─── Info Diet: live from Supabase feed_items ───
+const SUPABASE_URL = 'https://bzpraigsuwgjgpnclcpd.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6cHJhaWdzdXdnamdwbmNsY3BkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1Mzk2NDEsImV4cCI6MjA4NTExNTY0MX0.tBtsac6Mq05BiG93MhYtn1KV8iOGpEpVdlD3tqShrzE';
+
+// Color palette for source badges (rotates)
+const SRC_COLORS = ['#f5c6aa', '#60a5fa', '#ff6b35', '#a78bfa', '#22c55e', '#fbbf24', '#ef4444', '#06b6d4'];
+
+function extractSource(url) {
+  try {
+    const host = new URL(url).hostname.replace('www.', '');
+    const parts = host.split('.');
+    const name = parts.length > 2 ? parts.slice(-3, -1).join('.') : parts[0];
+    // Capitalize first letter
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  } catch { return 'Web'; }
+}
+
+function makeAbbr(src) {
+  if (src.length <= 3) return src.toUpperCase();
+  const words = src.split(/[\s.-]+/);
+  if (words.length >= 2) return words.map(w => w[0]).join('').toUpperCase().slice(0, 3);
+  return src.slice(0, 2).toUpperCase();
+}
+
+function timeAgo(tsMs) {
+  const diff = Date.now() - tsMs;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d`;
+}
+
+async function fetchInfoDiet() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/feed_items?select=id,take,content,category,type&order=id.desc&limit=5`,
+      {
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+        },
+        next: { revalidate: 300 },
+      }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.map((it, i) => {
+      const src = extractSource(it.content || '');
+      return {
+        title: it.take || '',
+        src,
+        abbr: makeAbbr(src),
+        color: SRC_COLORS[i % SRC_COLORS.length],
+        who: null,
+        ago: timeAgo(parseInt(it.id) || Date.now()),
+        url: it.content || '#',
+        tag: it.category || '',
+      };
+    });
+  } catch (err) {
+    console.error('Info Diet fetch error:', err.message);
+    return [];
+  }
+}
 
 const COMMENTS = {
   PLTR: { tx: 'Consolidando >$100. Tesis gobierno + comercial sigue intacta. AI play puro.', w: 'Hernán', a: '2h' },
@@ -263,11 +322,12 @@ const COMMENTS = {
 // ─── MAIN PAGE ──────────────────────────────────────────────
 export default async function HubPage() {
   // Fetch all data in parallel — briefing API handles FRED + Finnhub internally
-  const [macroQuotes, crypto, briefing, stockQuotes] = await Promise.all([
+  const [macroQuotes, crypto, briefing, stockQuotes, dietData] = await Promise.all([
     fetchYahoo(['^GSPC', '^VIX', 'DX-Y.NYB', 'CL=F', 'JPY=X', 'COP=X', '^TNX', '^IRX']),
     fetchCrypto(),
     fetchBriefing(),
     fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC']),
+    fetchInfoDiet(),
   ]);
 
   // ─── Parse earnings from briefing ───
@@ -448,7 +508,7 @@ export default async function HubPage() {
       watchlist={wl}
       earnings={earnings}
       insights={INSIGHTS}
-      diet={DIET}
+      diet={dietData}
     />
   );
 }

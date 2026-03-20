@@ -266,8 +266,6 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
                     <span style={{ fontSize: 8, color: '#71717a' }}>{d.src}</span>
                     <span style={{ fontSize: 7, color: '#71717a' }}>·</span>
-                    <span style={{ fontSize: 8, color: '#22C55E' }}>{d.who}</span>
-                    <span style={{ fontSize: 7, color: '#71717a' }}>·</span>
                     <span style={{ fontSize: 8, color: '#71717a' }}>{d.ago}</span>
                   </div>
                 </div>

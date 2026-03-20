@@ -369,7 +369,6 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
         <div style={{ display: 'flex', justifyContent: 'center', gap: 12, padding: '4px 0', borderTop: '1px solid #18181b' }}>
           <a href="https://10am.pro" target="_blank" rel="noopener" style={{ fontSize: 9, color: '#9ca3af', textDecoration: 'none' }}>Substack</a>
           <a href="https://x.com/holdmybirra" target="_blank" rel="noopener" style={{ fontSize: 9, color: '#22C55E', textDecoration: 'none' }}>@holdmybirra</a>
-          <a href="https://cerebro.10am.pro" target="_blank" rel="noopener" style={{ fontSize: 9, color: '#D4A843', textDecoration: 'none' }}>Cerebro</a>
         </div>
 
       </div>

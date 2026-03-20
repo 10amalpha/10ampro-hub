@@ -78,8 +78,8 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
                 <span style={{ color: '#22C55E' }}>AM</span>
                 <span style={{ color: '#3F3F46' }}>PRO</span>
               </div>
-              <div style={{ fontSize: 8, letterSpacing: '0.2em', color: '#27272A', textTransform: 'uppercase' }}>
-                MORNING INTELLIGENCE TERMINAL
+              <div style={{ fontSize: 8, letterSpacing: '0.2em', color: 'rgba(212,168,67,0.4)', textTransform: 'uppercase' }}>
+                BRIEFING DIARIO
               </div>
             </div>
           </div>

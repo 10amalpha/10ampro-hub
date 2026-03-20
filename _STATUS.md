@@ -1,5 +1,5 @@
 # 10AMPRO Hub — _STATUS.md
-**Last updated:** March 20, 2026 (session 3)
+**Last updated:** March 20, 2026 (session 4)
 **Live URL:** https://10ampro-hub.vercel.app
 **Repo:** 10amalpha/10ampro-hub
 **Vercel Project ID:** prj_lKkui80lHh4x3Fietp6nC4CRfupB
@@ -9,10 +9,12 @@
 ## Architecture
 
 - **Framework:** Next.js 14.0.4 (App Router)
-- **page.jsx** — Server component, fetches Yahoo/CoinGecko directly + calls `/api/briefing` for FRED + FMP data + fetches Supabase for Info Diet. `force-dynamic` with ISR revalidate 300s.
+- **page.jsx** — Server component, fetches Yahoo/CoinGecko directly + calls `/api/briefing` for FRED + FMP data + fetches Supabase for Info Diet + calls `getInsights()` from shared lib. `force-dynamic` with ISR revalidate 300s.
 - **HubClient.jsx** — Client component (`'use client'`), receives all data as props, handles interactivity (watchlist filters, comment expand/collapse, responsive breakpoints).
+- **app/lib/insights.js** — Shared module for AI insight generation. Called directly by `page.jsx` (avoids self-fetch deadlock). Also used by `/api/insights` for external access.
 - **API Routes** (all `force-dynamic`):
   - `/api/briefing` — FRED (6 series) + FMP economic calendar + FMP earnings per-ticker
+  - `/api/insights` — External access to AI-generated insights (reuses `lib/insights.js`)
   - `/api/watchlist` — Yahoo Finance stocks + CoinGecko crypto + USD/COP (legacy, not used by page)
   - `/api/debug` — Shows env var status (can delete when stable)
 
@@ -103,14 +105,18 @@ XRP: ripple, JLP: jupiter-perpetuals-liquidity-provider-token
 - Finnhub dependency fully removed (dead code cleaned from page.jsx + route.js)
 - **Debug log active:** `Earnings ${ticker}: date=... time=... eps=... keys=...` — remove once AMC/BMO confirmed working
 
-### 6. EDITORIAL INSIGHTS ✅ COMPLETE — AI-GENERATED (Anthropic API)
-- **Source:** `/api/insights` route calls Anthropic Claude Sonnet with market data + RSS feed
-- **Flow:** Fetch 10am.pro RSS (via rss2json) + Yahoo/CoinGecko market snapshot → build prompt → Claude generates 6 insights
-- **Voice:** 10AMPRO / Hernán / Búnker tone — direct, opinionated, never generic
-- **Substack links:** At least 2 of 6 insights link to real articles from RSS catalog
-- **Cache:** ISR 8 hours (~3 calls/day, ~$0.04/day, ~$1.20/month)
-- **Fallback:** Static insights array if API key missing or generation fails
+### 6. EDITORIAL INSIGHTS ✅ COMPLETE — AI-GENERATED (Anthropic API + RSS)
+- **Module:** `app/lib/insights.js` — shared logic, imported directly by `page.jsx`
+- **Flow:** Fetch 10am.pro RSS (via rss2json.com) → fetch market snapshot (Yahoo + CoinGecko) → call Anthropic Claude Sonnet → return 6 insights
+- **Model:** `claude-sonnet-4-20250514`
+- **Voice:** 10AMPRO / Hernán / Búnker tone — direct, opinionated, tactical, never generic
+- **Link rule:** Exactly 2 of 6 insights (30%) link to real Substack articles from RSS. Other 4 are pure tactical value.
+- **Content rule:** Each insight must contain tactical info — price levels, frameworks, data, non-obvious connections. Zero filler.
+- **RSS source:** `https://www.10am.pro/feed` — auto-updates when new articles are published on Substack
+- **Cache:** ISR 8 hours (~3 calls/day, ~$5/month estimated)
+- **Fallback:** Static 6-insight array if API key missing or generation fails
 - **Env var:** `ANTHROPIC_API_KEY` (Vercel, All Environments)
+- **Critical architecture note:** `page.jsx` calls `getInsights()` directly via import — NOT via HTTP self-fetch. Self-fetch from server components causes deadlock in Next.js. The `/api/insights` route exists for external testing only.
 
 ### 7. FOOTER ✅ COMPLETE
 
@@ -146,6 +152,9 @@ XRP: ripple, JLP: jupiter-perpetuals-liquidity-provider-token
 10. **Info Diet badges** — use category-based emoji not source-domain abbreviations. 42px box, 22px emoji.
 11. **FMP earnings-calendar vs earnings:** The general `/stable/earnings-calendar?from=X&to=Y` returns bulk data but may miss tickers without confirmed dates. Use `/stable/earnings?symbol=X` per-ticker for complete coverage.
 12. **FMP AMC/BMO field** — `time` field on earnings is often null 30+ days out. Only shows "amc"/"bmo" closer to the event. Code handles gracefully with conditional render.
+13. **Never self-fetch from server components.** `page.jsx` fetching its own `/api/insights` causes deadlock. Use direct import of shared module instead.
+14. **Substack RSS** is publicly available at `{domain}/feed`. Use rss2json.com as proxy for JSON conversion (avoids XML parsing + CORS).
+15. **Anthropic API in serverless:** First call takes ~8-12s (cold start + API latency). Subsequent ISR-cached pages are instant.
 
 ## Next Steps (priority order)
 
@@ -154,4 +163,5 @@ XRP: ripple, JLP: jupiter-perpetuals-liquidity-provider-token
 3. **Remove earnings debug log** once AMC/BMO confirmed working
 4. **Delete `/api/debug`** route once stable
 5. **Mobile testing** — verify 700px breakpoint on all sections
-6. **Insights tuning** — monitor AI output quality, adjust prompt/tone as needed
+6. **Insights tuning** — monitor AI output quality over days, adjust prompt/tone as needed
+7. **Delete `/api/watchlist`** route (legacy, page fetches Yahoo/CoinGecko directly)

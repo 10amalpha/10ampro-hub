@@ -182,7 +182,7 @@ const INSIGHTS_FALLBACK = [
 async function fetchInsights() {
   try {
     const baseUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
+      ? `https://10ampro-hub.vercel.app`
       : 'http://localhost:3000';
     const res = await fetch(`${baseUrl}/api/insights`, {
       next: { revalidate: 28800 },

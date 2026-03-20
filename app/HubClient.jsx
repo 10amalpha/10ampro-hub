@@ -246,7 +246,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
             </div>
             {diet.map((d, i) => (
               <a key={i} href={d.url} target="_blank" rel="noopener" style={{
-                display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', textDecoration: 'none',
+                display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', textDecoration: 'none',
                 borderBottom: i < diet.length - 1 ? '1px solid #ffffff05' : 'none',
               }}
                 onMouseEnter={e => e.currentTarget.style.background = '#ffffff04'}
@@ -259,17 +259,17 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
-                    fontSize: 10, color: '#e4e4e7', fontWeight: 600, lineHeight: 1.3,
+                    fontSize: 12, color: '#e4e4e7', fontWeight: 600, lineHeight: 1.3,
                     fontFamily: "'Plus Jakarta Sans',sans-serif",
                     display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                   }}>{d.title}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                    <span style={{ fontSize: 9, color: '#9ca3af' }}>{d.src}</span>
-                    <span style={{ fontSize: 7, color: '#9ca3af' }}>·</span>
-                    <span style={{ fontSize: 9, color: '#9ca3af' }}>{d.ago}</span>
+                    <span style={{ fontSize: 10, color: '#9ca3af' }}>{d.src}</span>
+                    <span style={{ fontSize: 8, color: '#9ca3af' }}>·</span>
+                    <span style={{ fontSize: 10, color: '#9ca3af' }}>{d.ago}</span>
                   </div>
                 </div>
-                <span style={{ fontSize: 8, color: '#9ca3af', background: '#ffffff06', padding: '1px 4px', borderRadius: 2, flexShrink: 0 }}>{d.tag}</span>
+                <span style={{ fontSize: 9, color: '#9ca3af', background: '#ffffff06', padding: '1px 4px', borderRadius: 2, flexShrink: 0 }}>{d.tag}</span>
               </a>
             ))}
           </div>
@@ -281,18 +281,18 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
             </div>
             {nextUp && (
               <div style={{
-                padding: '5px 8px', background: '#a78bfa08', borderBottom: '1px solid #27272a',
+                padding: '7px 10px', background: '#a78bfa08', borderBottom: '1px solid #27272a',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 12 }}>{nextUp.e}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#e4e4e7' }}>{nextUp.t}</span>
-                  <span style={{ fontSize: 9, color: '#a1a1aa' }}>{nextUp.n}</span>
+                  <span style={{ fontSize: 14 }}>{nextUp.e}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#e4e4e7' }}>{nextUp.t}</span>
+                  <span style={{ fontSize: 11, color: '#a1a1aa' }}>{nextUp.n}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  {nextUp.eps != null && <span style={{ fontSize: 8, color: '#a78bfa', fontWeight: 600 }}>EPS est: ${nextUp.eps}</span>}
-                  {nextUp.time && <span style={{ fontSize: 7, color: '#9ca3af', background: '#ffffff08', padding: '0px 4px', borderRadius: 2 }}>{nextUp.time}</span>}
-                  <span style={{ fontSize: 9, color: '#a1a1aa' }}>{nextUp.d} · <span style={{ color: '#a78bfa', fontWeight: 700 }}>{nextUp.days}d</span></span>
+                  {nextUp.eps != null && <span style={{ fontSize: 10, color: '#a78bfa', fontWeight: 600 }}>EPS est: ${nextUp.eps}</span>}
+                  {nextUp.time && <span style={{ fontSize: 8, color: '#9ca3af', background: '#ffffff08', padding: '0px 4px', borderRadius: 2 }}>{nextUp.time}</span>}
+                  <span style={{ fontSize: 10, color: '#a1a1aa' }}>{nextUp.d} · <span style={{ color: '#a78bfa', fontWeight: 700 }}>{nextUp.days}d</span></span>
                   <span style={{ fontSize: 8, fontWeight: 700, color: '#a78bfa', background: '#a78bfa18', padding: '1px 5px', borderRadius: 2, border: '1px solid #a78bfa30' }}>NEXT UP</span>
                 </div>
               </div>
@@ -300,19 +300,19 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
             {restEarn.map((e, i) => (
               <div key={i} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '3px 8px', borderBottom: i < restEarn.length - 1 ? '1px solid #ffffff05' : 'none',
+                padding: '5px 10px', borderBottom: i < restEarn.length - 1 ? '1px solid #ffffff05' : 'none',
               }}
                 onMouseEnter={ev => ev.currentTarget.style.background = '#ffffff04'}
                 onMouseLeave={ev => ev.currentTarget.style.background = 'transparent'}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 10 }}>{e.e}</span>
-                  <span style={{ fontSize: 9, fontWeight: 700, color: '#d4d4d8' }}>{e.t}</span>
-                  <span style={{ fontSize: 9, color: '#a1a1aa' }}>{e.n}</span>
+                  <span style={{ fontSize: 12 }}>{e.e}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#d4d4d8' }}>{e.t}</span>
+                  <span style={{ fontSize: 11, color: '#a1a1aa' }}>{e.n}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  {e.eps != null && <span style={{ fontSize: 8, color: '#9ca3af' }}>EPS est: ${e.eps}</span>}
-                  {e.time && <span style={{ fontSize: 7, color: '#9ca3af', background: '#ffffff08', padding: '0px 4px', borderRadius: 2 }}>{e.time}</span>}
-                  <span style={{ fontSize: 8, color: '#9ca3af' }}>{e.d} · {e.days}d</span>
+                  {e.eps != null && <span style={{ fontSize: 10, color: '#9ca3af' }}>EPS est: ${e.eps}</span>}
+                  {e.time && <span style={{ fontSize: 8, color: '#9ca3af', background: '#ffffff08', padding: '0px 4px', borderRadius: 2 }}>{e.time}</span>}
+                  <span style={{ fontSize: 10, color: '#9ca3af' }}>{e.d} · {e.days}d</span>
                 </div>
               </div>
             ))}

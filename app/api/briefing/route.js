@@ -184,6 +184,7 @@ async function getEarnings() {
         const next = data
           .filter(e => e.date && new Date(e.date) >= today)
           .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+        if (next) console.log(`Earnings ${item.ticker}: date=${next.date} time=${next.time} eps=${next.epsEstimated} keys=${Object.keys(next).join(',')}`);
         return {
           ...item,
           date: next?.date || null,

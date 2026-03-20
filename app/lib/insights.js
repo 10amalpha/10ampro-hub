@@ -4,7 +4,6 @@
 // Also used by /api/insights for external access
 // ============================================================
 
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
 
 // ─── Fetch Substack RSS via rss2json ────────────────────────
@@ -90,6 +89,7 @@ export const FALLBACK_INSIGHTS = [
 
 // ─── Generate insights via Anthropic ────────────────────────
 export async function generateInsights(articles, market) {
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
   if (!ANTHROPIC_API_KEY) {
     console.error('No ANTHROPIC_API_KEY');
     return null;

@@ -79,8 +79,16 @@ XRP: ripple, JLP: jupiter-perpetuals-liquidity-provider-token
 
 **Features:** 7→3 col responsive, green/red bg by magnitude, ALL/STK/CRY filters, 💬 comments (hardcoded), movers line.
 
-### 5. INFO DIET + EARNINGS RADAR 🔶 LAYOUT DONE — DATA MIXED
-**Info Diet:** Hardcoded 5 placeholder articles. TODO: wire to data source.
+### 5. INFO DIET + EARNINGS RADAR
+**Info Diet:** ✅ LIVE from Supabase `feed_items` table (same source as info-diet.vercel.app).
+- Fetches last 5 items via Supabase REST API, 5 min ISR
+- Source name auto-extracted from URL domain
+- Abbreviation auto-generated for badge
+- "ago" calculated from timestamp `id`
+- Fields used: `id`, `take` (title), `content` (URL), `category` (tag), `type`
+- No `who` field in Supabase — author line removed from hub display
+- Supabase anon key shared with info-diet app
+
 **Earnings Radar:** ✅ LIVE from Finnhub. NEXT UP badge + days countdown.
 
 ### 6. EDITORIAL INSIGHTS 🔶 LAYOUT DONE — DATA HARDCODED

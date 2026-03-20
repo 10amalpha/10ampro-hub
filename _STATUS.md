@@ -43,14 +43,20 @@
 **Signals:** RISK ON/MIXED/RISK OFF + EXPANDING/NEUTRAL/TIGHTENING
 **Layout:** MKT=6col grid, LIQ=5col grid, signal boxes 120px, labels 20px, aligned.
 
-### 3. CALENDAR ✅ COMPLETE — LIVE DATA (FMP)
+### 3. CALENDAR ✅ COMPLETE — LIVE DATA (FMP) + SMART FILTER
 - **Source:** Financial Modeling Prep (FMP) stable endpoint `/stable/economic-calendar`
 - **Refresh:** Every 1 hour (FMP updates every 15 min on their side)
 - HOY split into high-impact (blue times, red dots, blue bg) + low-impact (muted, below separator)
-- MAÑANA shows all next-day US events with yellow times
+- MAÑANA shows next-day US events with yellow times (filtered)
 - Times converted to ET timezone
 - Estimates + previous values displayed
 - US events only (filtered by `country === 'US'` or `currency === 'USD'`)
+- **Smart filtering (Mar 20):** 3-tier relevance system in `page.jsx`
+  - **Blocked:** CFTC speculative positions, Bill/Bond/Note/TIPS/FRN Auctions
+  - **Tier 1 (always show):** Fed/FOMC, NFP, Jobless Claims, CPI/PPI/PCE, GDP, Retail Sales, ISM, Consumer Confidence, Michigan, Home Sales, Balance of Trade, Powell
+  - **Tier 2 (context):** Mortgage Rates, Wholesale, EIA, Housing Starts, Building Permits, Durable Goods, Industrial Production, Fed Balance Sheet
+  - **HOY minimum: 5 events guaranteed** — if tiers 1+2 < 5, pulls from remaining non-blocked events
+  - **MAÑANA: no minimum** — just removes blocked noise
 
 ### 4. WATCHLIST ✅ COMPLETE — LIVE DATA (30 tickers)
 **Stocks (15) — Yahoo Finance, 5 min refresh:**

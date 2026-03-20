@@ -22,6 +22,7 @@
 |---|---|---|
 | `FRED_API_KEY` | ✅ Set | NET LIQ, US M2, CN M2 |
 | `FMP_API_KEY` | ✅ Set (paid plan, annual) | Economic calendar + Earnings Radar |
+| `ANTHROPIC_API_KEY` | ✅ Set | AI Editorial Insights generation |
 | `FINNHUB_API_KEY` | ⚠️ No longer needed | Can be removed from Vercel |
 
 ## Section Status
@@ -102,8 +103,14 @@ XRP: ripple, JLP: jupiter-perpetuals-liquidity-provider-token
 - Finnhub dependency fully removed (dead code cleaned from page.jsx + route.js)
 - **Debug log active:** `Earnings ${ticker}: date=... time=... eps=... keys=...` — remove once AMC/BMO confirmed working
 
-### 6. EDITORIAL INSIGHTS 🔶 LAYOUT DONE — DATA HARDCODED
-6 mini-explainers, colored tags, Substack links. TODO: CMS.
+### 6. EDITORIAL INSIGHTS ✅ COMPLETE — AI-GENERATED (Anthropic API)
+- **Source:** `/api/insights` route calls Anthropic Claude Sonnet with market data + RSS feed
+- **Flow:** Fetch 10am.pro RSS (via rss2json) + Yahoo/CoinGecko market snapshot → build prompt → Claude generates 6 insights
+- **Voice:** 10AMPRO / Hernán / Búnker tone — direct, opinionated, never generic
+- **Substack links:** At least 2 of 6 insights link to real articles from RSS catalog
+- **Cache:** ISR 8 hours (~3 calls/day, ~$0.04/day, ~$1.20/month)
+- **Fallback:** Static insights array if API key missing or generation fails
+- **Env var:** `ANTHROPIC_API_KEY` (Vercel, All Environments)
 
 ### 7. FOOTER ✅ COMPLETE
 
@@ -123,6 +130,7 @@ XRP: ripple, JLP: jupiter-perpetuals-liquidity-provider-token
 | Watchlist crypto (15) | CoinGecko | 2 min | 24/7 |
 | Earnings (13 tickers) | FMP `/stable/earnings` per-ticker | 6 hours | As companies announce |
 | Info Diet (5 items) | Supabase `feed_items` | 5 min | When items added via info-diet app |
+| Editorial Insights (6) | Anthropic API + RSS + Yahoo + CoinGecko | 8 hours | ~3x daily |
 
 ## Key Lessons Learned
 
@@ -142,8 +150,8 @@ XRP: ripple, JLP: jupiter-perpetuals-liquidity-provider-token
 ## Next Steps (priority order)
 
 1. **Watchlist comments:** Move from hardcoded to Supabase or editable JSON
-2. **Editorial Insights:** Decide CMS approach (Supabase table vs Google Doc)
-3. **Remove `FINNHUB_API_KEY`** from Vercel env vars (no longer used)
-4. **Remove earnings debug log** once AMC/BMO confirmed working
-5. **Delete `/api/debug`** route once stable
-6. **Mobile testing** — verify 700px breakpoint on all sections
+2. **Remove `FINNHUB_API_KEY`** from Vercel env vars (no longer used)
+3. **Remove earnings debug log** once AMC/BMO confirmed working
+4. **Delete `/api/debug`** route once stable
+5. **Mobile testing** — verify 700px breakpoint on all sections
+6. **Insights tuning** — monitor AI output quality, adjust prompt/tone as needed

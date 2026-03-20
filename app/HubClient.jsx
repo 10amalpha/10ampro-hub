@@ -290,6 +290,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
                   <span style={{ fontSize: 9, color: '#a1a1aa' }}>{nextUp.n}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  {nextUp.eps != null && <span style={{ fontSize: 8, color: '#a78bfa', fontWeight: 600 }}>EPS est: ${nextUp.eps}</span>}
                   <span style={{ fontSize: 9, color: '#a1a1aa' }}>{nextUp.d} · <span style={{ color: '#a78bfa', fontWeight: 700 }}>{nextUp.days}d</span></span>
                   <span style={{ fontSize: 6, fontWeight: 700, color: '#a78bfa', background: '#a78bfa18', padding: '1px 5px', borderRadius: 2, border: '1px solid #a78bfa30' }}>NEXT UP</span>
                 </div>
@@ -307,7 +308,10 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
                   <span style={{ fontSize: 9, fontWeight: 700, color: '#d4d4d8' }}>{e.t}</span>
                   <span style={{ fontSize: 9, color: '#a1a1aa' }}>{e.n}</span>
                 </div>
-                <span style={{ fontSize: 8, color: '#71717a' }}>{e.d} · {e.days}d</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  {e.eps != null && <span style={{ fontSize: 8, color: '#71717a' }}>EPS est: ${e.eps}</span>}
+                  <span style={{ fontSize: 8, color: '#71717a' }}>{e.d} · {e.days}d</span>
+                </div>
               </div>
             ))}
             {earnings.length === 0 && (

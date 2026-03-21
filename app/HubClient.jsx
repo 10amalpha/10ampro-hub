@@ -121,14 +121,54 @@ function MC({ m, bd = true, mb, span = 1 }) {
   );
 }
 
-export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, watchlist, earnings, insights, diet }) {
+export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalInit, calToday, calTomorrow, watchlist: wlInit, earnings, insights, diet }) {
   const [fl, sF] = useState('A');
   const [exp, sE] = useState(null);
   const [mb, sM] = useState(false);
+  const [mkt, setMkt] = useState(mktInit);
+  const [liq, setLiq] = useState(liqInit);
+  const [signal, setSignal] = useState(signalInit);
+  const [watchlist, setWatchlist] = useState(wlInit);
+  const [lastRefresh, setLastRefresh] = useState(null);
   const refSignal = useRef(null);
   const refWatch = useRef(null);
   const refDiet = useRef(null);
   const refInsights = useRef(null);
+
+  // Client-side price refresh on mount + every 5 min
+  const refreshPrices = useCallback(async () => {
+    try {
+      const res = await fetch('/api/prices');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.mkt) setMkt(data.mkt);
+      // Only update liq fields that have real values (yields, MOVE) — keep FRED data from ISR
+      if (data.liq) {
+        setLiq(prev => prev.map((item, i) => {
+          const fresh = data.liq[i];
+          // Keep ISR value for NET LIQ, US M2, CN M2 (first 3 items) since /api/prices doesn't fetch FRED
+          if (i < 3 && fresh.v === '—') return item;
+          return fresh;
+        }));
+      }
+      if (data.signal) setSignal(data.signal);
+      if (data.watchlist) {
+        // Merge: keep comments from initial data, update prices
+        setWatchlist(prev => data.watchlist.map(w => {
+          const orig = prev.find(o => o.t === w.t);
+          return { ...w, cm: orig?.cm || null };
+        }));
+      }
+      setLastRefresh(new Date());
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    // Refresh immediately on mount (gets fresh prices over ISR cache)
+    refreshPrices();
+    const interval = setInterval(refreshPrices, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [refreshPrices]);
 
   useEffect(() => {
     const c = () => sM(window.innerWidth < 700);
@@ -173,7 +213,9 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
             <div style={{ fontSize: 10, color: '#9ca3af' }}>
               {now.toLocaleString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })} COT
             </div>
-            <div style={{ fontSize: 9, color: '#9ca3af' }}>ISR 5min</div>
+            <div style={{ fontSize: 9, color: lastRefresh ? '#4ade80' : '#9ca3af' }}>
+              {lastRefresh ? `● LIVE ${lastRefresh.toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit' })}` : 'ISR 5min'}
+            </div>
           </div>
         </header>
 

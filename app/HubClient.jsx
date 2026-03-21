@@ -365,6 +365,45 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
           </a>
         </div>
 
+        {/* ═══ SHARE BAR ═══ */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, padding: '8px 0', margin: '4px 0' }}>
+          <button
+            onClick={() => {
+              const url = window.location.origin + '/api/story';
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = '10ampro-briefing.png';
+              link.click();
+            }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '6px 14px', border: '1px solid #D4A84340', borderRadius: 6,
+              background: '#D4A84310', color: '#D4A843', fontSize: 10, fontWeight: 600,
+              fontFamily: 'inherit', cursor: 'pointer', letterSpacing: '0.3px',
+            }}
+          >
+            📸 Compartir mi briefing
+          </button>
+          <button
+            onClick={() => {
+              const text = '📡 Mi briefing de hoy — 10AMPRO\n\n' + window.location.href;
+              if (navigator.share) {
+                navigator.share({ title: '10AMPRO Briefing', text, url: window.location.href }).catch(() => {});
+              } else {
+                navigator.clipboard.writeText(text).then(() => alert('Link copiado!')).catch(() => {});
+              }
+            }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '6px 14px', border: '1px solid #22C55E40', borderRadius: 6,
+              background: '#22C55E10', color: '#22C55E', fontSize: 10, fontWeight: 600,
+              fontFamily: 'inherit', cursor: 'pointer', letterSpacing: '0.3px',
+            }}
+          >
+            🔗 Compartir link
+          </button>
+        </div>
+
         {/* ═══ FOOTER ═══ */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 12, padding: '4px 0', borderTop: '1px solid #18181b' }}>
           <a href="https://10am.pro" target="_blank" rel="noopener" style={{ fontSize: 9, color: '#9ca3af', textDecoration: 'none' }}>Substack</a>

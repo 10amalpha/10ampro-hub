@@ -10,13 +10,14 @@
 
 - **Framework:** Next.js 14.0.4 (App Router)
 - **page.jsx** — Server component. Phase 1: parallel fetch (Yahoo macro+stocks, CoinGecko, FRED, FMP calendar+earnings, Supabase). Phase 2: builds market snapshot from Phase 1 data, passes to `getInsights()`. `force-dynamic` with ISR revalidate 300s.
-- **HubClient.jsx** — Client component (`'use client'`), receives all data as props, handles interactivity (watchlist filters, comment expand/collapse, responsive breakpoints).
+- **HubClient.jsx** — Client component (`'use client'`), receives all data as props, handles interactivity (watchlist filters, comment expand/collapse, responsive breakpoints, per-section share via html2canvas).
 - **app/lib/insights.js** — Shared module for AI insight generation. Called directly by `page.jsx` (NOT via HTTP self-fetch). Has 8h in-memory cache. Accepts pre-fetched market data as parameter to avoid redundant Yahoo/CoinGecko calls.
 - **app/lib/briefing.js** — Shared module for FRED + FMP data. Called directly by `page.jsx` (NOT via HTTP self-fetch). Contains `getFedData()`, `getEconomicCalendar()`, `getEarnings()`, `getBriefingData()`.
-- **API Routes** (all `force-dynamic`):
-  - `/api/briefing` — Slim wrapper around `lib/briefing.js` for external access only (17 lines). Page does NOT call this.
+- **API Routes:**
+  - `/api/briefing` — Slim wrapper around `lib/briefing.js` for external access only (17 lines)
   - `/api/insights` — External access to AI-generated insights (reuses `lib/insights.js`)
-  - `/api/og` — Dynamic OG image generation (Node.js runtime, `ImageResponse`). Fetches Yahoo+CoinGecko, renders 1200×630 PNG with market data + signal.
+  - `/api/og` — Dynamic OG image 1200×630 (Node.js runtime). Live market data for social previews.
+  - `/api/story` — Dynamic story image 1080×1920 (Node.js runtime). Vertical format for IG stories / WhatsApp status.
 
 ## Env Variables (Vercel)
 
@@ -29,79 +30,77 @@
 
 ## Section Status
 
-### 1. HEADER ✅ COMPLETE
-- Logo + 10AMPRO brand + "BRIEFING DIARIO" subtitle + date/COT + ISR 5min
-- **Do NOT change**
+### 1. HEADER ✅ COMPLETE — Do NOT change
 
 ### 2. SIGNAL + MACRO BAR ✅ COMPLETE — LIVE DATA
-**MKT Row (6 cells) — Yahoo Finance, 5 min refresh:**
-- S&P 500, VIX (red >25), DXY, WTI, USD/JPY, USD/COP
+**MKT Row (6 cells):** S&P 500, VIX, DXY, WTI, USD/JPY, USD/COP — Yahoo, 5 min
+**LIQ Row (6 cells):** NET LIQ (FRED), US M2 (FRED), CN M2 (FRED), US 10Y (Yahoo), US 2Y (Yahoo), **MOVE Index** (Yahoo `^MOVE`, red >100)
 
-**LIQ Row (6 cells):**
-- NET LIQ — FRED (WALCL−TGA−RRP), weekly Wed
-- US M2 — FRED M2SL, monthly
-- CN M2 — FRED MYAGM2CNM189N (yuan ÷ 1e12), monthly
-- US 10Y, US 2Y — Yahoo, 5 min
-- **MOVE Index** — Yahoo `^MOVE`, 5 min. Color: red >100 (bond stress), yellow ≤100
+### 3. CALENDAR ✅ COMPLETE — FMP + Smart 3-tier filter
 
-**Signals:** RISK ON/MIXED/RISK OFF + EXPANDING/NEUTRAL/TIGHTENING
-**Layout:** MKT=6col grid, LIQ=6col grid
-
-### 3. CALENDAR ✅ COMPLETE — LIVE DATA (FMP) + SMART FILTER
-- **Source:** FMP `/stable/economic-calendar`
-- HOY split into high-impact + low-impact. MAÑANA next-day US events.
-- 3-tier relevance system. HOY minimum 5 events guaranteed.
-
-### 4. WATCHLIST ✅ COMPLETE — LIVE DATA (30 tickers)
-**Stocks (15) — Yahoo, 5 min:** PLTR, HOOD, TSLA, HIMS, QSI, DUOL, STKE, MP, OKLO, AMD, NVDA, MSTR, BE, IBIT, STRC
-**Crypto (15) — CoinGecko, 2 min:** BTC, SOL, SUI, ETH, JUP, NOS, JTO, SHDW, 2Z, MET, HNT, ZEC, JITOSOL, XRP, JLP
-**2Z** via Solana contract: `J6pQQ3FAcJQeWPPGppWRb4nM8jU3wLyYbRrLh7feMfvd`
+### 4. WATCHLIST ✅ COMPLETE — 30 tickers (15 stocks Yahoo + 15 crypto CoinGecko)
 
 ### 5. INFO DIET + EARNINGS RADAR ✅ BOTH LIVE
-**Info Diet:** 7 items from Supabase `feed_items`, 5 min ISR. Category emoji badges.
-**Earnings Radar:** 13 tickers from FMP per-ticker, 6h ISR. EPS estimates, AMC/BMO badges, NEXT UP.
+- Info Diet: 7 items from Supabase `feed_items`
+- Earnings: 13 tickers from FMP per-ticker
 
-### 6. EDITORIAL INSIGHTS ✅ COMPLETE — AI-GENERATED
-- **Module:** `app/lib/insights.js`
-- **Flow:** RSS (rss2json.com) + pre-fetched market data (from page.jsx) → Anthropic Claude Sonnet → 6 insights
-- **Cache:** 8h in-memory. ~3 calls/day. ~$1.80/month estimated.
-- **Market data:** Passed from page.jsx (no redundant fetches). Includes S&P, VIX, DXY, WTI, US10Y, COP, BTC, SOL, MOVE.
-- **MOVE framework in prompt:** <80 calm, 80-100 tension, >100 bond stress, >120 liquidity crisis. MOVE >100 + VIX >25 = double risk signal.
-- **CRITICAL:** `process.env.ANTHROPIC_API_KEY` must be read inside the function, NOT at module scope.
-- **CRITICAL:** `page.jsx` calls `getInsights()` directly via import — NOT via HTTP self-fetch.
+### 6. EDITORIAL INSIGHTS ✅ AI-GENERATED
+- Anthropic Claude Sonnet, 8h in-memory cache, ~$1.80/month
+- Market data passed from page.jsx (includes MOVE)
+- MOVE framework in prompt: <80 calm, 80-100 tension, >100 bond stress, >120 crisis
 
-### 7. OG IMAGE ✅ COMPLETE — DYNAMIC SOCIAL CARD
-- **Route:** `/api/og` (Node.js runtime, `force-dynamic`)
-- **Output:** 1200×630 PNG with live market data
-- **Content:** 10AMPRO branding + RISK signal + 6 tickers (S&P, VIX, BTC, SOL, DXY, COP) with prices and % changes
-- **Dark theme** matching hub aesthetic
-- **Meta tags:** `og:image` + `twitter:card=summary_large_image` in layout.js
-- **Usage:** WhatsApp, X, Slack, iMessage — any platform that reads OG tags
-- **CRITICAL:** Must use Node.js runtime (NOT Edge). Edge runtime fails silently with external fetches.
+### 7. SUBSCRIBE CTA ✅ NEW
+- Banner between insights and quick access cards
+- Links to `10am.pro/subscribe` with UTM tracking
 
-### 8. PWA ✅ COMPLETE
-- `public/manifest.json`, apple-touch-icon, PWA icons. `display: standalone`.
+### 8. QUICK ACCESS CARDS ✅ NEW
+- 📊 FORECAST 2026 → forecast2026.vercel.app (portfolio tracker)
+- 🗓️ EVENTOS 10AMPRO → Luma calendar (Ep200, meetups)
 
-### 9. FOOTER ✅ COMPLETE
-- Substack + @holdmybirra (Cerebro removed)
+### 9. PER-SECTION SHARE BUTTONS ✅ NEW
+- 📤 SHARE button on: Watchlist, Info Diet, Insights
+- Client-side screenshot via `html2canvas` (dynamic import, ~40kb on first use)
+- Each screenshot adds branded footer: `10am.pro | @10ampro`
+- Mobile: native Web Share API (share image to WhatsApp/IG directly)
+- Desktop: downloads PNG
+
+### 10. SHARE BAR ✅
+- 📸 Compartir mi briefing (downloads story PNG from `/api/story`)
+- 🔗 Compartir link (Web Share API / clipboard)
+
+### 11. OG IMAGE + STORY IMAGE ✅ NEW
+- `/api/og` — 1200×630 for social link previews (WhatsApp, X, Slack)
+- `/api/story` — 1080×1920 vertical for IG stories / WhatsApp status
+- Both: Node.js runtime (NOT Edge — Edge fails silently with Yahoo fetches)
+- Both: live market data, 10AMPRO branding, signal badge
+- Meta tags: `og:image` + `twitter:card=summary_large_image` in layout.js
+
+### 12. UTM TRACKING ✅ NEW
+All hub links to 10am.pro tagged for Substack CSV tracking:
+
+| UTM params | Link |
+|---|---|
+| `utm_source=hub&utm_medium=insights&utm_campaign=article-link` | Insight article links (AI-generated) |
+| `utm_source=hub&utm_medium=insights&utm_campaign=deep-dive-cta` | "Más análisis y deep dives" bottom CTA |
+| `utm_source=hub&utm_medium=cta&utm_campaign=subscribe` | Subscribe CTA banner |
+| `utm_source=hub&utm_medium=footer&utm_campaign=nav` | Footer Substack link |
+| `utm_source=hub&utm_medium=card&utm_campaign=forecast` | Forecast 2026 card |
+| `utm_source=hub&utm_medium=card&utm_campaign=eventos` | Luma events card |
+
+UTMs added at render time in HubClient.jsx so both AI-generated and fallback insight links get tagged.
+
+### 13. PWA ✅ COMPLETE
+### 14. FOOTER ✅ Substack + @holdmybirra
 
 ---
 
-## Performance Architecture (Session 5)
+## Performance Architecture
 
-### Before (35 HTTP calls per render)
-- page.jsx → self-fetch to /api/briefing (deadlock risk)
-- /api/briefing internally fetched Yahoo + CoinGecko (redundant)
-- lib/insights.js fetched Yahoo + CoinGecko independently (redundant)
-- Yahoo crumb auth: 2 calls per fetchYahoo() × 2 = 4 extra calls
-- /api/watchlist, /api/debug = dead code
-
-### After (27 HTTP calls per render)
-- **Direct imports:** page.jsx imports `lib/briefing.js` and `lib/insights.js` directly (no self-fetch)
-- **No redundant fetches:** Market data fetched once by page.jsx, passed to `getInsights()` as parameter
-- **Yahoo crumb cached:** 30min in-memory TTL. Second `fetchYahoo()` reuses crumb instantly.
-- **Dead code removed:** /api/watchlist + /api/debug deleted. /api/briefing slimmed to 17-line wrapper.
-- **348 lines of code deleted**
+### HTTP Calls per render: 27 (down from 35)
+- **Eliminated:** self-fetch to /api/briefing, redundant Yahoo+CoinGecko in briefing and insights
+- **Yahoo crumb:** cached 30min in-memory
+- **AI Insights:** cached 8h in-memory (~3 calls/day, ~$1.80/month)
+- **Dead code removed:** /api/watchlist, /api/debug (348 lines deleted)
 
 ### Cache Architecture
 | Data | Cache | TTL |
@@ -109,53 +108,34 @@
 | Yahoo crumb | In-memory | 30 min |
 | AI Insights | In-memory | 8 hours |
 | ISR page | Next.js | 5 min |
-| FRED data | Next.js fetch cache | 1 hour |
-| FMP calendar | Next.js fetch cache | 1 hour |
-| FMP earnings | Next.js fetch cache | 6 hours |
-| CoinGecko | Next.js fetch cache | 2 min |
+| FRED data | Next.js fetch | 1 hour |
+| FMP calendar | Next.js fetch | 1 hour |
+| FMP earnings | Next.js fetch | 6 hours |
+| CoinGecko | Next.js fetch | 2 min |
 
-## Data Refresh Rates
-
-| Data | Source | Refresh |
-|---|---|---|
-| MKT row (S&P, VIX, DXY, WTI, JPY, COP) | Yahoo | 5 min |
-| LIQ row (US 10Y, US 2Y, MOVE) | Yahoo | 5 min |
-| NET LIQ, US M2, CN M2 | FRED | 1 hour |
-| Calendar | FMP | 1 hour |
-| Watchlist stocks (15) | Yahoo | 5 min |
-| Watchlist crypto (15) | CoinGecko | 2 min |
-| Earnings (13 tickers) | FMP per-ticker | 6 hours |
-| Info Diet (7 items) | Supabase | 5 min |
-| Editorial Insights (6) | Anthropic + RSS | 8h cache |
-| OG Image | Yahoo + CoinGecko | On-demand per request |
+---
 
 ## Key Lessons Learned
 
-1. **Env vars are case-sensitive** on Vercel.
-2. **Static pages can't read env vars at runtime.** Use `force-dynamic`.
-3. **Yahoo v7 requires crumb auth.** `getYahooCrumb()` with cookie→crumb flow.
-4. **FRED units:** WALCL/WDTGAL/RRPONTSYD = millions. M2SL = billions. CN M2 = yuan (÷1e12).
-5. **Don't change the header.**
-6. **FMP:** Use `/stable/` prefix for new accounts.
-7. **2Z token** uses CoinGecko contract address endpoint.
-8. **Supabase anon key** — one-char typo breaks silently.
-9. **FMP AMC/BMO field** — often null 30+ days out.
-10. **Never self-fetch from server components.** Use direct import of shared module.
-11. **Substack RSS** at `{domain}/feed`, use rss2json.com as proxy.
-12. **Read env vars inside functions, not module scope.** Module-scope reads can be undefined during SSR import.
-13. **ISR revalidate ≠ API cache.** Without internal cache, expensive API calls fire on every ISR render. Always add in-memory cache for Anthropic/expensive APIs.
-14. **Check Anthropic credits before debugging code.** 402 = credits, 401 = key, 429 = rate limit.
-15. **Gray readability:** Use `#9ca3af` minimum for secondary text on dark bg.
-16. **Yahoo crumb is reusable.** Cache in memory (30min TTL) to avoid 2 extra HTTP calls per fetchYahoo().
-17. **Pass data downstream instead of re-fetching.** page.jsx already has market data — pass it to getInsights() instead of letting it fetch again.
-18. **OG Image: Node.js runtime, not Edge.** Edge runtime fails silently with Yahoo Finance fetches. Node.js works reliably.
-19. **OG Image: no .map() in ImageResponse.** Satori (the renderer) has JSX limitations. Use explicit elements instead of dynamic lists.
-20. **MOVE Index** (^MOVE on Yahoo) is the VIX of bonds. >100 = bond stress. MOVE >100 + VIX >25 = double signal.
+1. **Never self-fetch from server components.** Use direct import of shared modules.
+2. **Read env vars inside functions, not module scope.** Module-scope reads can be undefined during SSR import on Vercel.
+3. **ISR revalidate ≠ API cache.** Without internal cache, Anthropic was called ~288 times/day ($5.76/day). Always add in-memory cache for expensive APIs.
+4. **Check Anthropic credits before debugging code.** Error logging: 402=credits, 401=key, 429=rate limit.
+5. **Yahoo crumb is reusable.** Cache 30min to avoid 2 extra HTTP calls per fetchYahoo().
+6. **Pass data downstream instead of re-fetching.** page.jsx passes market data to getInsights().
+7. **OG Image: Node.js runtime, not Edge.** Edge fails silently with Yahoo fetches.
+8. **OG Image: no .map() in ImageResponse.** Satori renderer has JSX limitations.
+9. **MOVE Index** (`^MOVE` on Yahoo) is the VIX of bonds. >100 = bond stress. MOVE+VIX double signal.
+10. **UTMs for Substack tracking.** Substack CSV reports referrer URLs including query params. Structure: `utm_source=hub&utm_medium={section}&utm_campaign={action}`.
+11. **html2canvas for client-side screenshots.** Dynamic import to avoid bundle bloat. Branded footer injected via DOM clone.
+12. **Vercel Hobby vs Pro:** Same speed, same CDN. Pro gives 10x limits + commercial use license. Not needed yet at current traffic (~39 visits/2months). Upgrade when >500 visits/day or when analytics needed.
 
-## Next Steps
+## Next Steps (priority order)
 
-1. **Watchlist comments:** Move from hardcoded to Supabase or editable JSON
-2. **Remove `FINNHUB_API_KEY`** from Vercel env vars
-3. **Monitor Anthropic costs** — should be ~$1.80/month with 8h cache
-4. **Mobile 700px breakpoint** — verify LIQ row 6-col renders correctly on mobile
-5. **OG Image refinement** — consider adding WTI or MOVE to the card
+1. **Facebook Pixel** — Install pixel `1538054851084565` on hub for retargeting audience
+2. **Vercel Web Analytics** — Free on Pro, manual setup on Hobby. Need traffic data.
+3. **Mobile responsive checkup** — LIQ row 6 cols + MOVE may break on mobile
+4. **"Qué Cambió" (approach C)** — Vercel cron at 10am COT saves snapshot to Supabase. Hub shows deltas since morning.
+5. **Push notifications** — PWA push or WhatsApp bot. Daily 10am trigger.
+6. **Watchlist comments** — Move from hardcoded to Supabase
+7. **Remove `FINNHUB_API_KEY`** from Vercel env vars

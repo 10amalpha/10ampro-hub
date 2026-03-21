@@ -11,8 +11,16 @@ import HubClient from './HubClient';
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-// ─── Yahoo Finance (crumb auth) ─────────────────────────────
+// ─── Yahoo Finance (crumb auth with in-memory cache) ────────
+let _yahooCrumb = null;
+let _yahooCrumbAt = 0;
+const CRUMB_TTL = 30 * 60 * 1000; // 30 min (crumbs last ~1h)
+
 async function getYahooCrumb() {
+  // Return cached crumb if fresh
+  const now = Date.now();
+  if (_yahooCrumb && (now - _yahooCrumbAt) < CRUMB_TTL) return _yahooCrumb;
+
   try {
     // Step 1: hit fc.yahoo.com to get A3 cookie
     const cookieRes = await fetch('https://fc.yahoo.com', {
@@ -29,8 +37,11 @@ async function getYahooCrumb() {
     });
     if (!crumbRes.ok) return null;
     const crumb = await crumbRes.text();
-    if (!crumb || crumb.includes('<')) return null; // HTML error page
-    return { cookie: cookieStr, crumb };
+    if (!crumb || crumb.includes('<')) return null;
+
+    _yahooCrumb = { cookie: cookieStr, crumb };
+    _yahooCrumbAt = Date.now();
+    return _yahooCrumb;
   } catch (e) {
     console.error('Yahoo crumb error:', e.message);
     return null;

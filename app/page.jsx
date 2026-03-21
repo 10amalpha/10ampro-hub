@@ -262,15 +262,28 @@ const COMMENTS = {
 
 // ─── MAIN PAGE ──────────────────────────────────────────────
 export default async function HubPage() {
-  // Fetch all data in parallel — briefing API handles FRED + Finnhub internally
-  const [macroQuotes, crypto, briefing, stockQuotes, dietData, insightsData] = await Promise.all([
+  // Phase 1: Fetch all base data in parallel
+  const [macroQuotes, crypto, briefing, stockQuotes, dietData] = await Promise.all([
     fetchYahoo(['^GSPC', '^VIX', 'DX-Y.NYB', 'CL=F', 'JPY=X', 'COP=X', '^TNX', '^IRX']),
     fetchCrypto(),
     fetchBriefing(),
     fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC']),
     fetchInfoDiet(),
-    getInsights(),
   ]);
+
+  // Phase 2: Build market snapshot from data we already have, pass to insights (avoids redundant Yahoo+CoinGecko fetches)
+  const q = (sym) => macroQuotes.find(x => x.symbol === sym);
+  const insightMarket = {
+    sp500: { price: q('^GSPC')?.regularMarketPrice, change: q('^GSPC')?.regularMarketChangePercent },
+    vix: { price: q('^VIX')?.regularMarketPrice, change: q('^VIX')?.regularMarketChangePercent },
+    dxy: { price: q('DX-Y.NYB')?.regularMarketPrice, change: q('DX-Y.NYB')?.regularMarketChangePercent },
+    wti: { price: q('CL=F')?.regularMarketPrice, change: q('CL=F')?.regularMarketChangePercent },
+    us10y: { price: q('^TNX')?.regularMarketPrice },
+    usdcop: { price: q('COP=X')?.regularMarketPrice, change: q('COP=X')?.regularMarketChangePercent },
+    btc: crypto.bitcoin ? { price: crypto.bitcoin.usd, change: crypto.bitcoin.usd_24h_change } : null,
+    sol: crypto.solana ? { price: crypto.solana.usd, change: crypto.solana.usd_24h_change } : null,
+  };
+  const insightsData = await getInsights(insightMarket);
 
   // ─── Parse earnings from briefing ───
   const today = new Date();
@@ -289,10 +302,7 @@ export default async function HubPage() {
     .sort((a, b) => a.days - b.days);
   if (earnings.length > 0) earnings[0].next = true;
 
-  // ─── Parse macro quotes ───
-  const q = (sym) => macroQuotes.find(x => x.symbol === sym);
-
-  // ─── MKT row ───
+  // ─── MKT row (q already defined above) ───
   const mktRow = [
     { l: 'S&P 500', v: fmt(q('^GSPC')?.regularMarketPrice), c: q('^GSPC')?.regularMarketChangePercent ?? null, cl: '#60a5fa' },
     { l: 'VIX', v: fmt(q('^VIX')?.regularMarketPrice, 1), c: q('^VIX')?.regularMarketChangePercent ?? null, cl: (q('^VIX')?.regularMarketPrice || 0) > 25 ? '#f87171' : '#fbbf24' },

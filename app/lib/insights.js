@@ -204,7 +204,8 @@ let _cachedAt = 0;
 const CACHE_TTL = 8 * 60 * 60 * 1000; // 8 hours in ms
 
 // ─── Main entry point ───────────────────────────────────────
-export async function getInsights() {
+// marketData is optional — if provided (from page.jsx), skips redundant Yahoo/CoinGecko fetches
+export async function getInsights(marketData) {
   // Return cached if fresh
   const now = Date.now();
   if (_cachedInsights && (now - _cachedAt) < CACHE_TTL) {
@@ -213,10 +214,18 @@ export async function getInsights() {
   }
 
   try {
-    const [articles, market] = await Promise.all([
-      fetchSubstackArticles(),
-      fetchMarketSnapshot(),
-    ]);
+    // If marketData provided, only fetch RSS. Otherwise fetch both.
+    let articles, market;
+    if (marketData) {
+      console.log('Insights: using pre-fetched market data, only fetching RSS');
+      articles = await fetchSubstackArticles();
+      market = marketData;
+    } else {
+      [articles, market] = await Promise.all([
+        fetchSubstackArticles(),
+        fetchMarketSnapshot(),
+      ]);
+    }
 
     console.log(`Insights: ${articles.length} RSS articles, ${Object.keys(market).length} market keys — calling Anthropic`);
 

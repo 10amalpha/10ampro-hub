@@ -7,7 +7,6 @@
 export const dynamic = 'force-dynamic';
 export const revalidate = 300; // ISR: regenerate every 5 minutes
 
-import { headers } from 'next/headers';
 import HubClient from './HubClient';
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
@@ -107,17 +106,8 @@ async function fetchCrypto() {
   } catch { return {}; }
 }
 
-// ─── Internal Briefing API (has FRED_API_KEY + FMP_API_KEY) ──
-async function fetchBriefing() {
-  try {
-    const h = headers();
-    const host = h.get('host') || '10ampro-hub.vercel.app';
-    const proto = host.includes('localhost') ? 'http' : 'https';
-    const res = await fetch(`${proto}://${host}/api/briefing`, { next: { revalidate: 300 } });
-    if (!res.ok) { console.error('Briefing API:', res.status); return null; }
-    return await res.json();
-  } catch (e) { console.error('Briefing fetch error:', e.message); return null; }
-}
+// ─── Briefing data (direct import — no self-fetch) ──────────
+import { getBriefingData } from './lib/briefing';
 
 // ─── Signal Calculation ─────────────────────────────────────
 function calcSignals(quotes) {
@@ -266,7 +256,7 @@ export default async function HubPage() {
   const [macroQuotes, crypto, briefing, stockQuotes, dietData] = await Promise.all([
     fetchYahoo(['^GSPC', '^VIX', 'DX-Y.NYB', 'CL=F', 'JPY=X', 'COP=X', '^TNX', '^IRX']),
     fetchCrypto(),
-    fetchBriefing(),
+    getBriefingData(),
     fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC']),
     fetchInfoDiet(),
   ]);

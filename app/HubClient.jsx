@@ -343,7 +343,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
               </div>
               <div style={{ fontSize: 13, color: '#d4d4d8', lineHeight: 1.6, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{ins.text}</div>
               {ins.link && (
-                <a href={ins.link.url} target="_blank" rel="noopener" style={{
+                <a href={`${ins.link.url}${ins.link.url.includes('?') ? '&' : '?'}utm_source=hub&utm_medium=insights&utm_campaign=article-link`} target="_blank" rel="noopener" style={{
                   display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 5,
                   fontSize: 10, color: '#D4A843', textDecoration: 'none', fontWeight: 600,
                 }}
@@ -354,7 +354,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
               )}
             </div>
           ))}
-          <a href="https://10am.substack.com" target="_blank" rel="noopener" style={{
+          <a href="https://10am.substack.com?utm_source=hub&utm_medium=insights&utm_campaign=deep-dive-cta" target="_blank" rel="noopener" style={{
             display: 'block', padding: '5px 10px', fontSize: 10, color: '#D4A843',
             textDecoration: 'none', borderTop: '1px solid #D4A84320', textAlign: 'center',
             background: '#D4A84306', fontWeight: 600,
@@ -365,9 +365,21 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
           </a>
         </div>
 
+        {/* ═══ SUBSCRIBE CTA ═══ */}
+        <a href="https://10am.pro/subscribe?utm_source=hub&utm_medium=cta&utm_campaign=subscribe" target="_blank" rel="noopener" style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          padding: '10px 16px', marginBottom: 6,
+          background: 'linear-gradient(90deg, #22C55E08, #22C55E12, #22C55E08)',
+          border: '1px solid #22C55E25', borderRadius: 6,
+          textDecoration: 'none', cursor: 'pointer',
+        }}>
+          <span style={{ fontSize: 11, color: '#9ca3af', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>Este briefing se construye con nuestros deep dives semanales.</span>
+          <span style={{ fontSize: 11, color: '#22C55E', fontWeight: 700, whiteSpace: 'nowrap' }}>Suscríbete gratis →</span>
+        </a>
+
         {/* ═══ QUICK ACCESS CARDS ═══ */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 6 }}>
-          <a href="https://forecast2026.vercel.app/" target="_blank" rel="noopener" style={{
+          <a href="https://forecast2026.vercel.app/?utm_source=hub&utm_medium=card&utm_campaign=forecast" target="_blank" rel="noopener" style={{
             display: 'flex', flexDirection: 'column', padding: '10px 14px',
             background: 'linear-gradient(135deg, #D4A84308, #D4A84315)',
             border: '1px solid #D4A84330', borderRadius: 6, textDecoration: 'none',
@@ -380,7 +392,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
             <span style={{ fontSize: 11, color: '#d4d4d8', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Tracker del portafolio</span>
             <span style={{ fontSize: 9, color: '#9ca3af', marginTop: 4 }}>Tesis de inversión en tiempo real →</span>
           </a>
-          <a href="https://luma.com/calendar/cal-yWCOIiS6eA71eGD" target="_blank" rel="noopener" style={{
+          <a href="https://luma.com/calendar/cal-yWCOIiS6eA71eGD?utm_source=hub&utm_medium=card&utm_campaign=eventos" target="_blank" rel="noopener" style={{
             display: 'flex', flexDirection: 'column', padding: '10px 14px',
             background: 'linear-gradient(135deg, #22C55E08, #22C55E15)',
             border: '1px solid #22C55E30', borderRadius: 6, textDecoration: 'none',
@@ -436,7 +448,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
 
         {/* ═══ FOOTER ═══ */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 12, padding: '4px 0', borderTop: '1px solid #18181b' }}>
-          <a href="https://10am.pro" target="_blank" rel="noopener" style={{ fontSize: 9, color: '#9ca3af', textDecoration: 'none' }}>Substack</a>
+          <a href="https://10am.pro?utm_source=hub&utm_medium=footer&utm_campaign=nav" target="_blank" rel="noopener" style={{ fontSize: 9, color: '#9ca3af', textDecoration: 'none' }}>Substack</a>
           <a href="https://x.com/holdmybirra" target="_blank" rel="noopener" style={{ fontSize: 9, color: '#22C55E', textDecoration: 'none' }}>@holdmybirra</a>
         </div>
 

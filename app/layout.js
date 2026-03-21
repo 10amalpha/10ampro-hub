@@ -9,6 +9,13 @@ export const metadata = {
     url: 'https://10ampro-hub.vercel.app',
     siteName: '10AMPRO',
     type: 'website',
+    images: [{ url: 'https://10ampro-hub.vercel.app/api/og', width: 1200, height: 630, alt: '10AMPRO Hub — Market Briefing' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '10AMPRO Hub',
+    description: 'Una pestaña. 30 segundos. Sabes dónde estás parado.',
+    images: ['https://10ampro-hub.vercel.app/api/og'],
   },
   robots: { index: true, follow: true },
 };

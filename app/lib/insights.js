@@ -180,7 +180,8 @@ Genera los 6 insights editoriales. Exactamente 2 con link, 4 sin link. Solo JSON
 
     if (!res.ok) {
       const errText = await res.text();
-      console.error('Anthropic API error:', res.status, errText);
+      console.error(`Anthropic API error: HTTP ${res.status} — ${res.status === 402 ? 'INSUFFICIENT CREDITS' : res.status === 401 ? 'INVALID API KEY' : res.status === 429 ? 'RATE LIMITED' : 'UNKNOWN'}`);
+      console.error('Response:', errText.substring(0, 200));
       return null;
     }
 
@@ -197,18 +198,35 @@ Genera los 6 insights editoriales. Exactamente 2 con link, 4 sin link. Solo JSON
   }
 }
 
+// ─── In-memory cache (survives across ISR renders within same serverless instance) ───
+let _cachedInsights = null;
+let _cachedAt = 0;
+const CACHE_TTL = 8 * 60 * 60 * 1000; // 8 hours in ms
+
 // ─── Main entry point ───────────────────────────────────────
 export async function getInsights() {
+  // Return cached if fresh
+  const now = Date.now();
+  if (_cachedInsights && (now - _cachedAt) < CACHE_TTL) {
+    console.log(`Insights: returning cached (age: ${Math.round((now - _cachedAt) / 60000)}min)`);
+    return _cachedInsights;
+  }
+
   try {
     const [articles, market] = await Promise.all([
       fetchSubstackArticles(),
       fetchMarketSnapshot(),
     ]);
 
-    console.log(`Insights: ${articles.length} RSS articles, ${Object.keys(market).length} market keys`);
+    console.log(`Insights: ${articles.length} RSS articles, ${Object.keys(market).length} market keys — calling Anthropic`);
 
     const insights = await generateInsights(articles, market);
-    if (insights && insights.length > 1) return insights;
+    if (insights && insights.length > 1) {
+      _cachedInsights = insights;
+      _cachedAt = Date.now();
+      console.log('Insights: cached fresh AI-generated insights');
+      return insights;
+    }
 
     console.warn('Insights generation failed — using fallback');
     return FALLBACK_INSIGHTS;

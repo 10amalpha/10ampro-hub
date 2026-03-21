@@ -3,9 +3,8 @@
 // Server Component: fetches all data, passes to HubClient
 // ============================================================
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-export const revalidate = 300; // ISR: regenerate every 5 minutes
+// ISR: serve cached page instantly, regenerate in background every 5 min
+export const revalidate = 300;
 
 import HubClient from './HubClient';
 

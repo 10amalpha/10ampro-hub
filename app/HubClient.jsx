@@ -365,6 +365,36 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
           </a>
         </div>
 
+        {/* ═══ QUICK ACCESS CARDS ═══ */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 6 }}>
+          <a href="https://forecast2026.vercel.app/" target="_blank" rel="noopener" style={{
+            display: 'flex', flexDirection: 'column', padding: '10px 14px',
+            background: 'linear-gradient(135deg, #D4A84308, #D4A84315)',
+            border: '1px solid #D4A84330', borderRadius: 6, textDecoration: 'none',
+            transition: 'border-color 0.2s',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              <span style={{ fontSize: 18 }}>📊</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#D4A843', letterSpacing: '0.3px' }}>FORECAST 2026</span>
+            </div>
+            <span style={{ fontSize: 11, color: '#d4d4d8', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Tracker del portafolio</span>
+            <span style={{ fontSize: 9, color: '#9ca3af', marginTop: 4 }}>Tesis de inversión en tiempo real →</span>
+          </a>
+          <a href="https://luma.com/calendar/cal-yWCOIiS6eA71eGD" target="_blank" rel="noopener" style={{
+            display: 'flex', flexDirection: 'column', padding: '10px 14px',
+            background: 'linear-gradient(135deg, #22C55E08, #22C55E15)',
+            border: '1px solid #22C55E30', borderRadius: 6, textDecoration: 'none',
+            transition: 'border-color 0.2s',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              <span style={{ fontSize: 18 }}>🗓️</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>EVENTOS 10AMPRO</span>
+            </div>
+            <span style={{ fontSize: 11, color: '#d4d4d8', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Calendario de eventos</span>
+            <span style={{ fontSize: 9, color: '#9ca3af', marginTop: 4 }}>Episodio 200 en vivo, meetups y más →</span>
+          </a>
+        </div>
+
         {/* ═══ SHARE BAR ═══ */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 8, padding: '8px 0', margin: '4px 0' }}>
           <button

@@ -109,6 +109,7 @@ export async function generateInsights(articles, market) {
     `USD/COP: ${f(market.usdcop?.price, 0)} (${f(market.usdcop?.change)}%)`,
     `BTC: $${market.btc?.price?.toLocaleString() ?? '?'} (${f(market.btc?.change)}%)`,
     `SOL: $${f(market.sol?.price)} (${f(market.sol?.change)}%)`,
+    `MOVE: ${f(market.move?.price, 1)} (${f(market.move?.change)}%)`,
   ].join('\n');
 
   const systemPrompt = `Eres el motor editorial de 10AMPRO, una plataforma de inversión táctica para audiencia LATAM. Generas los insights editoriales del morning briefing.
@@ -127,6 +128,7 @@ FRAMEWORK MACRO DE 10AMPRO (tu lente de análisis):
 - Net Liquidity (FED BAL − TGA − RRP) = indicador líder. Cuando sube, risk assets suben.
 - M2 global expandiendo = positivo para BTC y growth stocks en 3-6 meses.
 - VIX < 20 = complacencia. 20-25 = indecisión. > 25 = miedo. > 30 = pánico.
+- MOVE Index (bond volatility) < 80 = calma. 80-100 = tensión. > 100 = stress en bonos. > 120 = crisis de liquidez real. MOVE > 100 + VIX > 25 = doble señal de riesgo.
 - DXY débil = bueno para LATAM, emergentes, COP.
 - Bessent "3-3-3": déficit a 3% GDP, 3% crecimiento, 3M bpd oil.
 - El mercado se mueve por narrativa, no solo por fundamentales.

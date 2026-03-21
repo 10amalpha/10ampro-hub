@@ -265,7 +265,7 @@ const COMMENTS = {
 export default async function HubPage() {
   // Phase 1: Fetch all base data in parallel
   const [macroQuotes, crypto, briefing, stockQuotes, dietData] = await Promise.all([
-    fetchYahoo(['^GSPC', '^VIX', 'DX-Y.NYB', 'CL=F', 'JPY=X', 'COP=X', '^TNX', '^IRX']),
+    fetchYahoo(['^GSPC', '^VIX', 'DX-Y.NYB', 'CL=F', 'JPY=X', 'COP=X', '^TNX', '^IRX', '^MOVE']),
     fetchCrypto(),
     getBriefingData(),
     fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC']),
@@ -283,6 +283,7 @@ export default async function HubPage() {
     usdcop: { price: q('COP=X')?.regularMarketPrice, change: q('COP=X')?.regularMarketChangePercent },
     btc: crypto.bitcoin ? { price: crypto.bitcoin.usd, change: crypto.bitcoin.usd_24h_change } : null,
     sol: crypto.solana ? { price: crypto.solana.usd, change: crypto.solana.usd_24h_change } : null,
+    move: { price: q('^MOVE')?.regularMarketPrice, change: q('^MOVE')?.regularMarketChangePercent },
   };
   const insightsData = await getInsights(insightMarket);
 
@@ -336,6 +337,7 @@ export default async function HubPage() {
     { l: 'CN M2', v: cnm2Display, c: cnm2Chg, cl: '#ef4444' },
     { l: 'US 10Y', v: q('^TNX')?.regularMarketPrice != null ? q('^TNX').regularMarketPrice.toFixed(2) + '%' : '—', c: null, cl: '#e879f9' },
     { l: 'US 2Y', v: q('^IRX')?.regularMarketPrice != null ? q('^IRX').regularMarketPrice.toFixed(2) + '%' : '—', c: null, cl: '#c084fc' },
+    { l: 'MOVE', v: q('^MOVE')?.regularMarketPrice != null ? fmt(q('^MOVE').regularMarketPrice, 1) : '—', c: q('^MOVE')?.regularMarketChangePercent ?? null, cl: (q('^MOVE')?.regularMarketPrice || 0) > 100 ? '#f87171' : '#fbbf24' },
   ];
 
   // ─── Signals ───

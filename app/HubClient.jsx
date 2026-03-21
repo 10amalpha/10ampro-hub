@@ -1,5 +1,87 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+
+// ─── Share section as image ─────────────────────────────────
+async function shareSection(element, sectionName) {
+  if (!element) return;
+  const html2canvas = (await import('html2canvas')).default;
+
+  // Create a wrapper with padding and branded footer
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;background:#0c0c0e;padding:16px 16px 0';
+  
+  // Clone the section
+  const clone = element.cloneNode(true);
+  clone.style.width = element.offsetWidth + 'px';
+  wrapper.appendChild(clone);
+
+  // Add branded footer
+  const footer = document.createElement('div');
+  footer.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:12px 4px 14px;border-top:1px solid #27272a;margin-top:10px';
+  footer.innerHTML = `<span style="font-family:monospace;font-size:12px;color:#9ca3af">10am.pro</span><span style="font-family:monospace;font-size:12px;color:#22C55E;font-weight:600">@10ampro</span>`;
+  wrapper.appendChild(footer);
+
+  document.body.appendChild(wrapper);
+
+  try {
+    const canvas = await html2canvas(wrapper, {
+      backgroundColor: '#0c0c0e',
+      scale: 2,
+      useCORS: true,
+      logging: false,
+    });
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+      const file = new File([blob], `10ampro-${sectionName}.png`, { type: 'image/png' });
+
+      // Try native share (mobile)
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: '10AMPRO Briefing',
+            text: '📡 Mi briefing de hoy — 10am.pro | @10ampro',
+          });
+        } catch (e) { if (e.name !== 'AbortError') downloadBlob(blob, sectionName); }
+      } else {
+        downloadBlob(blob, sectionName);
+      }
+    }, 'image/png');
+  } finally {
+    document.body.removeChild(wrapper);
+  }
+}
+
+function downloadBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `10ampro-${name}.png`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─── Share button component ─────────────────────────────────
+function ShareBtn({ onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      title="Compartir sección"
+      style={{
+        display: 'flex', alignItems: 'center', gap: 4,
+        padding: '2px 7px', border: '1px solid #ffffff15', borderRadius: 3,
+        background: 'transparent', color: '#71717a', fontSize: 8, fontWeight: 600,
+        fontFamily: 'inherit', cursor: 'pointer', letterSpacing: '0.3px',
+        transition: 'all 0.15s',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.color = '#D4A843'; e.currentTarget.style.borderColor = '#D4A84340'; }}
+      onMouseLeave={e => { e.currentTarget.style.color = '#71717a'; e.currentTarget.style.borderColor = '#ffffff15'; }}
+    >
+      📤 SHARE
+    </button>
+  );
+}
 
 // ─── Formatting helpers ─────────────────────────────────────
 const fp = (p) => {
@@ -43,6 +125,10 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
   const [fl, sF] = useState('A');
   const [exp, sE] = useState(null);
   const [mb, sM] = useState(false);
+  const refSignal = useRef(null);
+  const refWatch = useRef(null);
+  const refDiet = useRef(null);
+  const refInsights = useRef(null);
 
   useEffect(() => {
     const c = () => sM(window.innerWidth < 700);
@@ -92,7 +178,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
         </header>
 
         {/* ═══ SIGNAL + MACRO BAR ═══ */}
-        <div style={{ borderLeft: '1px solid #27272a', borderRight: '1px solid #27272a', borderBottom: '1px solid #27272a', marginBottom: 6, overflow: 'hidden' }}>
+        <div ref={refSignal} style={{ borderLeft: '1px solid #27272a', borderRight: '1px solid #27272a', borderBottom: '1px solid #27272a', marginBottom: 6, overflow: 'hidden' }}>
           {/* MKT Row */}
           <div style={{ display: 'flex', alignItems: 'stretch', borderBottom: '1px solid #1e1e22' }}>
             <div style={{
@@ -182,7 +268,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
         </div>
 
         {/* ═══ WATCHLIST ═══ */}
-        <div style={{ marginBottom: 6 }}>
+        <div ref={refWatch} style={{ marginBottom: 6 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 10, fontWeight: 700, color: '#a1a1aa', letterSpacing: '0.5px' }}>WATCHLIST</span>
@@ -190,7 +276,9 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
                 <span key={i} style={{ fontSize: 9, color: cC(w.c), fontWeight: 600 }}>{w.t} {fv(w.c)}</span>
               ))}
             </div>
-            <div style={{ display: 'flex', gap: 2 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <ShareBtn onClick={() => shareSection(refWatch.current, 'watchlist')} />
+              <div style={{ display: 'flex', gap: 2 }}>
               {[['A', 'ALL'], ['S', 'STK'], ['C', 'CRY']].map(([k, l]) => (
                 <button key={k} onClick={() => sF(k)} style={{
                   padding: '2px 5px', border: 'none', borderRadius: 2, cursor: 'pointer',
@@ -198,6 +286,7 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
                   background: fl === k ? '#22C55E20' : 'transparent', color: fl === k ? '#4ade80' : '#71717a',
                 }}>{l}</button>
               ))}
+              </div>
             </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: mb ? 'repeat(3,1fr)' : 'repeat(7,1fr)', gap: 2 }}>
@@ -239,10 +328,13 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
         {/* ═══ INFO DIET + EARNINGS ═══ */}
         <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 6, marginBottom: 6 }}>
           {/* INFO DIET */}
-          <div style={{ border: '1px solid #27272a', borderRadius: 3, overflow: 'hidden' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 8px', background: '#0f0f12', borderBottom: '1px solid #27272a' }}>
+          <div ref={refDiet} style={{ border: '1px solid #27272a', borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '3px 8px', background: '#0f0f12', borderBottom: '1px solid #27272a' }}>
               <span style={{ fontSize: 10, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>📡 INFO DIET</span>
-              <span style={{ fontSize: 8, color: '#9ca3af' }}>Lo que estamos compartiendo en el chat de 10am.pro</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 8, color: '#9ca3af' }}>Lo que estamos compartiendo en el chat de 10am.pro</span>
+                <ShareBtn onClick={() => shareSection(refDiet.current, 'info-diet')} />
+              </div>
             </div>
             {diet.map((d, i) => (
               <a key={i} href={d.url} target="_blank" rel="noopener" style={{
@@ -323,13 +415,16 @@ export default function HubClient({ mkt, liq, signal, calToday, calTomorrow, wat
         </div>
 
         {/* ═══ EDITORIAL INSIGHTS ═══ */}
-        <div style={{ border: '1px solid #D4A84325', borderRadius: 3, overflow: 'hidden', marginBottom: 6 }}>
+        <div ref={refInsights} style={{ border: '1px solid #D4A84325', borderRadius: 3, overflow: 'hidden', marginBottom: 6 }}>
           <div style={{
             padding: '5px 10px', background: 'linear-gradient(90deg, #D4A84310, transparent)',
             borderBottom: '1px solid #D4A84320', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             <span style={{ fontSize: 10, fontWeight: 700, color: '#D4A843', letterSpacing: '0.5px' }}>💡 CONTEXTO 10AMPRO</span>
-            <span style={{ fontSize: 9, color: '#9ca3af' }}>Actualizado hoy</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 9, color: '#9ca3af' }}>Actualizado hoy</span>
+              <ShareBtn onClick={() => shareSection(refInsights.current, 'insights')} />
+            </div>
           </div>
           {insights.map((ins, i) => (
             <div key={i} style={{

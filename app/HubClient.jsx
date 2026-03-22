@@ -210,11 +210,11 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 10, color: '#9ca3af' }}>
-              {now.toLocaleString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })} COT
-            </div>
-            <div style={{ fontSize: 9, color: lastRefresh ? '#4ade80' : '#9ca3af' }}>
-              {lastRefresh ? `● LIVE ${lastRefresh.toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit' })}` : 'ISR 5min'}
+            <div style={{ fontSize: 10, color: lastRefresh ? '#4ade80' : '#9ca3af' }}>
+              {lastRefresh
+                ? `● ${lastRefresh.toLocaleString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })} COT`
+                : `${now.toLocaleString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })} COT`
+              }
             </div>
           </div>
         </header>

@@ -193,7 +193,7 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
           padding: '10px 0', marginBottom: 12,
           borderBottom: '1px solid rgba(255,255,255,0.04)',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <a href="https://10am.pro?utm_source=hub&utm_medium=header&utm_campaign=logo" target="_blank" rel="noopener" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
             <img
               src="/logo.jpg" alt="10AMPRO"
               style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid rgba(212,168,67,0.2)' }}
@@ -208,7 +208,7 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
                 BRIEFING DIARIO
               </div>
             </div>
-          </div>
+          </a>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: 10, color: lastRefresh ? '#4ade80' : '#9ca3af' }}>
               {lastRefresh

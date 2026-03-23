@@ -4,6 +4,9 @@
 // No insights, no calendar, no earnings — those stay cached via ISR
 // ============================================================
 
+// Force dynamic — this endpoint must always return fresh prices
+export const dynamic = 'force-dynamic';
+
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
 // ─── Yahoo crumb auth ───

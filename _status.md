@@ -47,7 +47,7 @@ Previously `page.jsx` used `force-dynamic`, which forced a full server render on
 
 1. **ISR (Incremental Static Regeneration):** `page.jsx` exports `revalidate = 300` (5 min). Vercel caches the full HTML (all data + insights). First visitor after cache expires triggers a background regeneration; all other visitors get instant cached response (<200ms).
 2. **Client-side refresh:** `HubClient.jsx` calls `/api/prices` on mount and every 5 minutes. This updates: MKT row (S&P, VIX, DXY, WTI, JPY, COP), LIQ row (US 10Y, US 2Y, MOVE — NOT NET LIQ/M2/CN M2 which need FRED server-side), watchlist prices, and risk/liquidity signals.
-3. **Header indicator:** Shows "ISR 5min" on initial load, switches to "● LIVE {time}" (green) once client-side refresh completes.
+3. **Header indicator:** Single timestamp line. Shows gray on initial ISR load, switches to green with `●` prefix once client-side refresh completes (e.g. "● 23 de mar, 10:32 a.m. COT").
 
 **What stays ISR-only (not refreshed client-side):**
 - NET LIQ, US M2, CN M2 (require FRED_API_KEY, server-side only)
@@ -59,11 +59,13 @@ Previously `page.jsx` used `force-dynamic`, which forced a full server render on
 **Key files:**
 - `app/page.jsx` — Server component. Fetches all data (Yahoo, CoinGecko, FRED, FMP, Supabase, Anthropic) and passes to HubClient. ISR 5min.
 - `app/HubClient.jsx` — Client component. Renders UI, manages state, client-side price refresh via `/api/prices`.
-- `app/api/prices/route.js` — Lightweight endpoint. Fetches only Yahoo (macro + stocks) + CoinGecko (crypto). No FRED, no Anthropic, no Finnhub. Returns mkt, liq (partial), signal, watchlist. Cache-Control: `s-maxage=60, stale-while-revalidate=120`.
+- `app/api/prices/route.js` — Lightweight endpoint. **Must use `force-dynamic`** — without it, Next.js pre-renders as static and Vercel CDN caches indefinitely (was stuck for 27h before fix). Fetches only Yahoo (macro + stocks) + CoinGecko (crypto). No FRED, no Anthropic, no Finnhub. Returns mkt, liq (partial), signal, watchlist.
 - `app/lib/briefing.js` — FRED + FMP data. Called by page.jsx directly (no self-fetch).
 - `app/lib/insights.js` — Fetches Substack RSS + calls Anthropic Claude Sonnet to generate 6 editorial insights. Called by page.jsx. **This is the slowest call (~3-8s) — only runs during ISR regeneration, never on client.**
 
-**Performance lesson:** Never put `force-dynamic` on a page that calls an LLM API. ISR + client-side refresh gives the best of both worlds: instant load + fresh prices.
+**Performance lessons:**
+- Never put `force-dynamic` on a page that calls an LLM API. ISR + client-side refresh gives the best of both worlds: instant load + fresh prices.
+- API routes that serve live data (like `/api/prices`) **must** have `export const dynamic = 'force-dynamic'`. Without it, Next.js treats them as static and Vercel CDN caches them indefinitely. The `Cache-Control` header in the Response is ignored for statically pre-rendered routes.
 
 ## V2+ Roadmap (por resolver)
 
@@ -123,7 +125,8 @@ Previously `page.jsx` used `force-dynamic`, which forced a full server render on
 - Siempre empezar clonando el repo.
 - `npx next build` antes de push para verificar compilación.
 - **Never use `force-dynamic` on pages that call external APIs (especially LLMs).** Use ISR + client-side refresh instead.
+- **Always use `force-dynamic` on API routes that serve live data.** Without it, Next.js pre-renders them as static and Vercel CDN caches them indefinitely.
 
 ---
 
-*Last updated: March 21, 2026*
+*Last updated: March 23, 2026*

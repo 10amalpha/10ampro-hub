@@ -1,21 +1,32 @@
 export const dynamic = 'force-dynamic';
 
 const API_KEY = 'AIzaSyANRsjsV-WdoLxM9yEz-yIgBFBdoUYPXCw';
-const UPLOADS_PLAYLIST = 'UU1yKEFqN6Tzz9DTK7fwS3LQ'; // UC -> UU
+const UPLOADS_PLAYLIST = 'UU1yKEFqN6Tzz9DTK7fwS3LQ';
 
 export async function GET() {
   try {
-    const url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${UPLOADS_PLAYLIST}&part=snippet&maxResults=50`;
-    const res = await fetch(url);
-    const data = await res.json();
+    const episodes = [];
+    let pageToken = '';
     
-    const episodes = (data.items || [])
-      .map(item => ({
-        title: item.snippet.title,
-        date: item.snippet.publishedAt.slice(0, 10),
-        videoId: item.snippet.resourceId?.videoId,
-      }))
-      .filter(e => /^E\d{2,3}/.test(e.title));
+    for (let page = 0; page < 8; page++) {
+      const url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${UPLOADS_PLAYLIST}&part=snippet&maxResults=50${pageToken ? '&pageToken=' + pageToken : ''}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      
+      for (const item of (data.items || [])) {
+        const title = item.snippet.title;
+        if (/^E\d{2,3}/.test(title)) {
+          episodes.push({
+            title,
+            date: item.snippet.publishedAt.slice(0, 10),
+            videoId: item.snippet.resourceId?.videoId,
+          });
+        }
+      }
+      
+      if (!data.nextPageToken) break;
+      pageToken = data.nextPageToken;
+    }
     
     return Response.json({ count: episodes.length, episodes });
   } catch (e) {

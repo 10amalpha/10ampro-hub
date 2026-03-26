@@ -393,44 +393,58 @@ export default async function HubPage() {
 
   // ─── Calendar filtering: remove noise, keep market-moving data ───
   const BLOCK_KEYWORDS = ['CFTC', 'Speculative net positions', 'Speculative Net Positions',
-    'Bill Auction', 'Bond Auction', 'Note Auction', 'TIPS Auction', 'FRN Auction'];
+    'Bill Auction', 'Bond Auction', 'Note Auction', 'TIPS Auction', 'FRN Auction',
+    'Kansas Fed', 'Dallas Fed', 'Philadelphia Fed', 'Richmond Fed', 'Chicago Fed',
+    'NY Empire State', 'Philly Fed'];
   const isBlocked = (name) => BLOCK_KEYWORDS.some(kw => name.includes(kw));
 
-  // Tier 1: always show (market-moving)
-  const TIER1_KEYWORDS = ['Fed ', 'FOMC', 'Nonfarm', 'NFP', 'Jobless Claims', 'Unemployment',
+  // Tier 1: market-moving data (NOT speeches)
+  const TIER1_KEYWORDS = ['FOMC', 'Nonfarm', 'NFP', 'Jobless Claims', 'Unemployment',
     'CPI', 'PPI', 'PCE', 'GDP', 'Retail Sales', 'ISM ', 'Consumer Confidence', 'Michigan',
-    'Home Sales', 'Balance of Trade', 'Interest Rate', 'Powell'];
+    'Home Sales', 'Balance of Trade', 'Interest Rate', 'Powell', 'Fed Funds Rate'];
   const isTier1 = (name) => TIER1_KEYWORDS.some(kw => name.includes(kw));
 
-  // Tier 2: useful context (shown in HOY only, or as filler)
+  // Tier 2: useful context
   const TIER2_KEYWORDS = ['Mortgage Rate', 'Wholesale', 'EIA ', 'Housing Starts',
     'Building Permits', 'Durable Goods', 'Industrial Production', 'Capacity Utilization',
-    'Fed Balance Sheet', 'Crude Oil', 'Natural Gas Stocks'];
+    'Fed Balance Sheet', 'Crude Oil', 'Natural Gas Stocks', 'Fed Speech',
+    'Fed Barr', 'Fed Jefferson', 'Fed Cook', 'Fed Daly', 'Fed Waller',
+    'Fed Bowman', 'Fed Goolsbee', 'Fed Mester', 'Fed Williams', 'Fed Bostic',
+    'Fed Kashkari', 'Fed Logan', 'Fed Kugler', 'Fed Collins', 'Fed Harker'];
   const isTier2 = (name) => TIER2_KEYWORDS.some(kw => name.includes(kw));
 
-  const filterCalendarEvents = (events, minCount = 0) => {
-    const tier1 = events.filter(ev => !isBlocked(ev.event) && isTier1(ev.event));
-    const tier2 = events.filter(ev => !isBlocked(ev.event) && isTier2(ev.event));
-    const rest = events.filter(ev => !isBlocked(ev.event) && !isTier1(ev.event) && !isTier2(ev.event));
-    let result = [...tier1, ...tier2];
-    // If below minimum, pull from remaining non-blocked events
-    if (result.length < minCount) {
-      result = [...result, ...rest.slice(0, minCount - result.length)];
-    }
-    return result;
+  const MAX_HOY = 8;
+  const MAX_MANANA = 6;
+
+  const filterCalendarEvents = (events, minCount = 0, maxCount = 99) => {
+    // Deduplicate by event name
+    const seen = new Set();
+    const deduped = events.filter(ev => {
+      if (seen.has(ev.event)) return false;
+      seen.add(ev.event);
+      return true;
+    });
+    const tier1 = deduped.filter(ev => !isBlocked(ev.event) && isTier1(ev.event));
+    const tier2 = deduped.filter(ev => !isBlocked(ev.event) && isTier2(ev.event) && !isTier1(ev.event));
+    const rest = deduped.filter(ev => !isBlocked(ev.event) && !isTier1(ev.event) && !isTier2(ev.event));
+    // Build result: tier1 first, then tier2, then rest (only to hit min)
+    let result = [...tier1];
+    if (result.length < maxCount) result = [...result, ...tier2.slice(0, maxCount - result.length)];
+    if (result.length < minCount) result = [...result, ...rest.slice(0, minCount - result.length)];
+    return result.slice(0, maxCount);
   };
 
   const todayEventsRaw = calendarRaw.filter(ev => ev.dateOnly === todayStr);
   const tmrwEventsRaw = calendarRaw.filter(ev => ev.dateOnly === tmrwStr);
 
-  // HOY: min 5 events guaranteed
-  const todayFiltered = filterCalendarEvents(todayEventsRaw, 5);
+  // HOY: min 5, max 8
+  const todayFiltered = filterCalendarEvents(todayEventsRaw, 5, MAX_HOY);
   const calToday = {
     high: todayFiltered.filter(ev => ev.impact >= 3).map(formatCalEvent),
     low: todayFiltered.filter(ev => ev.impact < 3).map(formatCalEvent),
   };
-  // MAÑANA: no minimum, just filter noise
-  const calTomorrow = filterCalendarEvents(tmrwEventsRaw, 0).map(formatCalEvent);
+  // MAÑANA: no minimum, max 6
+  const calTomorrow = filterCalendarEvents(tmrwEventsRaw, 0, MAX_MANANA).map(formatCalEvent);
 
   // ─── Watchlist ───
   const STOCK_TICKERS = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC'];

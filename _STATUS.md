@@ -1,5 +1,5 @@
 # 10AMPRO Hub — _STATUS.md
-**Last updated:** March 21, 2026 (session 5 — final)
+**Last updated:** March 26, 2026
 **Live URL:** https://10ampro-hub.vercel.app
 **Repo:** 10amalpha/10ampro-hub
 **Vercel Project ID:** prj_lKkui80lHh4x3Fietp6nC4CRfupB
@@ -36,7 +36,13 @@
 **MKT Row (6 cells):** S&P 500, VIX, DXY, WTI, USD/JPY, USD/COP — Yahoo, 5 min
 **LIQ Row (6 cells):** NET LIQ (FRED), US M2 (FRED), CN M2 (FRED), US 10Y (Yahoo), US 2Y (Yahoo), **MOVE Index** (Yahoo `^MOVE`, red >100)
 
-### 3. CALENDAR ✅ COMPLETE — FMP + Smart 3-tier filter
+### 3. CALENDAR ✅ COMPLETE — FMP + Smart 3-tier filter (fixed Mar 26)
+- **Tier 1 (always show):** FOMC, NFP, Jobless Claims, CPI, PPI, PCE, GDP, Retail Sales, ISM, Michigan, Home Sales, Balance of Trade, Interest Rate, Powell, Fed Funds Rate
+- **Tier 2 (fills remaining slots):** Fed speeches (Barr, Jefferson, Cook, Daly, etc.), Fed Balance Sheet, Mortgage Rates, Wholesale, EIA, Housing Starts, Building Permits, Durable Goods, Industrial Production, Crude Oil, Natural Gas
+- **Blocked:** CFTC, Speculative Net Positions, Bill/Bond/Note/TIPS/FRN Auctions, regional Fed indices (Kansas, Dallas, Philadelphia, Richmond, Chicago, NY Empire State, Philly Fed)
+- **Caps:** HOY max 8 (min 5 guaranteed) · MAÑANA max 6
+- **Dedup:** events with identical names collapsed (e.g. Fed Balance Sheet appearing twice)
+- **Mar 26 fix:** `'Fed '` keyword in Tier 1 was too broad — matched speeches, regional indices, balance sheet, causing 14+ items in HOY. Removed `'Fed '`, tightened to specific keywords, moved speeches to Tier 2, blocked regional Fed, added max caps + dedup.
 
 ### 4. WATCHLIST ✅ COMPLETE — 30 tickers (15 stocks Yahoo + 15 crypto CoinGecko)
 
@@ -129,6 +135,7 @@ UTMs added at render time in HubClient.jsx so both AI-generated and fallback ins
 10. **UTMs for Substack tracking.** Substack CSV reports referrer URLs including query params. Structure: `utm_source=hub&utm_medium={section}&utm_campaign={action}`.
 11. **html2canvas for client-side screenshots.** Dynamic import to avoid bundle bloat. Branded footer injected via DOM clone.
 12. **Vercel Hobby vs Pro:** Same speed, same CDN. Pro gives 10x limits + commercial use license. Not needed yet at current traffic (~39 visits/2months). Upgrade when >500 visits/day or when analytics needed.
+13. **Calendar keyword filters need specificity.** `'Fed '` matched everything (speeches, regional indices, balance sheet). Use exact event names or narrow keywords. Always pair keyword filter with a MAX cap — min guarantees without max caps dump unlimited items.
 
 ## Next Steps (priority order)
 

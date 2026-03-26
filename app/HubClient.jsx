@@ -8,7 +8,11 @@ async function shareSection(element, sectionName) {
 
   // Create a wrapper with padding and branded footer
   const wrapper = document.createElement('div');
-  wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;background:#0c0c0e;padding:16px 16px 0';
+  const isDark = !document.documentElement.classList.contains('light');
+  const shareBg = isDark ? '#0c0c0e' : '#ffffff';
+  const shareBorder = isDark ? '#27272a' : '#dee2e6';
+  const shareText = isDark ? '#9ca3af' : '#495057';
+  wrapper.style.cssText = `position:fixed;left:-9999px;top:0;background:${shareBg};padding:16px 16px 0`;
   
   // Clone the section
   const clone = element.cloneNode(true);
@@ -17,15 +21,15 @@ async function shareSection(element, sectionName) {
 
   // Add branded footer
   const footer = document.createElement('div');
-  footer.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:12px 4px 14px;border-top:1px solid #27272a;margin-top:10px';
-  footer.innerHTML = `<span style="font-family:monospace;font-size:12px;color:#9ca3af">10am.pro</span><span style="font-family:monospace;font-size:12px;color:#22C55E;font-weight:600">@10ampro</span>`;
+  footer.style.cssText = `display:flex;justify-content:space-between;align-items:center;padding:12px 4px 14px;border-top:1px solid ${shareBorder};margin-top:10px`;
+  footer.innerHTML = `<span style="font-family:monospace;font-size:12px;color:${shareText}">10am.pro</span><span style="font-family:monospace;font-size:12px;color:#22C55E;font-weight:600">@10ampro</span>`;
   wrapper.appendChild(footer);
 
   document.body.appendChild(wrapper);
 
   try {
     const canvas = await html2canvas(wrapper, {
-      backgroundColor: '#0c0c0e',
+      backgroundColor: shareBg,
       scale: 2,
       useCORS: true,
       logging: false,
@@ -70,13 +74,13 @@ function ShareBtn({ onClick }) {
       title="Compartir sección"
       style={{
         display: 'flex', alignItems: 'center', gap: 4,
-        padding: '2px 7px', border: '1px solid #ffffff15', borderRadius: 3,
-        background: 'transparent', color: '#71717a', fontSize: 8, fontWeight: 600,
+        padding: '2px 7px', border: '1px solid var(--border)', borderRadius: 3,
+        background: 'transparent', color: 'var(--text-muted)', fontSize: 8, fontWeight: 600,
         fontFamily: 'inherit', cursor: 'pointer', letterSpacing: '0.3px',
         transition: 'all 0.15s',
       }}
       onMouseEnter={e => { e.currentTarget.style.color = '#D4A843'; e.currentTarget.style.borderColor = '#D4A84340'; }}
-      onMouseLeave={e => { e.currentTarget.style.color = '#71717a'; e.currentTarget.style.borderColor = '#ffffff15'; }}
+      onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
     >
       📤 SHARE
     </button>
@@ -97,25 +101,25 @@ const fv = (v) => {
   return `${v > 0 ? '+' : ''}${v.toFixed(2)}%`;
 };
 const cBg = (c) => {
-  if (c == null) return '#18181b';
-  if (c > 3) return '#166534'; if (c > 1.5) return '#14532d'; if (c > 0) return '#052e16';
-  if (c < -3) return '#7f1d1d'; if (c < -1.5) return '#450a0a'; if (c < 0) return '#1c0a0a';
-  return '#18181b';
+  if (c == null) return 'var(--cell-neutral-bg)';
+  if (c > 3) return 'var(--green-dim)'; if (c > 1.5) return 'var(--green-dim)'; if (c > 0) return 'var(--cell-pos-bg)';
+  if (c < -3) return 'var(--red-dim)'; if (c < -1.5) return 'var(--red-dim)'; if (c < 0) return 'var(--cell-neg-bg)';
+  return 'var(--cell-neutral-bg)';
 };
-const cBd = (c) => c > 1.5 ? '#22c55e40' : c < -1.5 ? '#ef444440' : '#27272a';
-const cC = (c) => c > 0 ? '#4ade80' : c < 0 ? '#fca5a5' : '#71717a';
-const sigCl = (s) => s === 'RISK ON' || s === 'EXPANDING' ? '#4ade80' : s === 'RISK OFF' || s === 'TIGHTENING' ? '#f87171' : '#facc15';
+const cBd = (c) => c > 1.5 ? 'var(--cell-pos-border)' : c < -1.5 ? 'var(--cell-neg-border)' : 'var(--cell-neutral-border)';
+const cC = (c) => c > 0 ? 'var(--green)' : c < 0 ? 'var(--red)' : 'var(--text-muted)';
+const sigCl = (s) => s === 'RISK ON' || s === 'EXPANDING' ? 'var(--green)' : s === 'RISK OFF' || s === 'TIGHTENING' ? 'var(--red)' : '#facc15';
 
 // ─── Macro cell subcomponent ────────────────────────────────
 function MC({ m, bd = true, mb, span = 1 }) {
   return (
     <div style={{
-      padding: '5px 6px', borderRight: bd ? '1px solid #1e1e22' : 'none',
-      textAlign: 'center', background: '#111113', minWidth: 0,
+      padding: '5px 6px', borderRight: bd ? '1px solid var(--border-subtle)' : 'none',
+      textAlign: 'center', background: 'var(--surface)', minWidth: 0,
       gridColumn: span > 1 ? `span ${span}` : undefined,
     }}>
-      <div style={{ fontSize: 8, color: '#9ca3af', letterSpacing: '0.6px', textTransform: 'uppercase', lineHeight: 1 }}>{m.l}</div>
-      <div style={{ fontSize: mb ? 11 : 14, fontWeight: 700, color: m.cl || '#e4e4e7', lineHeight: 1.2, marginTop: 2 }}>{m.v}</div>
+      <div style={{ fontSize: 8, color: 'var(--text-muted)', letterSpacing: '0.6px', textTransform: 'uppercase', lineHeight: 1 }}>{m.l}</div>
+      <div style={{ fontSize: mb ? 11 : 14, fontWeight: 700, color: m.cl || 'var(--text-primary)', lineHeight: 1.2, marginTop: 2 }}>{m.v}</div>
       {m.c != null && <div style={{ fontSize: 8, fontWeight: 600, color: cC(m.c), lineHeight: 1 }}>{fv(m.c)}</div>}
     </div>
   );
@@ -130,10 +134,24 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
   const [signal, setSignal] = useState(signalInit);
   const [watchlist, setWatchlist] = useState(wlInit);
   const [lastRefresh, setLastRefresh] = useState(null);
+  const [theme, setTheme] = useState('dark');
   const refSignal = useRef(null);
   const refWatch = useRef(null);
   const refDiet = useRef(null);
   const refInsights = useRef(null);
+
+  // Theme: load from localStorage and apply to <html>
+  useEffect(() => {
+    const saved = localStorage.getItem('10am-theme') || 'dark';
+    setTheme(saved);
+    document.documentElement.classList.toggle('light', saved === 'light');
+  }, []);
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    localStorage.setItem('10am-theme', next);
+    document.documentElement.classList.toggle('light', next === 'light');
+  };
 
   // Client-side price refresh on mount + every 5 min
   const refreshPrices = useCallback(async () => {
@@ -184,7 +202,7 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
   const restEarn = earnings.filter(e => !e.next);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0c0c0e', color: '#d4d4d8', fontFamily: "'JetBrains Mono',ui-monospace,monospace", fontSize: 11 }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text-primary)', fontFamily: "'JetBrains Mono',ui-monospace,monospace", fontSize: 11, transition: 'background 0.3s, color 0.3s' }}>
       <div style={{ maxWidth: 920, margin: '0 auto', padding: mb ? '6px 8px' : '10px 20px' }}>
 
         {/* ═══ HEADER ═══ */}
@@ -209,31 +227,45 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
               </div>
             </div>
           </a>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 10, color: lastRefresh ? '#4ade80' : '#9ca3af' }}>
-              {lastRefresh
-                ? `● ${lastRefresh.toLocaleString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })} COT`
-                : `${now.toLocaleString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })} COT`
-              }
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: 28, height: 28, borderRadius: '50%',
+                border: '1px solid var(--border)', background: 'var(--surface)',
+                cursor: 'pointer', fontSize: 14, transition: 'all 0.2s',
+              }}
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: 10, color: lastRefresh ? 'var(--green)' : 'var(--text-muted)' }}>
+                {lastRefresh
+                  ? `● ${lastRefresh.toLocaleString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })} COT`
+                  : `${now.toLocaleString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })} COT`
+                }
+              </div>
             </div>
           </div>
         </header>
 
         {/* ═══ SIGNAL + MACRO BAR ═══ */}
-        <div ref={refSignal} style={{ borderLeft: '1px solid #27272a', borderRight: '1px solid #27272a', borderBottom: '1px solid #27272a', marginBottom: 6, overflow: 'hidden' }}>
+        <div ref={refSignal} style={{ borderLeft: '1px solid var(--border)', borderRight: '1px solid var(--border)', borderBottom: '1px solid var(--border)', marginBottom: 6, overflow: 'hidden' }}>
           {/* MKT Row */}
-          <div style={{ display: 'flex', alignItems: 'stretch', borderBottom: '1px solid #1e1e22' }}>
+          <div style={{ display: 'flex', alignItems: 'stretch', borderBottom: '1px solid var(--border-subtle)' }}>
             <div style={{
               padding: mb ? '8px 10px' : '8px 14px', background: `${mktC}08`, borderRight: `1px solid ${mktC}20`,
               display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
               width: mb ? 90 : 120, flexShrink: 0,
             }}>
-              <div style={{ fontSize: 8, color: '#a1a1aa', letterSpacing: '1px', marginBottom: 1 }}>RISK</div>
+              <div style={{ fontSize: 8, color: 'var(--text-secondary)', letterSpacing: '1px', marginBottom: 1 }}>RISK</div>
               <div style={{ fontSize: mb ? 14 : 18, fontWeight: 800, color: mktC, letterSpacing: '-1px', lineHeight: 1 }}>{signal.risk}</div>
             </div>
             <div style={{ display: 'flex', flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', borderRight: '1px solid #1e1e22', flexShrink: 0, width: 20 }}>
-                <span style={{ fontSize: 8, color: '#9ca3af', writingMode: mb ? 'horizontal-tb' : 'vertical-rl', transform: mb ? 'none' : 'rotate(180deg)', letterSpacing: '0.5px' }}>MKT</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', borderRight: '1px solid var(--border-subtle)', flexShrink: 0, width: 20 }}>
+                <span style={{ fontSize: 8, color: 'var(--text-muted)', writingMode: mb ? 'horizontal-tb' : 'vertical-rl', transform: mb ? 'none' : 'rotate(180deg)', letterSpacing: '0.5px' }}>MKT</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', flex: 1 }}>
                 {mkt.map((m, i) => <MC key={i} m={m} bd={i < mkt.length - 1} mb={mb} />)}
@@ -247,12 +279,12 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
               display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
               width: mb ? 90 : 120, flexShrink: 0,
             }}>
-              <div style={{ fontSize: 8, color: '#a1a1aa', letterSpacing: '1px', marginBottom: 1 }}>LIQUIDITY</div>
+              <div style={{ fontSize: 8, color: 'var(--text-secondary)', letterSpacing: '1px', marginBottom: 1 }}>LIQUIDITY</div>
               <div style={{ fontSize: mb ? 14 : 18, fontWeight: 800, color: liqC, letterSpacing: '-0.5px', lineHeight: 1 }}>{signal.liq}</div>
             </div>
             <div style={{ display: 'flex', flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', borderRight: '1px solid #1e1e22', flexShrink: 0, width: 20 }}>
-                <span style={{ fontSize: 8, color: '#9ca3af', writingMode: mb ? 'horizontal-tb' : 'vertical-rl', transform: mb ? 'none' : 'rotate(180deg)', letterSpacing: '0.5px' }}>LIQ</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', borderRight: '1px solid var(--border-subtle)', flexShrink: 0, width: 20 }}>
+                <span style={{ fontSize: 8, color: 'var(--text-muted)', writingMode: mb ? 'horizontal-tb' : 'vertical-rl', transform: mb ? 'none' : 'rotate(180deg)', letterSpacing: '0.5px' }}>LIQ</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', flex: 1 }}>
                 {liq.map((m, i) => <MC key={i} m={m} bd={i < liq.length - 1} mb={mb} />)}
@@ -262,48 +294,48 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
         </div>
 
         {/* ═══ CALENDAR ═══ */}
-        <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 0, marginBottom: 6, border: '1px solid #27272a', borderRadius: 3, overflow: 'hidden' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 0, marginBottom: 6, border: '1px solid var(--border)', borderRadius: 3, overflow: 'hidden' }}>
           {/* HOY */}
-          <div style={{ borderRight: mb ? 'none' : '1px solid #27272a' }}>
-            <div style={{ display: 'flex', alignItems: 'center', padding: '3px 8px', background: '#0f0f12', borderBottom: '1px solid #27272a', gap: 6 }}>
+          <div style={{ borderRight: mb ? 'none' : '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', padding: '3px 8px', background: 'var(--surface)', borderBottom: '1px solid var(--border)', gap: 6 }}>
               <span style={{ fontSize: 10, fontWeight: 700, color: '#60a5fa' }}>HOY</span>
-              <span style={{ fontSize: 9, color: '#a1a1aa' }}>{now.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
+              <span style={{ fontSize: 9, color: 'var(--text-secondary)' }}>{now.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
             </div>
             {calToday.high.length === 0 && calToday.low.length === 0 && (
-              <div style={{ padding: '8px', fontSize: 9, color: '#9ca3af', textAlign: 'center' }}>Sin eventos de alto impacto hoy</div>
+              <div style={{ padding: '8px', fontSize: 9, color: 'var(--text-muted)', textAlign: 'center' }}>Sin eventos de alto impacto hoy</div>
             )}
             {calToday.high.map((ev, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderBottom: i < calToday.high.length - 1 ? '1px solid #ffffff06' : 'none', background: '#60a5fa06' }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderBottom: i < calToday.high.length - 1 ? '1px solid var(--border-subtle)' : 'none', background: '#60a5fa06' }}>
                 <span style={{ fontSize: 10, color: '#60a5fa', fontWeight: 700, width: 38, flexShrink: 0 }}>{ev.t}</span>
-                <span style={{ fontSize: 10, color: '#e4e4e7', fontWeight: 600, flex: 1 }}>{ev.e}</span>
-                {ev.es && <span style={{ fontSize: 9, color: '#a1a1aa' }}>est: {ev.es}</span>}
-                {ev.p && <span style={{ fontSize: 9, color: '#9ca3af' }}>prev: {ev.p}</span>}
+                <span style={{ fontSize: 10, color: 'var(--text-primary)', fontWeight: 600, flex: 1 }}>{ev.e}</span>
+                {ev.es && <span style={{ fontSize: 9, color: 'var(--text-secondary)' }}>est: {ev.es}</span>}
+                {ev.p && <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>prev: {ev.p}</span>}
                 <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#ef4444', flexShrink: 0 }} />
               </div>
             ))}
             {calToday.low.length > 0 && calToday.low.map((ev, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 8px', borderTop: i === 0 ? '1px solid #27272a' : 'none', borderBottom: i < calToday.low.length - 1 ? '1px solid #ffffff04' : 'none' }}>
-                <span style={{ fontSize: 9, color: '#9ca3af', width: 38, flexShrink: 0 }}>{ev.t}</span>
-                <span style={{ fontSize: 10, color: '#a1a1aa', flex: 1 }}>{ev.e}</span>
-                {ev.es && <span style={{ fontSize: 8, color: '#9ca3af' }}>est: {ev.es}</span>}
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 8px', borderTop: i === 0 ? '1px solid var(--border)' : 'none', borderBottom: i < calToday.low.length - 1 ? '1px solid var(--border-subtle)' : 'none' }}>
+                <span style={{ fontSize: 9, color: 'var(--text-muted)', width: 38, flexShrink: 0 }}>{ev.t}</span>
+                <span style={{ fontSize: 10, color: 'var(--text-secondary)', flex: 1 }}>{ev.e}</span>
+                {ev.es && <span style={{ fontSize: 8, color: 'var(--text-muted)' }}>est: {ev.es}</span>}
               </div>
             ))}
           </div>
           {/* MAÑANA */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', padding: '3px 8px', background: '#0f0f12', borderBottom: '1px solid #27272a', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', padding: '3px 8px', background: 'var(--surface)', borderBottom: '1px solid var(--border)', gap: 6 }}>
               <span style={{ fontSize: 10, fontWeight: 700, color: '#fbbf24' }}>MAÑANA</span>
-              <span style={{ fontSize: 9, color: '#a1a1aa' }}>{tmrw.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
+              <span style={{ fontSize: 9, color: 'var(--text-secondary)' }}>{tmrw.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
             </div>
             {calTomorrow.length === 0 && (
-              <div style={{ padding: '8px', fontSize: 9, color: '#9ca3af', textAlign: 'center' }}>Sin eventos programados</div>
+              <div style={{ padding: '8px', fontSize: 9, color: 'var(--text-muted)', textAlign: 'center' }}>Sin eventos programados</div>
             )}
             {calTomorrow.map((ev, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderBottom: i < calTomorrow.length - 1 ? '1px solid #ffffff06' : 'none' }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderBottom: i < calTomorrow.length - 1 ? '1px solid var(--border-subtle)' : 'none' }}>
                 <span style={{ fontSize: 10, color: '#fbbf24', fontWeight: 600, width: 38, flexShrink: 0 }}>{ev.t}</span>
-                <span style={{ fontSize: 10, color: '#d4d4d8', fontWeight: 500, flex: 1 }}>{ev.e}</span>
-                {ev.es && <span style={{ fontSize: 9, color: '#a1a1aa' }}>est: {ev.es}</span>}
-                {ev.p && <span style={{ fontSize: 9, color: '#9ca3af' }}>prev: {ev.p}</span>}
+                <span style={{ fontSize: 10, color: 'var(--text-primary)', fontWeight: 500, flex: 1 }}>{ev.e}</span>
+                {ev.es && <span style={{ fontSize: 9, color: 'var(--text-secondary)' }}>est: {ev.es}</span>}
+                {ev.p && <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>prev: {ev.p}</span>}
               </div>
             ))}
           </div>
@@ -313,7 +345,7 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
         <div ref={refWatch} style={{ marginBottom: 6 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: '#a1a1aa', letterSpacing: '0.5px' }}>WATCHLIST</span>
+              <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.5px' }}>WATCHLIST</span>
               {watchlist.filter(w => Math.abs(w.c || 0) > 2).slice(0, 3).map((w, i) => (
                 <span key={i} style={{ fontSize: 9, color: cC(w.c), fontWeight: 600 }}>{w.t} {fv(w.c)}</span>
               ))}
@@ -325,7 +357,7 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
                 <button key={k} onClick={() => sF(k)} style={{
                   padding: '2px 5px', border: 'none', borderRadius: 2, cursor: 'pointer',
                   fontSize: 8, fontFamily: 'inherit', fontWeight: 600,
-                  background: fl === k ? '#22C55E20' : 'transparent', color: fl === k ? '#4ade80' : '#71717a',
+                  background: fl === k ? '#22C55E20' : 'transparent', color: fl === k ? 'var(--green)' : 'var(--text-muted)',
                 }}>{l}</button>
               ))}
               </div>
@@ -340,10 +372,10 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
                 onMouseEnter={e => e.currentTarget.style.filter = 'brightness(1.25)'}
                 onMouseLeave={e => e.currentTarget.style.filter = 'brightness(1)'}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 9, fontWeight: 700, color: '#e4e4e7' }}>{w.t}</span>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-primary)' }}>{w.t}</span>
                   {w.cm && <span style={{ fontSize: 6, color: '#D4A843' }}>💬</span>}
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#f4f4f5', lineHeight: 1.2, marginTop: 1 }}>{fp(w.p)}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-bright)', lineHeight: 1.2, marginTop: 1 }}>{fp(w.p)}</div>
                 <div style={{ fontSize: 9, fontWeight: 700, color: cC(w.c), marginTop: 1 }}>{fv(w.c)}</div>
               </div>
             ))}
@@ -352,16 +384,16 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
             const w = watchlist.find(w => w.t === exp);
             return (
               <div style={{
-                marginTop: 3, padding: '6px 10px', background: '#111113',
+                marginTop: 3, padding: '6px 10px', background: 'var(--surface)',
                 border: '1px solid #D4A84330', borderLeft: '3px solid #D4A843',
                 borderRadius: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10,
               }}>
                 <div>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: '#e4e4e7', marginRight: 6 }}>{exp}</span>
-                  <span style={{ fontSize: 10, color: '#d4d4d8', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{w.cm.tx}</span>
-                  <span style={{ fontSize: 8, color: '#a1a1aa' }}> — {w.cm.w}, {w.cm.a}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-primary)', marginRight: 6 }}>{exp}</span>
+                  <span style={{ fontSize: 10, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{w.cm.tx}</span>
+                  <span style={{ fontSize: 8, color: 'var(--text-secondary)' }}> — {w.cm.w}, {w.cm.a}</span>
                 </div>
-                <button onClick={() => sE(null)} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', flexShrink: 0 }}>✕</button>
+                <button onClick={() => sE(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', flexShrink: 0 }}>✕</button>
               </div>
             );
           })()}
@@ -370,20 +402,20 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
         {/* ═══ INFO DIET + EARNINGS ═══ */}
         <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 6, marginBottom: 6 }}>
           {/* INFO DIET */}
-          <div ref={refDiet} style={{ border: '1px solid #27272a', borderRadius: 3, overflow: 'hidden' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '3px 8px', background: '#0f0f12', borderBottom: '1px solid #27272a' }}>
+          <div ref={refDiet} style={{ border: '1px solid var(--border)', borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '3px 8px', background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
               <span style={{ fontSize: 10, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>📡 INFO DIET</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 8, color: '#9ca3af' }}>Lo que estamos compartiendo en el chat de 10am.pro</span>
+                <span style={{ fontSize: 8, color: 'var(--text-muted)' }}>Lo que estamos compartiendo en el chat de 10am.pro</span>
                 <ShareBtn onClick={() => shareSection(refDiet.current, 'info-diet')} />
               </div>
             </div>
             {diet.map((d, i) => (
               <a key={i} href={d.url} target="_blank" rel="noopener" style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', textDecoration: 'none',
-                borderBottom: i < diet.length - 1 ? '1px solid #ffffff05' : 'none',
+                borderBottom: i < diet.length - 1 ? '1px solid var(--border-subtle)' : 'none',
               }}
-                onMouseEnter={e => e.currentTarget.style.background = '#ffffff04'}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--hover-bg)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <div style={{
                   width: 42, height: 42, borderRadius: 3, background: `${d.color}15`,
@@ -393,40 +425,40 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
-                    fontSize: 12, color: '#e4e4e7', fontWeight: 600, lineHeight: 1.3,
+                    fontSize: 12, color: 'var(--text-primary)', fontWeight: 600, lineHeight: 1.3,
                     fontFamily: "'Plus Jakarta Sans',sans-serif",
                     display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                   }}>{d.title}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                    <span style={{ fontSize: 10, color: '#9ca3af' }}>{d.src}</span>
-                    <span style={{ fontSize: 8, color: '#9ca3af' }}>·</span>
-                    <span style={{ fontSize: 10, color: '#9ca3af' }}>{d.ago}</span>
+                    <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{d.src}</span>
+                    <span style={{ fontSize: 8, color: 'var(--text-muted)' }}>·</span>
+                    <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{d.ago}</span>
                   </div>
                 </div>
-                <span style={{ fontSize: 9, color: '#9ca3af', background: '#ffffff06', padding: '1px 4px', borderRadius: 2, flexShrink: 0 }}>{d.tag}</span>
+                <span style={{ fontSize: 9, color: 'var(--text-muted)', background: 'var(--surface-2)', padding: '1px 4px', borderRadius: 2, flexShrink: 0 }}>{d.tag}</span>
               </a>
             ))}
           </div>
 
           {/* EARNINGS RADAR */}
-          <div style={{ border: '1px solid #27272a', borderRadius: 3, overflow: 'hidden' }}>
-            <div style={{ padding: '3px 8px', background: '#0f0f12', borderBottom: '1px solid #27272a' }}>
+          <div style={{ border: '1px solid var(--border)', borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ padding: '3px 8px', background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
               <span style={{ fontSize: 10, fontWeight: 700, color: '#a78bfa' }}>📊 EARNINGS RADAR</span>
             </div>
             {nextUp && (
               <div style={{
-                padding: '7px 10px', background: '#a78bfa08', borderBottom: '1px solid #27272a',
+                padding: '7px 10px', background: '#a78bfa08', borderBottom: '1px solid var(--border)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ fontSize: 14 }}>{nextUp.e}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#e4e4e7' }}>{nextUp.t}</span>
-                  <span style={{ fontSize: 11, color: '#a1a1aa' }}>{nextUp.n}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{nextUp.t}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{nextUp.n}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   {nextUp.eps != null && <span style={{ fontSize: 10, color: '#a78bfa', fontWeight: 600 }}>EPS est: ${nextUp.eps}</span>}
-                  {nextUp.time && <span style={{ fontSize: 8, color: '#9ca3af', background: '#ffffff08', padding: '0px 4px', borderRadius: 2 }}>{nextUp.time}</span>}
-                  <span style={{ fontSize: 10, color: '#a1a1aa' }}>{nextUp.d} · <span style={{ color: '#a78bfa', fontWeight: 700 }}>{nextUp.days}d</span></span>
+                  {nextUp.time && <span style={{ fontSize: 8, color: 'var(--text-muted)', background: 'var(--surface-2)', padding: '0px 4px', borderRadius: 2 }}>{nextUp.time}</span>}
+                  <span style={{ fontSize: 10, color: 'var(--text-secondary)' }}>{nextUp.d} · <span style={{ color: '#a78bfa', fontWeight: 700 }}>{nextUp.days}d</span></span>
                   <span style={{ fontSize: 8, fontWeight: 700, color: '#a78bfa', background: '#a78bfa18', padding: '1px 5px', borderRadius: 2, border: '1px solid #a78bfa30' }}>NEXT UP</span>
                 </div>
               </div>
@@ -434,24 +466,24 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
             {restEarn.map((e, i) => (
               <div key={i} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '5px 10px', borderBottom: i < restEarn.length - 1 ? '1px solid #ffffff05' : 'none',
+                padding: '5px 10px', borderBottom: i < restEarn.length - 1 ? '1px solid var(--border-subtle)' : 'none',
               }}
-                onMouseEnter={ev => ev.currentTarget.style.background = '#ffffff04'}
+                onMouseEnter={ev => ev.currentTarget.style.background = 'var(--hover-bg)'}
                 onMouseLeave={ev => ev.currentTarget.style.background = 'transparent'}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ fontSize: 12 }}>{e.e}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#d4d4d8' }}>{e.t}</span>
-                  <span style={{ fontSize: 11, color: '#a1a1aa' }}>{e.n}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)' }}>{e.t}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{e.n}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  {e.eps != null && <span style={{ fontSize: 10, color: '#9ca3af' }}>EPS est: ${e.eps}</span>}
-                  {e.time && <span style={{ fontSize: 8, color: '#9ca3af', background: '#ffffff08', padding: '0px 4px', borderRadius: 2 }}>{e.time}</span>}
-                  <span style={{ fontSize: 10, color: '#9ca3af' }}>{e.d} · {e.days}d</span>
+                  {e.eps != null && <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>EPS est: ${e.eps}</span>}
+                  {e.time && <span style={{ fontSize: 8, color: 'var(--text-muted)', background: 'var(--surface-2)', padding: '0px 4px', borderRadius: 2 }}>{e.time}</span>}
+                  <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{e.d} · {e.days}d</span>
                 </div>
               </div>
             ))}
             {earnings.length === 0 && (
-              <div style={{ padding: '8px', fontSize: 9, color: '#9ca3af', textAlign: 'center' }}>Sin earnings próximos</div>
+              <div style={{ padding: '8px', fontSize: 9, color: 'var(--text-muted)', textAlign: 'center' }}>Sin earnings próximos</div>
             )}
           </div>
         </div>
@@ -464,21 +496,21 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
           }}>
             <span style={{ fontSize: 10, fontWeight: 700, color: '#D4A843', letterSpacing: '0.5px' }}>💡 CONTEXTO 10AMPRO</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 9, color: '#9ca3af' }}>Actualizado hoy</span>
+              <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>Actualizado hoy</span>
               <ShareBtn onClick={() => shareSection(refInsights.current, 'insights')} />
             </div>
           </div>
           {insights.map((ins, i) => (
             <div key={i} style={{
-              padding: '8px 10px', borderBottom: i < insights.length - 1 ? '1px solid #ffffff06' : 'none',
+              padding: '8px 10px', borderBottom: i < insights.length - 1 ? '1px solid var(--border-subtle)' : 'none',
               borderLeft: `3px solid ${ins.color}30`,
             }}
-              onMouseEnter={e => e.currentTarget.style.background = '#ffffff03'}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--hover-bg)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                 <span style={{ fontSize: 10, fontWeight: 700, color: ins.color, background: `${ins.color}15`, padding: '1px 6px', borderRadius: 2, letterSpacing: '0.3px' }}>{ins.tag}</span>
               </div>
-              <div style={{ fontSize: 13, color: '#d4d4d8', lineHeight: 1.6, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{ins.text}</div>
+              <div style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.6, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{ins.text}</div>
               {ins.link && (
                 <a href={`${ins.link.url}${ins.link.url.includes('?') ? '&' : '?'}utm_source=hub&utm_medium=insights&utm_campaign=article-link`} target="_blank" rel="noopener" style={{
                   display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 5,
@@ -510,7 +542,7 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
           border: '1px solid #22C55E25', borderRadius: 6,
           textDecoration: 'none', cursor: 'pointer',
         }}>
-          <span style={{ fontSize: 11, color: '#9ca3af', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>Este briefing se construye con nuestros deep dives semanales.</span>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>Este briefing se construye con nuestros deep dives semanales.</span>
           <span style={{ fontSize: 11, color: '#22C55E', fontWeight: 700, whiteSpace: 'nowrap' }}>Suscríbete gratis →</span>
         </a>
 
@@ -526,8 +558,8 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
               <span style={{ fontSize: 18 }}>📊</span>
               <span style={{ fontSize: 11, fontWeight: 700, color: '#D4A843', letterSpacing: '0.3px' }}>FORECAST 2026</span>
             </div>
-            <span style={{ fontSize: 11, color: '#d4d4d8', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Tracker del portafolio</span>
-            <span style={{ fontSize: 9, color: '#9ca3af', marginTop: 4 }}>Tesis de inversión en tiempo real →</span>
+            <span style={{ fontSize: 11, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Tracker del portafolio</span>
+            <span style={{ fontSize: 9, color: 'var(--text-muted)', marginTop: 4 }}>Tesis de inversión en tiempo real →</span>
           </a>
           <a href="https://luma.com/calendar/cal-yWCOIiS6eA71eGD?utm_source=hub&utm_medium=card&utm_campaign=eventos" target="_blank" rel="noopener" style={{
             display: 'flex', flexDirection: 'column', padding: '10px 14px',
@@ -539,8 +571,8 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
               <span style={{ fontSize: 18 }}>🗓️</span>
               <span style={{ fontSize: 11, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>EVENTOS 10AMPRO</span>
             </div>
-            <span style={{ fontSize: 11, color: '#d4d4d8', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Calendario de eventos</span>
-            <span style={{ fontSize: 9, color: '#9ca3af', marginTop: 4 }}>Episodio 200 en vivo, meetups y más →</span>
+            <span style={{ fontSize: 11, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Calendario de eventos</span>
+            <span style={{ fontSize: 9, color: 'var(--text-muted)', marginTop: 4 }}>Episodio 200 en vivo, meetups y más →</span>
           </a>
         </div>
 
@@ -584,8 +616,8 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
         </div>
 
         {/* ═══ FOOTER ═══ */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 12, padding: '4px 0', borderTop: '1px solid #18181b' }}>
-          <a href="https://10am.pro?utm_source=hub&utm_medium=footer&utm_campaign=nav" target="_blank" rel="noopener" style={{ fontSize: 9, color: '#9ca3af', textDecoration: 'none' }}>Substack</a>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 12, padding: '4px 0', borderTop: '1px solid var(--border)' }}>
+          <a href="https://10am.pro?utm_source=hub&utm_medium=footer&utm_campaign=nav" target="_blank" rel="noopener" style={{ fontSize: 9, color: 'var(--text-muted)', textDecoration: 'none' }}>Substack</a>
           <a href="https://x.com/holdmybirra" target="_blank" rel="noopener" style={{ fontSize: 9, color: '#22C55E', textDecoration: 'none' }}>@holdmybirra</a>
         </div>
 

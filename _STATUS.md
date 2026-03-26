@@ -30,7 +30,11 @@
 
 ## Section Status
 
-### 1. HEADER ✅ COMPLETE — Do NOT change
+### 1. HEADER ✅ COMPLETE — Do NOT change (except theme toggle added Mar 26)
+- ☀️/🌙 toggle button next to timestamp
+- Persists to `localStorage` (`10am-theme`)
+- Toggles `.light` class on `<html>` → swaps all CSS custom properties
+- Smooth 0.3s transition on background/color
 
 ### 2. SIGNAL + MACRO BAR ✅ COMPLETE — LIVE DATA
 **MKT Row (6 cells):** S&P 500, VIX, DXY, WTI, USD/JPY, USD/COP — Yahoo, 5 min
@@ -97,6 +101,18 @@ UTMs added at render time in HubClient.jsx so both AI-generated and fallback ins
 
 ### 13. PWA ✅ COMPLETE
 ### 14. FOOTER ✅ Substack + @holdmybirra
+
+---
+
+## Theme System (added Mar 26)
+
+- **Dark mode** (default): Bloomberg terminal aesthetic, `#0c0c0e` background
+- **Light mode**: High-contrast light, `#f8f9fa` background — inspired by Situation Room
+- All colors use CSS custom properties in `globals.css` (`:root` dark, `:root.light` light)
+- HubClient inline styles reference `var(--bg)`, `var(--text-primary)`, etc.
+- Color helper functions (`cBg`, `cBd`, `cC`) return CSS var strings
+- Share screenshots resolve theme at capture time (html2canvas needs real hex, not CSS vars)
+- Brand accents (#D4A843 gold, #22C55E green, section colors like #60a5fa, #fbbf24, #a78bfa) stay constant across themes
 
 ---
 

@@ -1,5 +1,5 @@
 # 10AMPRO Hub — _STATUS.md
-**Last updated:** March 26, 2026
+**Last updated:** March 27, 2026
 **Live URL:** https://10ampro-hub.vercel.app
 **Repo:** 10amalpha/10ampro-hub
 **Vercel Project ID:** prj_lKkui80lHh4x3Fietp6nC4CRfupB
@@ -40,7 +40,10 @@
 **MKT Row (6 cells):** S&P 500, VIX, DXY, WTI, USD/JPY, USD/COP — Yahoo, 5 min
 **LIQ Row (6 cells):** NET LIQ (FRED), US M2 (FRED), CN M2 (FRED), US 10Y (Yahoo), US 2Y (Yahoo), **MOVE Index** (Yahoo `^MOVE`, red >100)
 
-### 3. CALENDAR ✅ COMPLETE — FMP + Smart 3-tier filter (fixed Mar 26)
+### 3. CALENDAR ✅ COMPLETE — FMP + Smart 3-tier filter + Actual values + Time progression
+- **Actual values (added Mar 27):** When FMP publishes actual data (e.g., Michigan Consumer Sentiment = 53.3), it displays in bold next to the event name. Color-coded: green (beat estimate), red (miss), yellow (inline with estimate or no estimate to compare). The `est:` label dims when actual is present so actual takes visual priority.
+- **Time progression (added Mar 27):** Past events (UTC time < now) dim to 55% opacity. Time label switches from blue to muted. Dot logic: 🟢 green = actual released, 🟡 yellow = time passed but no actual yet, 🔴 red = upcoming. FMP timestamps normalized from `"2026-03-27 14:00:00"` to ISO UTC `"2026-03-27T14:00:00Z"` via `toISOUTC()` helper in page.jsx — without this, browsers parse FMP's format as local time and dimming breaks.
+- **FMP calendar cache reduced from 1h → 15min (Mar 27):** Actuals now appear within ~20min of release (15min FMP cache + 5min ISR regen).
 - **Tier 1 (always show):** FOMC, NFP, Jobless Claims, CPI, PPI, PCE, GDP, Retail Sales, ISM, Michigan, Home Sales, Balance of Trade, Interest Rate, Powell, Fed Funds Rate
 - **Tier 2 (fills remaining slots):** Fed speeches (Barr, Jefferson, Cook, Daly, etc.), Fed Balance Sheet, Mortgage Rates, Wholesale, EIA, Housing Starts, Building Permits, Durable Goods, Industrial Production, Crude Oil, Natural Gas
 - **Blocked:** CFTC, Speculative Net Positions, Bill/Bond/Note/TIPS/FRN Auctions, regional Fed indices (Kansas, Dallas, Philadelphia, Richmond, Chicago, NY Empire State, Philly Fed)
@@ -131,7 +134,7 @@ UTMs added at render time in HubClient.jsx so both AI-generated and fallback ins
 | AI Insights | In-memory | 8 hours |
 | ISR page | Next.js | 5 min |
 | FRED data | Next.js fetch | 1 hour |
-| FMP calendar | Next.js fetch | 1 hour |
+| FMP calendar | Next.js fetch | 15 min |
 | FMP earnings | Next.js fetch | 6 hours |
 | CoinGecko | Next.js fetch | 2 min |
 
@@ -152,6 +155,7 @@ UTMs added at render time in HubClient.jsx so both AI-generated and fallback ins
 11. **html2canvas for client-side screenshots.** Dynamic import to avoid bundle bloat. Branded footer injected via DOM clone.
 12. **Vercel Hobby vs Pro:** Same speed, same CDN. Pro gives 10x limits + commercial use license. Not needed yet at current traffic (~39 visits/2months). Upgrade when >500 visits/day or when analytics needed.
 13. **Calendar keyword filters need specificity.** `'Fed '` matched everything (speeches, regional indices, balance sheet). Use exact event names or narrow keywords. Always pair keyword filter with a MAX cap — min guarantees without max caps dump unlimited items.
+14. **FMP timestamps have no timezone.** FMP returns `"2026-03-27 14:00:00"` (no `T`, no `Z`). Browsers parse this as local time, breaking UTC comparisons. Always normalize to ISO: `str.replace(' ', 'T') + 'Z'` via `toISOUTC()` helper.
 
 ## Next Steps (priority order)
 

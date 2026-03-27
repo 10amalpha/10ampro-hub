@@ -386,6 +386,7 @@ export default async function HubPage() {
 
   const formatCalEvent = (ev) => ({
     t: formatTime(ev.time || ''),
+    raw: ev.time || '',
     e: ev.event || '',
     a: fmtEstimate(ev.actual, ev.unit),
     es: fmtEstimate(ev.estimate, ev.unit),

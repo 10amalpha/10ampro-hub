@@ -304,24 +304,30 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
             {calToday.high.length === 0 && calToday.low.length === 0 && (
               <div style={{ padding: '8px', fontSize: 9, color: 'var(--text-muted)', textAlign: 'center' }}>Sin eventos de alto impacto hoy</div>
             )}
-            {calToday.high.map((ev, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderBottom: i < calToday.high.length - 1 ? '1px solid var(--border-subtle)' : 'none', background: '#60a5fa06' }}>
-                <span style={{ fontSize: 10, color: '#60a5fa', fontWeight: 700, width: 38, flexShrink: 0 }}>{ev.t}</span>
-                <span style={{ fontSize: 10, color: 'var(--text-primary)', fontWeight: 600, flex: 1 }}>{ev.e}</span>
+            {calToday.high.map((ev, i) => {
+              const isPast = ev.raw && new Date(ev.raw) < now;
+              return (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderBottom: i < calToday.high.length - 1 ? '1px solid var(--border-subtle)' : 'none', background: '#60a5fa06', opacity: isPast ? 0.55 : 1 }}>
+                <span style={{ fontSize: 10, color: isPast ? 'var(--text-muted)' : '#60a5fa', fontWeight: 700, width: 38, flexShrink: 0 }}>{ev.t}</span>
+                <span style={{ fontSize: 10, color: isPast ? 'var(--text-secondary)' : 'var(--text-primary)', fontWeight: 600, flex: 1 }}>{ev.e}</span>
                 {ev.a && <span style={{ fontSize: 9, fontWeight: 700, color: ev.es != null && parseFloat(ev.a) > parseFloat(ev.es) ? '#22c55e' : ev.es != null && parseFloat(ev.a) < parseFloat(ev.es) ? '#ef4444' : '#fbbf24' }}>{ev.a}</span>}
                 {ev.es && <span style={{ fontSize: 9, color: ev.a ? 'var(--text-muted)' : 'var(--text-secondary)' }}>est: {ev.es}</span>}
                 {ev.p && <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>prev: {ev.p}</span>}
-                <span style={{ width: 4, height: 4, borderRadius: '50%', background: ev.a ? '#22c55e' : '#ef4444', flexShrink: 0 }} />
+                <span style={{ width: 4, height: 4, borderRadius: '50%', background: ev.a ? '#22c55e' : isPast ? '#fbbf24' : '#ef4444', flexShrink: 0 }} />
               </div>
-            ))}
-            {calToday.low.length > 0 && calToday.low.map((ev, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 8px', borderTop: i === 0 ? '1px solid var(--border)' : 'none', borderBottom: i < calToday.low.length - 1 ? '1px solid var(--border-subtle)' : 'none' }}>
+              );
+            })}
+            {calToday.low.length > 0 && calToday.low.map((ev, i) => {
+              const isPast = ev.raw && new Date(ev.raw) < now;
+              return (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 8px', borderTop: i === 0 ? '1px solid var(--border)' : 'none', borderBottom: i < calToday.low.length - 1 ? '1px solid var(--border-subtle)' : 'none', opacity: isPast ? 0.55 : 1 }}>
                 <span style={{ fontSize: 9, color: 'var(--text-muted)', width: 38, flexShrink: 0 }}>{ev.t}</span>
                 <span style={{ fontSize: 10, color: 'var(--text-secondary)', flex: 1 }}>{ev.e}</span>
                 {ev.a && <span style={{ fontSize: 8, fontWeight: 700, color: ev.es != null && parseFloat(ev.a) > parseFloat(ev.es) ? '#22c55e' : ev.es != null && parseFloat(ev.a) < parseFloat(ev.es) ? '#ef4444' : '#fbbf24' }}>{ev.a}</span>}
                 {ev.es && <span style={{ fontSize: 8, color: 'var(--text-muted)' }}>est: {ev.es}</span>}
               </div>
-            ))}
+              );
+            })}
           </div>
           {/* MAÑANA */}
           <div>

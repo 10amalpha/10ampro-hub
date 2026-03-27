@@ -60,7 +60,7 @@ export async function getEconomicCalendar() {
     const toDate = new Date(today.getTime() + 3 * 86400000);
     const to = toDate.toISOString().split('T')[0];
     const url = `https://financialmodelingprep.com/stable/economic-calendar?from=${from}&to=${to}&apikey=${apiKey}`;
-    const res = await fetch(url, { next: { revalidate: 3600 } });
+    const res = await fetch(url, { next: { revalidate: 900 } });
     if (!res.ok) { console.error('FMP calendar HTTP:', res.status); return []; }
     const data = await res.json();
     if (!Array.isArray(data)) { console.error('FMP calendar: unexpected response'); return []; }

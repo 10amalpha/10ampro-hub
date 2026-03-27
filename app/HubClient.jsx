@@ -308,15 +308,17 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderBottom: i < calToday.high.length - 1 ? '1px solid var(--border-subtle)' : 'none', background: '#60a5fa06' }}>
                 <span style={{ fontSize: 10, color: '#60a5fa', fontWeight: 700, width: 38, flexShrink: 0 }}>{ev.t}</span>
                 <span style={{ fontSize: 10, color: 'var(--text-primary)', fontWeight: 600, flex: 1 }}>{ev.e}</span>
-                {ev.es && <span style={{ fontSize: 9, color: 'var(--text-secondary)' }}>est: {ev.es}</span>}
+                {ev.a && <span style={{ fontSize: 9, fontWeight: 700, color: ev.es != null && parseFloat(ev.a) > parseFloat(ev.es) ? '#22c55e' : ev.es != null && parseFloat(ev.a) < parseFloat(ev.es) ? '#ef4444' : '#fbbf24' }}>{ev.a}</span>}
+                {ev.es && <span style={{ fontSize: 9, color: ev.a ? 'var(--text-muted)' : 'var(--text-secondary)' }}>est: {ev.es}</span>}
                 {ev.p && <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>prev: {ev.p}</span>}
-                <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#ef4444', flexShrink: 0 }} />
+                <span style={{ width: 4, height: 4, borderRadius: '50%', background: ev.a ? '#22c55e' : '#ef4444', flexShrink: 0 }} />
               </div>
             ))}
             {calToday.low.length > 0 && calToday.low.map((ev, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 8px', borderTop: i === 0 ? '1px solid var(--border)' : 'none', borderBottom: i < calToday.low.length - 1 ? '1px solid var(--border-subtle)' : 'none' }}>
                 <span style={{ fontSize: 9, color: 'var(--text-muted)', width: 38, flexShrink: 0 }}>{ev.t}</span>
                 <span style={{ fontSize: 10, color: 'var(--text-secondary)', flex: 1 }}>{ev.e}</span>
+                {ev.a && <span style={{ fontSize: 8, fontWeight: 700, color: ev.es != null && parseFloat(ev.a) > parseFloat(ev.es) ? '#22c55e' : ev.es != null && parseFloat(ev.a) < parseFloat(ev.es) ? '#ef4444' : '#fbbf24' }}>{ev.a}</span>}
                 {ev.es && <span style={{ fontSize: 8, color: 'var(--text-muted)' }}>est: {ev.es}</span>}
               </div>
             ))}
@@ -334,7 +336,8 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderBottom: i < calTomorrow.length - 1 ? '1px solid var(--border-subtle)' : 'none' }}>
                 <span style={{ fontSize: 10, color: '#fbbf24', fontWeight: 600, width: 38, flexShrink: 0 }}>{ev.t}</span>
                 <span style={{ fontSize: 10, color: 'var(--text-primary)', fontWeight: 500, flex: 1 }}>{ev.e}</span>
-                {ev.es && <span style={{ fontSize: 9, color: 'var(--text-secondary)' }}>est: {ev.es}</span>}
+                {ev.a && <span style={{ fontSize: 9, fontWeight: 700, color: ev.es != null && parseFloat(ev.a) > parseFloat(ev.es) ? '#22c55e' : ev.es != null && parseFloat(ev.a) < parseFloat(ev.es) ? '#ef4444' : '#fbbf24' }}>{ev.a}</span>}
+                {ev.es && <span style={{ fontSize: 9, color: ev.a ? 'var(--text-muted)' : 'var(--text-secondary)' }}>est: {ev.es}</span>}
                 {ev.p && <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>prev: {ev.p}</span>}
               </div>
             ))}

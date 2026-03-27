@@ -352,6 +352,7 @@ export default async function HubPage() {
       time: rawDate,
       dateOnly,
       event: ev.event || '',
+      actual: ev.actual,
       estimate: ev.estimate,
       prev: ev.previous,
       impact: ev.impact ?? 1,
@@ -386,6 +387,7 @@ export default async function HubPage() {
   const formatCalEvent = (ev) => ({
     t: formatTime(ev.time || ''),
     e: ev.event || '',
+    a: fmtEstimate(ev.actual, ev.unit),
     es: fmtEstimate(ev.estimate, ev.unit),
     p: fmtEstimate(ev.prev, ev.unit),
     impact: ev.impact,

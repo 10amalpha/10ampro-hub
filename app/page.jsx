@@ -384,9 +384,16 @@ export default async function HubPage() {
     return s;
   };
 
+  const toISOUTC = (t) => {
+    if (!t) return '';
+    if (t.includes('T')) return t;
+    // FMP format: "2026-03-27 14:00:00" → treat as UTC
+    return t.replace(' ', 'T') + 'Z';
+  };
+
   const formatCalEvent = (ev) => ({
     t: formatTime(ev.time || ''),
-    raw: ev.time || '',
+    raw: toISOUTC(ev.time || ''),
     e: ev.event || '',
     a: fmtEstimate(ev.actual, ev.unit),
     es: fmtEstimate(ev.estimate, ev.unit),

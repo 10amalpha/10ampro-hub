@@ -1,5 +1,5 @@
 # 10AMPRO Hub — _STATUS.md
-**Last updated:** March 27, 2026
+**Last updated:** March 29, 2026
 **Live URL:** https://10ampro-hub.vercel.app
 **Repo:** 10amalpha/10ampro-hub
 **Vercel Project ID:** prj_lKkui80lHh4x3Fietp6nC4CRfupB
@@ -156,6 +156,7 @@ UTMs added at render time in HubClient.jsx so both AI-generated and fallback ins
 12. **Vercel Hobby vs Pro:** Same speed, same CDN. Pro gives 10x limits + commercial use license. Not needed yet at current traffic (~39 visits/2months). Upgrade when >500 visits/day or when analytics needed.
 13. **Calendar keyword filters need specificity.** `'Fed '` matched everything (speeches, regional indices, balance sheet). Use exact event names or narrow keywords. Always pair keyword filter with a MAX cap — min guarantees without max caps dump unlimited items.
 14. **FMP timestamps have no timezone.** FMP returns `"2026-03-27 14:00:00"` (no `T`, no `Z`). Browsers parse this as local time, breaking UTC comparisons. Always normalize to ISO: `str.replace(' ', 'T') + 'Z'` via `toISOUTC()` helper.
+15. **Server-side date bucketing must use ET, not UTC.** Vercel runs in UTC — after 7pm ET, `new Date().toISOString().split('T')[0]` returns tomorrow's date. This causes Monday's events to appear in Sunday's HOY column. Fix: `new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }))` for all date-only comparisons.
 
 ## Next Steps (priority order)
 

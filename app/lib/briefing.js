@@ -55,9 +55,9 @@ export async function getEconomicCalendar() {
   const apiKey = process.env.FMP_API_KEY;
   if (!apiKey) { console.error('Calendar: no FMP_API_KEY'); return []; }
   try {
-    const today = new Date();
-    const from = today.toISOString().split('T')[0];
-    const toDate = new Date(today.getTime() + 3 * 86400000);
+    const etNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const from = etNow.toISOString().split('T')[0];
+    const toDate = new Date(etNow.getTime() + 3 * 86400000);
     const to = toDate.toISOString().split('T')[0];
     const url = `https://financialmodelingprep.com/stable/economic-calendar?from=${from}&to=${to}&apikey=${apiKey}`;
     const res = await fetch(url, { next: { revalidate: 900 } });

@@ -360,8 +360,11 @@ export default async function HubPage() {
     };
   });
 
-  const todayStr = new Date().toISOString().split('T')[0];
-  const tmrwDate = new Date(); tmrwDate.setDate(tmrwDate.getDate() + 1);
+  // Use ET for date buckets — FMP dates represent US economic events (ET schedule)
+  // Vercel runs in UTC, so new Date().toISOString() can be a day ahead of ET after 7/8pm ET
+  const etNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+  const todayStr = etNow.toISOString().split('T')[0];
+  const tmrwDate = new Date(etNow); tmrwDate.setDate(tmrwDate.getDate() + 1);
   const tmrwStr = tmrwDate.toISOString().split('T')[0];
 
   const formatTime = (timeStr) => {

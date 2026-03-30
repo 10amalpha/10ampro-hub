@@ -370,11 +370,11 @@ export default async function HubPage() {
   const formatTime = (timeStr) => {
     if (!timeStr) return '';
     try {
-      // Normalize FMP format "2026-03-27 14:00:00" → ISO UTC
-      const normalized = timeStr.includes('T') ? timeStr : timeStr.replace(' ', 'T') + 'Z';
-      const d = new Date(normalized);
-      if (isNaN(d.getTime())) return timeStr;
-      return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/New_York' });
+      if (timeStr.includes('T')) {
+        const d = new Date(timeStr);
+        return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/New_York' });
+      }
+      return timeStr;
     } catch { return timeStr; }
   };
 

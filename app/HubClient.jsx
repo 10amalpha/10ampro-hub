@@ -300,7 +300,7 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
             <div style={{ display: 'flex', alignItems: 'center', padding: '3px 8px', background: 'var(--surface)', borderBottom: '1px solid var(--border)', gap: 6 }}>
               <span style={{ fontSize: 10, fontWeight: 700, color: '#60a5fa' }}>HOY</span>
               <span style={{ fontSize: 9, color: 'var(--text-secondary)', flex: 1 }}>{now.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
-              <span style={{ fontSize: 8, color: 'var(--text-muted)', letterSpacing: '0.5px' }}>ET</span>
+              <span style={{ fontSize: 8, color: 'var(--text-muted)', letterSpacing: '0.5px' }}>UTC</span>
             </div>
             {calToday.high.length === 0 && calToday.low.length === 0 && (
               <div style={{ padding: '8px', fontSize: 9, color: 'var(--text-muted)', textAlign: 'center' }}>Sin eventos de alto impacto hoy</div>

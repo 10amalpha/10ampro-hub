@@ -307,9 +307,9 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
             {calToday.high.map((ev, i) => {
               const isPast = ev.raw && new Date(ev.raw) < now;
               return (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderBottom: i < calToday.high.length - 1 ? '1px solid var(--border-subtle)' : 'none', background: '#60a5fa06', opacity: isPast ? 0.55 : 1 }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 8px', borderBottom: i < calToday.high.length - 1 ? '1px solid var(--border-subtle)' : 'none', background: isPast ? 'transparent' : '#60a5fa0d', opacity: isPast ? 0.4 : 1 }}>
                 <span style={{ fontSize: 10, color: isPast ? 'var(--text-muted)' : '#60a5fa', fontWeight: 700, width: 38, flexShrink: 0 }}>{ev.t}</span>
-                <span style={{ fontSize: 10, color: isPast ? 'var(--text-secondary)' : 'var(--text-primary)', fontWeight: 600, flex: 1 }}>{ev.e}</span>
+                <span style={{ fontSize: isPast ? 10 : 11, color: isPast ? 'var(--text-muted)' : 'var(--text-primary)', fontWeight: isPast ? 500 : 700, flex: 1 }}>{ev.e}</span>
                 {ev.a && <span style={{ fontSize: 9, fontWeight: 700, color: ev.es != null && parseFloat(ev.a) > parseFloat(ev.es) ? '#22c55e' : ev.es != null && parseFloat(ev.a) < parseFloat(ev.es) ? '#ef4444' : '#fbbf24' }}>{ev.a}</span>}
                 {ev.es && <span style={{ fontSize: 9, color: ev.a ? 'var(--text-muted)' : 'var(--text-secondary)' }}>est: {ev.es}</span>}
                 {ev.p && <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>prev: {ev.p}</span>}
@@ -320,7 +320,7 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
             {calToday.low.length > 0 && calToday.low.map((ev, i) => {
               const isPast = ev.raw && new Date(ev.raw) < now;
               return (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 8px', borderTop: i === 0 ? '1px solid var(--border)' : 'none', borderBottom: i < calToday.low.length - 1 ? '1px solid var(--border-subtle)' : 'none', opacity: isPast ? 0.55 : 1 }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 8px', borderTop: i === 0 ? '1px solid var(--border)' : 'none', borderBottom: i < calToday.low.length - 1 ? '1px solid var(--border-subtle)' : 'none', opacity: isPast ? 0.4 : 1 }}>
                 <span style={{ fontSize: 9, color: isPast ? 'var(--text-muted)' : '#60a5fa80', width: 38, flexShrink: 0 }}>{ev.t}</span>
                 <span style={{ fontSize: 10, color: isPast ? 'var(--text-muted)' : 'var(--text-primary)', fontWeight: 500, flex: 1 }}>{ev.e}</span>
                 {ev.a && <span style={{ fontSize: 8, fontWeight: 700, color: ev.es != null && parseFloat(ev.a) > parseFloat(ev.es) ? '#22c55e' : ev.es != null && parseFloat(ev.a) < parseFloat(ev.es) ? '#ef4444' : '#fbbf24' }}>{ev.a}</span>}

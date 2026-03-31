@@ -199,15 +199,24 @@ export default function PortfolioEmbed({ mb }) {
 
   // ─── NO WALLET ───
   if (state === 'no_wallet') {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator?.userAgent || '');
+    const phantomDeepLink = `https://phantom.app/ul/browse/${encodeURIComponent(window.location.href)}?ref=${encodeURIComponent(window.location.origin)}`;
+
     return (
-      <div style={{ ...barStyle, padding: padX, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <a
+        href={isMobile ? phantomDeepLink : 'https://phantom.app'}
+        target={isMobile ? '_self' : '_blank'}
+        rel="noopener noreferrer"
+        style={{ ...barStyle, padding: padX, display: 'flex', alignItems: 'center', justifyContent: 'space-between', textDecoration: 'none', cursor: 'pointer' }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={labelStyle}>MI PORTAFOLIO</span>
           <span style={{ fontSize: mb ? 9 : 10, color: 'var(--text-muted)' }}>
-            Instala <a href="https://phantom.app" target="_blank" rel="noopener noreferrer" style={{ color: '#D4A843', textDecoration: 'none' }}>Phantom</a> para ver tu portafolio
+            {isMobile ? 'Abrir en Phantom para conectar wallet' : 'Instala Phantom para ver tu portafolio'}
           </span>
         </div>
-      </div>
+        <Wallet size={14} color="#D4A843" />
+      </a>
     );
   }
 

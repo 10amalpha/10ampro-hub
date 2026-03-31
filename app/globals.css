@@ -103,3 +103,8 @@ a:hover {
   .macro-grid { grid-template-columns: repeat(3, 1fr) !important; }
   .macro-label-col { display: none !important; }
 }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

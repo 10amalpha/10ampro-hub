@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown, ChevronUp, ExternalLink, Wallet } from 'lucide-react';
+import { ChevronDown, ChevronUp, ExternalLink, Wallet, Plus, X, RefreshCw, LogOut } from 'lucide-react';
 
 const TRACKER_API = 'https://portafoliotracker.vercel.app';
 const SUPABASE_URL = 'https://bzpraigsuwgjgpnclcpd.supabase.co';
@@ -33,6 +33,65 @@ export default function PortfolioEmbed({ mb }) {
 
   const [availableWallets, setAvailableWallets] = useState([]);
   const providerRef = useRef(null);
+  const [showAddPanel, setShowAddPanel] = useState(false);
+  const [newAddress, setNewAddress] = useState('');
+  const [addingWallet, setAddingWallet] = useState(false);
+  const [addError, setAddError] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+
+  function detectChainFromAddr(address) {
+    if (!address || typeof address !== 'string') return null;
+    const t = address.trim();
+    if (/^0x[a-fA-F0-9]{40}$/.test(t)) return 'ethereum';
+    if (/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(t) || /^bc1[a-zA-HJ-NP-Z0-9]{25,90}$/.test(t)) return 'bitcoin';
+    if (/^r[1-9A-HJ-NP-Za-km-z]{24,34}$/.test(t)) return 'xrp';
+    if (/^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(t)) return 'tron';
+    if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(t)) return 'solana';
+    return null;
+  }
+
+  const detectedChain = detectChainFromAddr(newAddress);
+
+  // Add tracked wallet
+  const handleAddWallet = async () => {
+    const trimmed = newAddress.trim();
+    const chain = detectChainFromAddr(trimmed);
+    if (!chain) { setAddError('Dirección no reconocida'); return; }
+    if (trimmed === walletAddr) { setAddError('Ya está incluida'); return; }
+    if (trackedWallets.some(tw => tw.tracked_address === trimmed)) { setAddError('Ya está siendo rastreada'); return; }
+    setAddingWallet(true); setAddError('');
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/tracked_wallets`, {
+        method: 'POST', headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify({ owner_wallet: walletAddr, tracked_address: trimmed, chain, added_at: new Date().toISOString() }),
+      });
+      setNewAddress(''); setShowAddPanel(false);
+      const tws = await sbFetch(`tracked_wallets?owner_wallet=eq.${walletAddr}&select=*`);
+      setTrackedWallets(Array.isArray(tws) ? tws : []);
+      setState('load_holdings');
+    } catch { setAddError('Error al guardar'); }
+    finally { setAddingWallet(false); }
+  };
+
+  // Remove tracked wallet
+  const handleRemoveWallet = async (addr) => {
+    await fetch(`${SUPABASE_URL}/rest/v1/tracked_wallets?owner_wallet=eq.${walletAddr}&tracked_address=eq.${addr}`, {
+      method: 'DELETE', headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    const tws = await sbFetch(`tracked_wallets?owner_wallet=eq.${walletAddr}&select=*`);
+    setTrackedWallets(Array.isArray(tws) ? tws : []);
+    setState('load_holdings');
+  };
+
+  // Refresh holdings
+  const handleRefresh = () => { setRefreshing(true); setState('load_holdings'); };
+
+  // Disconnect wallet
+  const handleDisconnect = () => {
+    if (providerRef.current?.disconnect) providerRef.current.disconnect();
+    setWalletAddr(null); setHoldings([]); setPrices({}); setTrackedWallets([]);
+    setExpanded(false); setState('disconnected');
+  };
 
   // Detect all Solana wallet providers
   function getProviders() {
@@ -173,7 +232,7 @@ export default function PortfolioEmbed({ mb }) {
             if (pr.ok) Object.assign(merged, await pr.json());
           } catch {}
         }
-        if (mounted.current) { setPrices(merged); setState('ready'); }
+        if (mounted.current) { setPrices(merged); setState('ready'); setRefreshing(false); }
       } catch (e) {
         console.error('Portfolio embed error:', e);
         if (mounted.current) setState('error');
@@ -398,19 +457,103 @@ export default function PortfolioEmbed({ mb }) {
           {visible.length === 0 && (
             <div style={{ padding: '12px 14px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 10 }}>No se encontraron tokens con valor &gt; $1</div>
           )}
-          <div style={{ padding: '6px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-subtle)' }}>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {sortedChains.map(c => (
-                <span key={c} style={{ fontSize: 8, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 3 }}>
-                  <span style={{ width: 4, height: 4, borderRadius: '50%', background: CHAIN_COLORS[c], display: 'inline-block' }} />
-                  {grouped[c].length} en {CHAIN_LABELS[c]}
-                </span>
-              ))}
+
+          {/* ─── Wallet management footer ─── */}
+          <div style={{ padding: '8px 14px', borderTop: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {/* Add wallet panel */}
+            {showAddPanel ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  <div style={{ flex: 1, position: 'relative' }}>
+                    <input
+                      value={newAddress}
+                      onChange={e => { setNewAddress(e.target.value); setAddError(''); }}
+                      onKeyDown={e => e.key === 'Enter' && handleAddWallet()}
+                      placeholder="Pega dirección (SOL, ETH, BTC, TRX, XRP)"
+                      spellCheck={false}
+                      autoFocus
+                      style={{
+                        width: '100%', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 3,
+                        padding: '5px 10px', paddingRight: detectedChain ? 70 : 10, color: 'var(--text-primary)',
+                        fontSize: 10, fontFamily: "'JetBrains Mono', monospace", outline: 'none',
+                      }}
+                    />
+                    {detectedChain && (
+                      <span style={{
+                        position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                        fontSize: 8, fontWeight: 700, color: CHAIN_COLORS[detectedChain], textTransform: 'uppercase',
+                        letterSpacing: '0.5px', background: 'var(--bg)', padding: '1px 4px', borderRadius: 2,
+                        border: `1px solid ${CHAIN_COLORS[detectedChain]}30`,
+                      }}>
+                        {CHAIN_LABELS[detectedChain]}
+                      </span>
+                    )}
+                  </div>
+                  <button onClick={handleAddWallet} disabled={addingWallet || !detectedChain}
+                    style={{ background: '#D4A843', color: '#0c0c0e', border: 'none', borderRadius: 3, padding: '5px 10px', fontSize: 9, fontWeight: 700, cursor: 'pointer', opacity: addingWallet || !detectedChain ? 0.5 : 1, fontFamily: "'Space Grotesk', sans-serif", whiteSpace: 'nowrap' }}>
+                    {addingWallet ? '...' : 'Rastrear'}
+                  </button>
+                  <button onClick={() => { setShowAddPanel(false); setNewAddress(''); setAddError(''); }}
+                    style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 2 }}>
+                    <X size={12} />
+                  </button>
+                </div>
+                {addError && <span style={{ fontSize: 8, color: '#ef4444' }}>{addError}</span>}
+              </div>
+            ) : (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <button onClick={() => setShowAddPanel(true)}
+                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 3, padding: '4px 10px', fontSize: 9, fontWeight: 600, cursor: 'pointer', color: 'var(--text-secondary)', fontFamily: "'Space Grotesk', sans-serif", display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <Plus size={10} /> Rastrear otra wallet
+                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <button onClick={handleRefresh} title="Actualizar"
+                    style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 2, display: 'flex' }}>
+                    <RefreshCw size={11} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
+                  </button>
+                  <button onClick={handleDisconnect} title="Desconectar wallet"
+                    style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 2, display: 'flex', transition: 'color 0.15s' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
+                    onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}>
+                    <LogOut size={11} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Tracked wallet pills */}
+            {trackedWallets.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {trackedWallets.map(tw => (
+                  <div key={tw.tracked_address} style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 3,
+                    padding: '2px 6px', fontSize: 8, fontFamily: "'JetBrains Mono', monospace", color: 'var(--text-muted)',
+                  }}>
+                    <span style={{ width: 4, height: 4, borderRadius: '50%', background: CHAIN_COLORS[tw.chain], display: 'inline-block' }} />
+                    <span>{short(tw.tracked_address)}</span>
+                    <button onClick={() => handleRemoveWallet(tw.tracked_address)}
+                      style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0, display: 'flex' }}>
+                      <X size={8} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Chain status + connected wallet */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {sortedChains.map(c => (
+                  <span key={c} style={{ fontSize: 8, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 3 }}>
+                    <span style={{ width: 4, height: 4, borderRadius: '50%', background: CHAIN_COLORS[c], display: 'inline-block' }} />
+                    {grouped[c].length} en {CHAIN_LABELS[c]}
+                  </span>
+                ))}
+                {trackedWallets.length > 0 && <span style={{ fontSize: 8, color: 'var(--text-muted)' }}>· {trackedWallets.length + 1} wallets</span>}
+              </div>
+              <span style={{ fontSize: 8, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>{short(walletAddr)}</span>
             </div>
-            <a href="https://portafoliotracker.vercel.app" target="_blank" rel="noopener noreferrer"
-              style={{ fontSize: 8, color: '#D4A843', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 3 }}>
-              Gestionar <ExternalLink size={8} />
-            </a>
           </div>
         </div>
       )}

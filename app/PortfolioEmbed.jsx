@@ -16,6 +16,14 @@ async function sbFetch(path) {
   return r.ok ? r.json() : [];
 }
 
+function trackEmbed(wallet, event, data = {}) {
+  fetch(`${TRACKER_API}/api/track`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ wallet, event, ...data }),
+  }).catch(() => {});
+}
+
 export default function PortfolioEmbed({ mb }) {
   // States: checking | no_wallet | disconnected | not_activated | loading | ready | error
   const [state, setState] = useState('checking');
@@ -66,6 +74,7 @@ export default function PortfolioEmbed({ mb }) {
         body: JSON.stringify({ owner_wallet: walletAddr, tracked_address: trimmed, chain, added_at: new Date().toISOString() }),
       });
       setNewAddress(''); setShowAddPanel(false);
+      trackEmbed(walletAddr, 'add_wallet', { chains: [chain], walletCount: trackedWallets.length + 2 });
       const tws = await sbFetch(`tracked_wallets?owner_wallet=eq.${walletAddr}&select=*`);
       setTrackedWallets(Array.isArray(tws) ? tws : []);
       setState('load_holdings');
@@ -84,7 +93,7 @@ export default function PortfolioEmbed({ mb }) {
   };
 
   // Refresh holdings
-  const handleRefresh = () => { setRefreshing(true); setState('load_holdings'); };
+  const handleRefresh = () => { setRefreshing(true); trackEmbed(walletAddr, 'refresh'); setState('load_holdings'); };
 
   // Disconnect wallet
   const handleDisconnect = () => {
@@ -232,7 +241,29 @@ export default function PortfolioEmbed({ mb }) {
             if (pr.ok) Object.assign(merged, await pr.json());
           } catch {}
         }
-        if (mounted.current) { setPrices(merged); setState('ready'); setRefreshing(false); }
+        if (mounted.current) {
+          setPrices(merged);
+          setState('ready');
+          setRefreshing(false);
+
+          // Track session with full portfolio data
+          const totalVal = all.reduce((s, h) => {
+            const p = merged[h.symbol]?.usd || h.price_usd || 0;
+            return s + h.quantity * p;
+          }, 0);
+          const chains = [...new Set(all.map(h => h.chain || 'solana'))];
+          const tokensByValue = all
+            .map(h => ({ symbol: h.symbol, val: h.quantity * (merged[h.symbol]?.usd || h.price_usd || 0) }))
+            .filter(t => t.val >= 1)
+            .sort((a, b) => b.val - a.val)
+            .map(t => t.symbol);
+          trackEmbed(walletAddr, 'session', {
+            totalValue: totalVal,
+            chains,
+            topTokens: tokensByValue,
+            walletCount: (wallets || []).length + 1,
+          });
+        }
       } catch (e) {
         console.error('Portfolio embed error:', e);
         if (mounted.current) setState('error');
@@ -391,7 +422,7 @@ export default function PortfolioEmbed({ mb }) {
   return (
     <div style={barStyle}>
       <div
-        onClick={() => setExpanded(!expanded)}
+        onClick={() => { if (!expanded) trackEmbed(walletAddr, 'expand', { topTokens: visible.map(h => h.symbol) }); setExpanded(!expanded); }}
         style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: padX, cursor: 'pointer', userSelect: 'none' }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: mb ? 8 : 12 }}>

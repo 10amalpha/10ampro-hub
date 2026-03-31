@@ -31,28 +31,51 @@ export default function PortfolioEmbed({ mb }) {
 
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
 
-  // Step 1: detect Phantom, try silent connect
+  const [availableWallets, setAvailableWallets] = useState([]);
+  const providerRef = useRef(null);
+
+  // Detect all Solana wallet providers
+  function getProviders() {
+    const providers = [];
+    if (window?.phantom?.solana?.isPhantom) providers.push({ name: 'Phantom', provider: window.phantom.solana, icon: '👻' });
+    if (window?.backpack?.solana) providers.push({ name: 'Backpack', provider: window.backpack.solana, icon: '🎒' });
+    if (window?.xnft?.solana) providers.push({ name: 'xNFT', provider: window.xnft.solana, icon: '🔗' });
+    // Fallback: window.solana if not already captured
+    if (providers.length === 0 && window?.solana) providers.push({ name: 'Wallet', provider: window.solana, icon: '💳' });
+    return providers;
+  }
+
+  // Step 1: detect wallets, try silent connect on each
   useEffect(() => {
     const init = async () => {
       await new Promise(r => setTimeout(r, 400));
-      const phantom = window?.phantom?.solana || window?.solana;
-      if (!phantom?.isPhantom) { if (mounted.current) setState('no_wallet'); return; }
-      try {
-        const resp = await phantom.connect({ onlyIfTrusted: true });
-        if (mounted.current) { setWalletAddr(resp.publicKey.toString()); setState('check_activation'); }
-      } catch {
-        if (mounted.current) setState('disconnected');
+      const providers = getProviders();
+      if (providers.length === 0) { if (mounted.current) setState('no_wallet'); return; }
+      if (mounted.current) setAvailableWallets(providers);
+
+      // Try silent connect on each provider
+      for (const w of providers) {
+        try {
+          const resp = await w.provider.connect({ onlyIfTrusted: true });
+          if (mounted.current) {
+            providerRef.current = w.provider;
+            setWalletAddr(resp.publicKey.toString());
+            setState('check_activation');
+          }
+          return;
+        } catch { /* not trusted yet, continue */ }
       }
+      // No silent connect worked
+      if (mounted.current) setState('disconnected');
     };
     init();
   }, []);
 
-  // Manual connect
-  const handleConnect = async () => {
-    const phantom = window?.phantom?.solana || window?.solana;
-    if (!phantom) return;
+  // Manual connect with a specific provider
+  const handleConnect = async (provider) => {
     try {
-      const resp = await phantom.connect();
+      const resp = await provider.connect();
+      providerRef.current = provider;
       setWalletAddr(resp.publicKey.toString());
       setState('check_activation');
     } catch { /* user rejected */ }
@@ -220,15 +243,31 @@ export default function PortfolioEmbed({ mb }) {
     );
   }
 
-  // ─── DISCONNECTED ───
+  // ─── DISCONNECTED — show available wallets ───
   if (state === 'disconnected') {
     return (
-      <div onClick={handleConnect} style={{ ...barStyle, padding: padX, display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+      <div style={{ ...barStyle, padding: padX, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={labelStyle}>MI PORTAFOLIO</span>
-          <span style={{ fontSize: mb ? 9 : 10, color: 'var(--text-muted)' }}>Conecta tu wallet para ver tu portafolio</span>
+          <span style={{ fontSize: mb ? 9 : 10, color: 'var(--text-muted)' }}>Conecta tu wallet</span>
         </div>
-        <Wallet size={14} color="var(--text-muted)" />
+        <div style={{ display: 'flex', gap: 6 }}>
+          {availableWallets.map(w => (
+            <button
+              key={w.name}
+              onClick={() => handleConnect(w.provider)}
+              style={{
+                background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 3,
+                padding: '4px 10px', fontSize: 9, fontWeight: 600, cursor: 'pointer',
+                color: 'var(--text-secondary)', fontFamily: "'Space Grotesk', sans-serif",
+                display: 'flex', alignItems: 'center', gap: 4,
+                transition: 'border-color 0.15s',
+              }}
+            >
+              <span style={{ fontSize: 11 }}>{w.icon}</span> {w.name}
+            </button>
+          ))}
+        </div>
       </div>
     );
   }

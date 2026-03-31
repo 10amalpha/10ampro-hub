@@ -1,5 +1,5 @@
 # 10AMPRO Hub — _STATUS.md
-**Last updated:** March 29, 2026
+**Last updated:** March 31, 2026
 **Live URL:** https://10ampro-hub.vercel.app
 **Repo:** 10amalpha/10ampro-hub
 **Vercel Project ID:** prj_lKkui80lHh4x3Fietp6nC4CRfupB
@@ -11,6 +11,7 @@
 - **Framework:** Next.js 14.0.4 (App Router)
 - **page.jsx** — Server component. Phase 1: parallel fetch (Yahoo macro+stocks, CoinGecko, FRED, FMP calendar+earnings, Supabase). Phase 2: builds market snapshot from Phase 1 data, passes to `getInsights()`. `force-dynamic` with ISR revalidate 300s.
 - **HubClient.jsx** — Client component (`'use client'`), receives all data as props, handles interactivity (watchlist filters, comment expand/collapse, responsive breakpoints, per-section share via html2canvas).
+- **PortfolioEmbed.jsx** — Client-only component (dynamic import, SSR disabled). Detects Phantom wallet via `window.phantom.solana`, silent connect, checks activation via shared Supabase, fetches holdings cross-origin from portafoliotracker.vercel.app APIs. Zero new npm deps. Three states: CTA bar → loading → full portfolio bar with expandable holdings. Sits between macro bar and calendar.
 - **app/lib/insights.js** — Shared module for AI insight generation. Called directly by `page.jsx` (NOT via HTTP self-fetch). Has 8h in-memory cache. Accepts pre-fetched market data as parameter to avoid redundant Yahoo/CoinGecko calls.
 - **app/lib/briefing.js** — Shared module for FRED + FMP data. Called directly by `page.jsx` (NOT via HTTP self-fetch). Contains `getFedData()`, `getEconomicCalendar()`, `getEarnings()`, `getBriefingData()`.
 - **API Routes:**

@@ -1,5 +1,8 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import dynamic from 'next/dynamic';
+
+const PortfolioEmbed = dynamic(() => import('./PortfolioEmbed'), { ssr: false });
 
 // ─── Share section as image ─────────────────────────────────
 async function shareSection(element, sectionName) {
@@ -292,6 +295,9 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
             </div>
           </div>
         </div>
+
+        {/* ═══ MI PORTAFOLIO ═══ */}
+        <PortfolioEmbed mb={mb} />
 
         {/* ═══ CALENDAR ═══ */}
         <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 0, marginBottom: 6, border: '1px solid var(--border)', borderRadius: 3, overflow: 'hidden' }}>

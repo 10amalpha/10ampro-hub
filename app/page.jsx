@@ -448,14 +448,17 @@ export default async function HubPage() {
   const todayEventsRaw = calendarRaw.filter(ev => ev.dateOnly === todayStr);
   const tmrwEventsRaw = calendarRaw.filter(ev => ev.dateOnly === tmrwStr);
 
-  // HOY: min 5, max 8
-  const todayFiltered = filterCalendarEvents(todayEventsRaw, 5, MAX_HOY);
+  // HOY: min 5, max 8 — sort chronologically after filtering
+  const todayFiltered = filterCalendarEvents(todayEventsRaw, 5, MAX_HOY)
+    .sort((a, b) => new Date(toISOUTC(a.time)) - new Date(toISOUTC(b.time)));
   const calToday = {
     high: todayFiltered.filter(ev => ev.impact >= 3).map(formatCalEvent),
     low: todayFiltered.filter(ev => ev.impact < 3).map(formatCalEvent),
   };
-  // MAÑANA: no minimum, max 6
-  const calTomorrow = filterCalendarEvents(tmrwEventsRaw, 0, MAX_MANANA).map(formatCalEvent);
+  // MAÑANA: no minimum, max 6 — sort chronologically
+  const calTomorrow = filterCalendarEvents(tmrwEventsRaw, 0, MAX_MANANA)
+    .sort((a, b) => new Date(toISOUTC(a.time)) - new Date(toISOUTC(b.time)))
+    .map(formatCalEvent);
 
   // ─── Watchlist ───
   const STOCK_TICKERS = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC'];

@@ -164,6 +164,7 @@ UTMs added at render time in HubClient.jsx so both AI-generated and fallback ins
 16. **FMP date format breaks `formatTime()`.** FMP returns `"2026-04-01 14:00:00"` (space-separated, no `T`). The original `formatTime()` only handled ISO `T` format — FMP's format fell through the `if (timeStr.includes('T'))` guard and returned the full datetime string. Fix: normalize first (`str.replace(' ', 'T') + 'Z'`), then parse. Always test `formatTime` with actual FMP output, not assumed ISO input.
 17. **Never use opacity for text dimming.** Stacking `color: var(--text-muted)` AND `opacity: 0.6` double-dims text into invisibility on dark backgrounds. Use color steps alone (`--text-primary` → `--text-secondary` → `--text-muted`). One mechanism, not two.
 18. **Sort after filtering, not before.** Tier-based filtering (tier 1 first, tier 2 fills remaining) produces results ordered by tier, not by time. Always `.sort()` by timestamp as the last step before rendering. The filter picks WHICH events; the sort decides display ORDER.
+19. **Global font size pass (Apr 1).** Every `fontSize` in HubClient.jsx and PortfolioEmbed.jsx bumped +2px (8→10, 9→11, 10→12, 11→13, 12→14, 13→15). Ternary mobile sizes also bumped (e.g. `mb ? 11 : 14` → `mb ? 13 : 16`). Time column width 38→46px. Use a Python `str.replace()` script for bulk edits like this — more reliable than chaining 80+ `str_replace` tool calls. Always bump ALL components in the same pass (PortfolioEmbed was missed on first pass).
 
 ## Next Steps (priority order)
 

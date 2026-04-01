@@ -43,7 +43,10 @@
 
 ### 3. CALENDAR ✅ COMPLETE — FMP + Smart 3-tier filter + Actual values + Time progression
 - **Actual values (added Mar 27):** When FMP publishes actual data (e.g., Michigan Consumer Sentiment = 53.3), it displays in bold next to the event name. Color-coded: green (beat estimate), red (miss), yellow (inline with estimate or no estimate to compare). The `est:` label dims when actual is present so actual takes visual priority.
-- **Time progression (added Mar 27):** Past events (UTC time < now) dim to 55% opacity. Time label switches from blue to muted. Dot logic: 🟢 green = actual released, 🟡 yellow = time passed but no actual yet, 🔴 red = upcoming. FMP timestamps normalized from `"2026-03-27 14:00:00"` to ISO UTC `"2026-03-27T14:00:00Z"` via `toISOUTC()` helper in page.jsx — without this, browsers parse FMP's format as local time and dimming breaks.
+- **Time display fix (Apr 1):** `formatTime()` now normalizes FMP's space-separated format (`"2026-04-01 14:00:00"`) to ISO before parsing. Previously only handled `T`-separated ISO strings — FMP format fell through and dumped the full datetime string (date + time) on every row. Now shows just `HH:MM` in ET.
+- **Time progression (added Mar 27, simplified Apr 1):** Past events use `var(--text-secondary)` color (no opacity hacks). Upcoming events stay bright with blue time + blue background tint. No row-level opacity — all dimming is done via color alone, matching CONTEXTO section readability.
+- **Chronological sort (Apr 1):** Events now sort by time after tier filtering. Previously tier priority determined display order (tier 1 first, tier 2 next), causing 10:00 events to show above 08:30 events. Now both HOY and MAÑANA columns read top-to-bottom chronologically.
+- **Timezone label (Apr 1):** Header changed from "UTC" to "ET" since `formatTime()` converts all times to Eastern.
 - **FMP calendar cache reduced from 1h → 15min (Mar 27):** Actuals now appear within ~20min of release (15min FMP cache + 5min ISR regen).
 - **Tier 1 (always show):** FOMC, NFP, Jobless Claims, CPI, PPI, PCE, GDP, Retail Sales, ISM, Michigan, Home Sales, Balance of Trade, Interest Rate, Powell, Fed Funds Rate
 - **Tier 2 (fills remaining slots):** Fed speeches (Barr, Jefferson, Cook, Daly, etc.), Fed Balance Sheet, Mortgage Rates, Wholesale, EIA, Housing Starts, Building Permits, Durable Goods, Industrial Production, Crude Oil, Natural Gas
@@ -158,6 +161,9 @@ UTMs added at render time in HubClient.jsx so both AI-generated and fallback ins
 13. **Calendar keyword filters need specificity.** `'Fed '` matched everything (speeches, regional indices, balance sheet). Use exact event names or narrow keywords. Always pair keyword filter with a MAX cap — min guarantees without max caps dump unlimited items.
 14. **FMP timestamps have no timezone.** FMP returns `"2026-03-27 14:00:00"` (no `T`, no `Z`). Browsers parse this as local time, breaking UTC comparisons. Always normalize to ISO: `str.replace(' ', 'T') + 'Z'` via `toISOUTC()` helper.
 15. **Server-side date bucketing must use ET, not UTC.** Vercel runs in UTC — after 7pm ET, `new Date().toISOString().split('T')[0]` returns tomorrow's date. This causes Monday's events to appear in Sunday's HOY column. Fix: `new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }))` for all date-only comparisons.
+16. **FMP date format breaks `formatTime()`.** FMP returns `"2026-04-01 14:00:00"` (space-separated, no `T`). The original `formatTime()` only handled ISO `T` format — FMP's format fell through the `if (timeStr.includes('T'))` guard and returned the full datetime string. Fix: normalize first (`str.replace(' ', 'T') + 'Z'`), then parse. Always test `formatTime` with actual FMP output, not assumed ISO input.
+17. **Never use opacity for text dimming.** Stacking `color: var(--text-muted)` AND `opacity: 0.6` double-dims text into invisibility on dark backgrounds. Use color steps alone (`--text-primary` → `--text-secondary` → `--text-muted`). One mechanism, not two.
+18. **Sort after filtering, not before.** Tier-based filtering (tier 1 first, tier 2 fills remaining) produces results ordered by tier, not by time. Always `.sort()` by timestamp as the last step before rendering. The filter picks WHICH events; the sort decides display ORDER.
 
 ## Next Steps (priority order)
 

@@ -305,7 +305,7 @@ export default function PortfolioEmbed({ mb }) {
     overflow: 'hidden', background: 'var(--surface)',
   };
   const padX = mb ? '8px 10px' : '10px 14px';
-  const labelStyle = { fontSize: mb ? 9 : 10, fontWeight: 700, color: '#D4A843', letterSpacing: '0.5px' };
+  const labelStyle = { fontSize: mb ? 11 : 12, fontWeight: 700, color: '#D4A843', letterSpacing: '0.5px' };
 
   // ─── CHECKING ───
   if (state === 'checking') return null;
@@ -324,7 +324,7 @@ export default function PortfolioEmbed({ mb }) {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={labelStyle}>MI PORTAFOLIO</span>
-          <span style={{ fontSize: mb ? 9 : 10, color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: mb ? 11 : 12, color: 'var(--text-muted)' }}>
             {isMobile ? 'Abrir en Phantom para conectar wallet' : 'Instala Phantom para ver tu portafolio'}
           </span>
         </div>
@@ -339,7 +339,7 @@ export default function PortfolioEmbed({ mb }) {
       <div style={{ ...barStyle, padding: padX, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={labelStyle}>MI PORTAFOLIO</span>
-          <span style={{ fontSize: mb ? 9 : 10, color: 'var(--text-muted)' }}>Conecta tu wallet</span>
+          <span style={{ fontSize: mb ? 11 : 12, color: 'var(--text-muted)' }}>Conecta tu wallet</span>
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
           {availableWallets.map(w => (
@@ -348,7 +348,7 @@ export default function PortfolioEmbed({ mb }) {
               onClick={() => handleConnect(w.provider)}
               style={{
                 background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 3,
-                padding: '4px 10px', fontSize: 9, fontWeight: 600, cursor: 'pointer',
+                padding: '4px 10px', fontSize: 11, fontWeight: 600, cursor: 'pointer',
                 color: 'var(--text-secondary)', fontFamily: "'Space Grotesk', sans-serif",
                 display: 'flex', alignItems: 'center', gap: 4,
                 transition: 'border-color 0.15s',
@@ -368,7 +368,7 @@ export default function PortfolioEmbed({ mb }) {
       <div style={{ ...barStyle, padding: padX }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
           <span style={labelStyle}>MI PORTAFOLIO</span>
-          <span style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>{short(walletAddr)}</span>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>{short(walletAddr)}</span>
         </div>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
           <input
@@ -381,7 +381,7 @@ export default function PortfolioEmbed({ mb }) {
             autoFocus
             style={{
               background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 3,
-              padding: '5px 10px', color: 'var(--text-primary)', fontSize: 11,
+              padding: '5px 10px', color: 'var(--text-primary)', fontSize: 13,
               fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase',
               letterSpacing: '1px', outline: 'none', flex: 1, minWidth: 140,
             }}
@@ -391,15 +391,15 @@ export default function PortfolioEmbed({ mb }) {
             disabled={activating || !code.trim()}
             style={{
               background: '#D4A843', color: '#0c0c0e', border: 'none', borderRadius: 3,
-              padding: '5px 14px', fontSize: 10, fontWeight: 700, cursor: 'pointer',
+              padding: '5px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer',
               fontFamily: "'Space Grotesk', sans-serif", opacity: activating || !code.trim() ? 0.5 : 1,
             }}
           >
             {activating ? '...' : 'Activar'}
           </button>
         </div>
-        {codeError && <div style={{ fontSize: 9, color: '#ef4444', marginTop: 4 }}>{codeError}</div>}
-        <div style={{ fontSize: 8, color: 'var(--text-muted)', marginTop: 6 }}>
+        {codeError && <div style={{ fontSize: 11, color: '#ef4444', marginTop: 4 }}>{codeError}</div>}
+        <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 6 }}>
           Los suscriptores de <a href="https://10am.pro/subscribe" target="_blank" rel="noopener noreferrer" style={{ color: '#D4A843', textDecoration: 'none' }}>10am.pro</a> reciben su código al suscribirse.
         </div>
       </div>
@@ -427,13 +427,13 @@ export default function PortfolioEmbed({ mb }) {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: mb ? 8 : 12 }}>
           <span style={labelStyle}>MI PORTAFOLIO</span>
-          <span style={{ fontSize: mb ? 16 : 20, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', fontFamily: "'Space Grotesk', sans-serif" }}>
+          <span style={{ fontSize: mb ? 18 : 22, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', fontFamily: "'Space Grotesk', sans-serif" }}>
             {fmt(totalValue)}
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{
-            fontSize: mb ? 10 : 12, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace",
+            fontSize: mb ? 12 : 14, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace",
             padding: '2px 8px', borderRadius: 3,
             background: isPos ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
             color: isPos ? '#22c55e' : '#ef4444',
@@ -451,7 +451,7 @@ export default function PortfolioEmbed({ mb }) {
             <div key={chain}>
               <div style={{ padding: '4px 14px', display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid var(--border-subtle)' }}>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: CHAIN_COLORS[chain], display: 'inline-block' }} />
-                <span style={{ fontSize: 8, color: CHAIN_COLORS[chain], fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>{CHAIN_LABELS[chain]}</span>
+                <span style={{ fontSize: 10, color: CHAIN_COLORS[chain], fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>{CHAIN_LABELS[chain]}</span>
               </div>
               {grouped[chain].map((h, i) => {
                 const price = prices[h.symbol]?.usd || 0;
@@ -460,25 +460,25 @@ export default function PortfolioEmbed({ mb }) {
                 return (
                   <div key={`${chain}-${i}`} style={{
                     display: 'grid', gridTemplateColumns: mb ? '1fr 1fr' : '2fr 1fr 1fr',
-                    padding: '6px 14px', fontSize: 11, borderBottom: '1px solid var(--border-subtle)', alignItems: 'center',
+                    padding: '6px 14px', fontSize: 13, borderBottom: '1px solid var(--border-subtle)', alignItems: 'center',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {h.image ? (
                         <img src={h.image} alt={h.symbol} width={20} height={20} style={{ borderRadius: '50%', background: 'var(--surface)' }} onError={e => { e.target.style.display = 'none'; }} />
                       ) : (
-                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--text-muted)' }}>
+                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: 'var(--text-muted)' }}>
                           {h.symbol?.charAt(0) || '?'}
                         </div>
                       )}
                       <div>
                         <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: 11 }}>{h.symbol}</span>
-                        {h.name && <div style={{ fontSize: 8, color: 'var(--text-muted)', lineHeight: 1 }}>{h.name}</div>}
+                        {h.name && <div style={{ fontSize: 10, color: 'var(--text-muted)', lineHeight: 1 }}>{h.name}</div>}
                       </div>
                     </div>
                     {!mb && <span style={{ textAlign: 'right', color: 'var(--text-secondary)', fontSize: 10 }}>{fmtQty(h.quantity)}</span>}
                     <div style={{ textAlign: 'right' }}>
                       <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{value > 0 ? fmt(value) : '—'}</span>
-                      {chg !== 0 && <div style={{ fontSize: 9, color: chg >= 0 ? '#22c55e' : '#ef4444' }}>{chg >= 0 ? '+' : ''}{chg.toFixed(1)}%</div>}
+                      {chg !== 0 && <div style={{ fontSize: 11, color: chg >= 0 ? '#22c55e' : '#ef4444' }}>{chg >= 0 ? '+' : ''}{chg.toFixed(1)}%</div>}
                     </div>
                   </div>
                 );
@@ -506,13 +506,13 @@ export default function PortfolioEmbed({ mb }) {
                       style={{
                         width: '100%', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 3,
                         padding: '5px 10px', paddingRight: detectedChain ? 70 : 10, color: 'var(--text-primary)',
-                        fontSize: 10, fontFamily: "'JetBrains Mono', monospace", outline: 'none',
+                        fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: 'none',
                       }}
                     />
                     {detectedChain && (
                       <span style={{
                         position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
-                        fontSize: 8, fontWeight: 700, color: CHAIN_COLORS[detectedChain], textTransform: 'uppercase',
+                        fontSize: 10, fontWeight: 700, color: CHAIN_COLORS[detectedChain], textTransform: 'uppercase',
                         letterSpacing: '0.5px', background: 'var(--bg)', padding: '1px 4px', borderRadius: 2,
                         border: `1px solid ${CHAIN_COLORS[detectedChain]}30`,
                       }}>
@@ -521,7 +521,7 @@ export default function PortfolioEmbed({ mb }) {
                     )}
                   </div>
                   <button onClick={handleAddWallet} disabled={addingWallet || !detectedChain}
-                    style={{ background: '#D4A843', color: '#0c0c0e', border: 'none', borderRadius: 3, padding: '5px 10px', fontSize: 9, fontWeight: 700, cursor: 'pointer', opacity: addingWallet || !detectedChain ? 0.5 : 1, fontFamily: "'Space Grotesk', sans-serif", whiteSpace: 'nowrap' }}>
+                    style={{ background: '#D4A843', color: '#0c0c0e', border: 'none', borderRadius: 3, padding: '5px 10px', fontSize: 11, fontWeight: 700, cursor: 'pointer', opacity: addingWallet || !detectedChain ? 0.5 : 1, fontFamily: "'Space Grotesk', sans-serif", whiteSpace: 'nowrap' }}>
                     {addingWallet ? '...' : 'Rastrear'}
                   </button>
                   <button onClick={() => { setShowAddPanel(false); setNewAddress(''); setAddError(''); }}
@@ -529,12 +529,12 @@ export default function PortfolioEmbed({ mb }) {
                     <X size={12} />
                   </button>
                 </div>
-                {addError && <span style={{ fontSize: 8, color: '#ef4444' }}>{addError}</span>}
+                {addError && <span style={{ fontSize: 10, color: '#ef4444' }}>{addError}</span>}
               </div>
             ) : (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <button onClick={() => setShowAddPanel(true)}
-                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 3, padding: '4px 10px', fontSize: 9, fontWeight: 600, cursor: 'pointer', color: 'var(--text-secondary)', fontFamily: "'Space Grotesk', sans-serif", display: 'flex', alignItems: 'center', gap: 4 }}>
+                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 3, padding: '4px 10px', fontSize: 11, fontWeight: 600, cursor: 'pointer', color: 'var(--text-secondary)', fontFamily: "'Space Grotesk', sans-serif", display: 'flex', alignItems: 'center', gap: 4 }}>
                   <Plus size={10} /> Rastrear otra wallet
                 </button>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -559,7 +559,7 @@ export default function PortfolioEmbed({ mb }) {
                   <div key={tw.tracked_address} style={{
                     display: 'inline-flex', alignItems: 'center', gap: 4,
                     background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 3,
-                    padding: '2px 6px', fontSize: 8, fontFamily: "'JetBrains Mono', monospace", color: 'var(--text-muted)',
+                    padding: '2px 6px', fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: 'var(--text-muted)',
                   }}>
                     <span style={{ width: 4, height: 4, borderRadius: '50%', background: CHAIN_COLORS[tw.chain], display: 'inline-block' }} />
                     <span>{short(tw.tracked_address)}</span>
@@ -576,14 +576,14 @@ export default function PortfolioEmbed({ mb }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {sortedChains.map(c => (
-                  <span key={c} style={{ fontSize: 8, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 3 }}>
+                  <span key={c} style={{ fontSize: 10, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 3 }}>
                     <span style={{ width: 4, height: 4, borderRadius: '50%', background: CHAIN_COLORS[c], display: 'inline-block' }} />
                     {grouped[c].length} en {CHAIN_LABELS[c]}
                   </span>
                 ))}
-                {trackedWallets.length > 0 && <span style={{ fontSize: 8, color: 'var(--text-muted)' }}>· {trackedWallets.length + 1} wallets</span>}
+                {trackedWallets.length > 0 && <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>· {trackedWallets.length + 1} wallets</span>}
               </div>
-              <span style={{ fontSize: 8, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>{short(walletAddr)}</span>
+              <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>{short(walletAddr)}</span>
             </div>
           </div>
         </div>

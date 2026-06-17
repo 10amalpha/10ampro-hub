@@ -596,6 +596,21 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
           </a>
         </div>
 
+        {/* ═══ BIOLOGY IS CODE ═══ */}
+        <a href="/biology-is-code" style={{
+          display: 'flex', flexDirection: 'column', padding: '10px 14px', marginBottom: 6,
+          background: 'linear-gradient(135deg, #22C55E08, #185FA515)',
+          border: '1px solid #22C55E30', borderRadius: 6, textDecoration: 'none',
+          transition: 'border-color 0.2s',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <span style={{ fontSize: 18 }}>🧬</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>BIOLOGY IS CODE</span>
+          </div>
+          <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Programmable biology — market caps & financials</span>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>$NAUT · $RXRX · $IBRX · $INKT · $TEM →</span>
+        </a>
+
         {/* ═══ SHARE BAR ═══ */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 8, padding: '8px 0', margin: '4px 0' }}>
           <button

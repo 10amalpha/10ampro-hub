@@ -175,6 +175,46 @@ export default function ElDiezXMasRapido() {
         </div>
       </div>
 
+      {/* ARTÍCULO — portada + paywall (solo imagen y título, sin contenido) */}
+      <a href="https://www.10am.pro/p/cual-de-mis-6-convicciones-hara-10x" target="_blank" rel="noopener"
+        style={{ display: 'block', textDecoration: 'none', marginBottom: 34 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: MONO, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12 }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: VEL }} /> El artículo · 10am.pro
+        </div>
+        <div style={{ border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden', background: 'var(--surface)' }}>
+          {/* cover */}
+          <div style={{ position: 'relative', lineHeight: 0 }}>
+            <img
+              src="https://substackcdn.com/image/fetch/$s_!9TBt!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F519ea920-3dec-4a36-b493-eedeebba1f96_1642x958.png"
+              alt="¿Cuál de Mis 6 Convicciones Hará 10x Primero?"
+              loading="lazy"
+              style={{ width: '100%', height: 'auto', display: 'block' }} />
+            {/* lock badge */}
+            <div style={{ position: 'absolute', top: 12, right: 12, display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: MONO, fontSize: 10.5, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#fff', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', padding: '6px 11px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.18)' }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
+              Solo alphas
+            </div>
+          </div>
+          {/* body */}
+          <div style={{ padding: mb ? '18px 16px 20px' : '22px 24px 24px' }}>
+            <h2 style={{ fontFamily: DISP, fontWeight: 800, fontSize: mb ? 21 : 27, lineHeight: 1.12, letterSpacing: '-0.015em', color: 'var(--text-bright)', margin: '0 0 10px' }}>
+              ¿Cuál de Mis 6 Convicciones Hará 10x Primero?
+            </h2>
+            <p style={{ fontFamily: BODY, fontSize: mb ? 13.5 : 15, lineHeight: 1.55, color: 'var(--text-secondary)', margin: '0 0 18px', maxWidth: 620 }}>
+              Bitcoin, Tesla, Palantir, Solana, Hims y Robinhood compiten en una carrera donde el caballo más pequeño no necesariamente es el más rápido.
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14 }}>
+              <span style={{ fontFamily: MONO, fontSize: 11, color: 'var(--text-muted)' }}>
+                Hernán Jaramillo · <span style={{ color: VEL }}>@holdmybirra</span> · 24 jun 2026
+              </span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: MONO, fontSize: 12.5, fontWeight: 700, color: '#fff', background: VEL, padding: '11px 18px', borderRadius: 10, whiteSpace: 'nowrap' }}>
+                Suscríbete para leer →
+              </span>
+            </div>
+          </div>
+        </div>
+      </a>
+
       {/* 01 — RANKING */}
       <div style={{ marginBottom: 30 }}>
         <SectionHead n="01" title="El Ranking — velocidad de 10x"

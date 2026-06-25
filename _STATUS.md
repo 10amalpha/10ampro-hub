@@ -1,6 +1,6 @@
 # 10AMPRO Hub — _STATUS.md
-**Last updated:** April 1, 2026
-**Live URL:** https://10ampro-hub.vercel.app
+**Last updated:** June 25, 2026
+**Live URL:** https://10ampro-hub.vercel.app · **Prod domain:** https://mercados.10am.pro
 **Repo:** 10amalpha/10ampro-hub
 **Vercel Project ID:** prj_lKkui80lHh4x3Fietp6nC4CRfupB
 
@@ -111,6 +111,30 @@ UTMs added at render time in HubClient.jsx so both AI-generated and fallback ins
 
 ---
 
+## Standalone Thesis Pages (Research Routes — added June 2026)
+
+Self-contained client-component pages under `app/<route>/page.jsx`. They reuse the global theme system (`globals.css` CSS vars + `10am-theme` localStorage) and Bloomberg aesthetic, but are independent of the hub data pipeline (no Yahoo/FMP/Supabase fetch — data is a hardcoded point-in-time snapshot). Each is discoverable via a link card in `HubClient.jsx`.
+
+### `/biology-is-code` ✅ LIVE — "Biology is Code: The Biological Operating System"
+- **URL:** https://mercados.10am.pro/biology-is-code
+- **Thesis:** Biology shifting from a discovery lottery to a computable search problem. Framework = **Read · Orchestrate · Write** (Bio-OS value chain).
+- **Sections:** hero (paradigm shift), Healthspan-per-Token scaling law + longevity escape velocity, 5-level proteomic abstraction stack (Atoms→Chemistry→Peptides→Proteins→Clinical), Read/Orchestrate/Write value-chain grid, 9-ticker market-cap table (layer-tagged), tabbed income-statement SVG charts, compute-bottleneck stat (~0.02%), methodology notes (ES), footer.
+- **9 tickers (Jun 2026 snapshot, hardcoded):**
+  - READ: TEM ($9.3B), CAI ($4.9B, IPO Jun 2025), RXRX ($1.4B), NAUT ($286M)
+  - ORCHESTRATE: HIMS ($7.8B — only name with positive operating income)
+  - WRITE: IBRX ($7.4B), PBLS ($3.3B, record IPO Jun 2026), NGEN ($210M), INKT ($60M)
+- **Chart data:** 7 tickers with multi-year income statements (HIMS, TEM, CAI, IBRX, RXRX, NAUT, INKT); PBLS + NGEN render as pre-revenue / newly-public info cards (no chart).
+- **Data caveats (in methodology block):** CAI gross profit margin-estimated, 2025 op income distorted by IPO stock comp; IBRX 2022/2025 op income ≈ R&D + SG&A; NAUT/INKT pre-revenue (op-loss only).
+- **History:** built 5-ticker (commit e69177a) → expanded to 9 + Bio-OS framework (36fbb8d) → hub button → 10am.pro (bdb70ee).
+
+### `/el-10x-mas-rapido` ✅ LIVE (added separately)
+- Speed-to-10x tearsheet (prob × velocity matrix, Laffont). Cover + paywall CTA funneling to subscribe.
+
+### Hub-button rule (IMPORTANT)
+On every standalone page, the header hub/back button **must link to `https://10am.pro`** (the main site), NOT `mercados.10am.pro`. Driving traffic to 10am.pro is the priority. Use UTM: `?utm_source=<route>&utm_medium=header&utm_campaign=hub`.
+
+---
+
 ## Theme System (added Mar 26)
 
 - **Dark mode** (default): Bloomberg terminal aesthetic, `#0c0c0e` background
@@ -165,6 +189,8 @@ UTMs added at render time in HubClient.jsx so both AI-generated and fallback ins
 17. **Never use opacity for text dimming.** Stacking `color: var(--text-muted)` AND `opacity: 0.6` double-dims text into invisibility on dark backgrounds. Use color steps alone (`--text-primary` → `--text-secondary` → `--text-muted`). One mechanism, not two.
 18. **Sort after filtering, not before.** Tier-based filtering (tier 1 first, tier 2 fills remaining) produces results ordered by tier, not by time. Always `.sort()` by timestamp as the last step before rendering. The filter picks WHICH events; the sort decides display ORDER.
 19. **Global font size pass (Apr 1).** Every `fontSize` in HubClient.jsx and PortfolioEmbed.jsx bumped +2px (8→10, 9→11, 10→12, 11→13, 12→14, 13→15). Ternary mobile sizes also bumped (e.g. `mb ? 11 : 14` → `mb ? 13 : 16`). Time column width 38→46px. Use a Python `str.replace()` script for bulk edits like this — more reliable than chaining 80+ `str_replace` tool calls. Always bump ALL components in the same pass (PortfolioEmbed was missed on first pass).
+20. **Standalone thesis pages use hardcoded snapshots, not the live data layer.** Research/thesis routes (`/biology-is-code`, etc.) are independent client components with point-in-time market data baked in. Keep an `AS_OF` constant + a methodology block stating figures move daily and flagging any estimated/approximate numbers. Wiring them into the hub's Yahoo layer is optional and deferred.
+21. **Hub button → 10am.pro, always.** On any standalone page, the header back/hub button links to `https://10am.pro` (main site), never `mercados.10am.pro`. Driving traffic to 10am.pro is a top priority. Tag with `utm_source=<route>&utm_medium=header&utm_campaign=hub`.
 
 ## Next Steps (priority order)
 

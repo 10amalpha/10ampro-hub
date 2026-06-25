@@ -191,9 +191,9 @@ export default function BiologyIsCode() {
   return (
     <div style={{ maxWidth: 920, margin: '0 auto', padding: mb ? '6px 8px' : '10px 20px' }}>
       <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--border)', marginBottom: 18 }}>
-        <a href="https://mercados.10am.pro" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+        <a href="https://10am.pro?utm_source=biology-is-code&utm_medium=header&utm_campaign=hub" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <img src="/logo.jpg" alt="10AMPRO" style={{ width: 34, height: 34, borderRadius: 6 }} />
-          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>← Volver al hub</span>
+          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>← 10am.pro</span>
         </a>
         <button onClick={toggleTheme} title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
           style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text-primary)', fontSize: 16, width: 36, height: 32, cursor: 'pointer' }}>

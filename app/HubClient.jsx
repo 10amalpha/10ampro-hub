@@ -607,8 +607,8 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
             <span style={{ fontSize: 18 }}>🧬</span>
             <span style={{ fontSize: 13, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>BIOLOGY IS CODE</span>
           </div>
-          <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Programmable biology — market caps & financials</span>
-          <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>$NAUT · $RXRX · $IBRX · $INKT · $TEM →</span>
+          <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>The Biological OS — Read · Orchestrate · Write</span>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>$HIMS · $TEM · $IBRX · $CAI · $PBLS · $RXRX · $NAUT · $NGEN · $INKT →</span>
         </a>
 
         {/* ═══ SHARE BAR ═══ */}

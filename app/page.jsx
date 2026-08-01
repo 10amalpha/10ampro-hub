@@ -263,12 +263,11 @@ const COMMENTS = {
 // ─── MAIN PAGE ──────────────────────────────────────────────
 export default async function HubPage() {
   // Phase 1: Fetch all base data in parallel
-  const [macroQuotes, crypto, briefing, stockQuotes, dietData] = await Promise.all([
+  const [macroQuotes, crypto, briefing, stockQuotes] = await Promise.all([
     fetchYahoo(['^GSPC', '^VIX', 'DX-Y.NYB', 'CL=F', 'JPY=X', 'COP=X', '^TNX', '^IRX', '^MOVE']),
     fetchCrypto(),
     getBriefingData(),
     fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC']),
-    fetchInfoDiet(),
   ]);
 
   // Phase 2: Build market snapshot from data we already have, pass to insights (avoids redundant Yahoo+CoinGecko fetches)
@@ -492,7 +491,6 @@ export default async function HubPage() {
       watchlist={wl}
       earnings={earnings}
       insights={insightsData}
-      diet={dietData}
     />
   );
 }

@@ -128,7 +128,7 @@ function MC({ m, bd = true, mb, span = 1 }) {
   );
 }
 
-export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalInit, calToday, calTomorrow, watchlist: wlInit, earnings, insights, diet }) {
+export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalInit, calToday, calTomorrow, watchlist: wlInit, earnings, insights }) {
   const [fl, sF] = useState('A');
   const [exp, sE] = useState(null);
   const [mb, sM] = useState(false);
@@ -140,7 +140,6 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
   const [theme, setTheme] = useState('dark');
   const refSignal = useRef(null);
   const refWatch = useRef(null);
-  const refDiet = useRef(null);
   const refInsights = useRef(null);
 
   // Theme: load from localStorage and apply to <html>
@@ -419,49 +418,8 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
           })()}
         </div>
 
-        {/* ═══ INFO DIET + EARNINGS ═══ */}
-        <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 6, marginBottom: 6 }}>
-          {/* INFO DIET */}
-          <div ref={refDiet} style={{ border: '1px solid var(--border)', borderRadius: 3, overflow: 'hidden' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '3px 8px', background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>📡 INFO DIET</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Lo que estamos compartiendo en el chat de 10am.pro</span>
-                <ShareBtn onClick={() => shareSection(refDiet.current, 'info-diet')} />
-              </div>
-            </div>
-            {diet.map((d, i) => (
-              <a key={i} href={d.url} target="_blank" rel="noopener" style={{
-                display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', textDecoration: 'none',
-                borderBottom: i < diet.length - 1 ? '1px solid var(--border-subtle)' : 'none',
-              }}
-                onMouseEnter={e => e.currentTarget.style.background = 'var(--hover-bg)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                <div style={{
-                  width: 42, height: 42, borderRadius: 3, background: `${d.color}15`,
-                  border: `1px solid ${d.color}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                }}>
-                  <span style={{ fontSize: 22, lineHeight: 1 }}>{d.abbr}</span>
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{
-                    fontSize: 14, color: 'var(--text-primary)', fontWeight: 600, lineHeight: 1.3,
-                    fontFamily: "'Plus Jakarta Sans',sans-serif",
-                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                  }}>{d.title}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{d.src}</span>
-                    <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>·</span>
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{d.ago}</span>
-                  </div>
-                </div>
-                <span style={{ fontSize: 11, color: 'var(--text-muted)', background: 'var(--surface-2)', padding: '1px 4px', borderRadius: 2, flexShrink: 0 }}>{d.tag}</span>
-              </a>
-            ))}
-          </div>
-
-          {/* EARNINGS RADAR */}
-          <div style={{ border: '1px solid var(--border)', borderRadius: 3, overflow: 'hidden' }}>
+        {/* ═══ EARNINGS RADAR ═══ */}
+          <div style={{ border: '1px solid var(--border)', borderRadius: 3, overflow: 'hidden', marginBottom: 6 }}>
             <div style={{ padding: '3px 8px', background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
               <span style={{ fontSize: 12, fontWeight: 700, color: '#a78bfa' }}>📊 EARNINGS RADAR</span>
             </div>
@@ -506,7 +464,6 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
               <div style={{ padding: '8px', fontSize: 11, color: 'var(--text-muted)', textAlign: 'center' }}>Sin earnings próximos</div>
             )}
           </div>
-        </div>
 
         {/* ═══ EDITORIAL INSIGHTS ═══ */}
         <div ref={refInsights} style={{ border: '1px solid #D4A84325', borderRadius: 3, overflow: 'hidden', marginBottom: 6 }}>
@@ -596,20 +553,43 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
           </a>
         </div>
 
-        {/* ═══ BIOLOGY IS CODE ═══ */}
-        <a href="/biology-is-code" style={{
-          display: 'flex', flexDirection: 'column', padding: '10px 14px', marginBottom: 6,
-          background: 'linear-gradient(135deg, #22C55E08, #185FA515)',
-          border: '1px solid #22C55E30', borderRadius: 6, textDecoration: 'none',
-          transition: 'border-color 0.2s',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <span style={{ fontSize: 18 }}>🧬</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>BIOLOGY IS CODE</span>
+        {/* ═══ TESIS EN FORMACIÓN (RESEARCH) ═══ */}
+        <div style={{ marginBottom: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 2px 6px' }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#5b8cff', letterSpacing: '0.3px' }}>🔬 TESIS EN FORMACIÓN</span>
+            <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Research en vivo · deep dives en construcción</span>
           </div>
-          <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>The Biological OS — Read · Orchestrate · Write</span>
-          <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>$HIMS · $TEM · $IBRX · $CAI · $PBLS · $RXRX · $NAUT · $NGEN · $INKT →</span>
-        </a>
+          <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 6 }}>
+            {/* BIOLOGY IS CODE */}
+            <a href="/biology-is-code" style={{
+              display: 'flex', flexDirection: 'column', padding: '10px 14px',
+              background: 'linear-gradient(135deg, #22C55E08, #185FA515)',
+              border: '1px solid #22C55E30', borderRadius: 6, textDecoration: 'none',
+              transition: 'border-color 0.2s',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <span style={{ fontSize: 18 }}>🧬</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>BIOLOGY IS CODE</span>
+              </div>
+              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>The Biological OS — Read · Orchestrate · Write</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>$HIMS · $TEM · $IBRX · $CAI · $PBLS · $RXRX · $NAUT · $NGEN · $INKT →</span>
+            </a>
+            {/* NOSANA */}
+            <a href="/nosana" style={{
+              display: 'flex', flexDirection: 'column', padding: '10px 14px',
+              background: 'linear-gradient(135deg, #5b8cff08, #5b8cff18)',
+              border: '1px solid #5b8cff30', borderRadius: 6, textDecoration: 'none',
+              transition: 'border-color 0.2s',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <span style={{ fontSize: 18 }}>🛰️</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#5b8cff', letterSpacing: '0.3px' }}>NOSANA</span>
+              </div>
+              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Network telemetry — GPU network + $NOS</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Jobs · Hosts · Precio · Market cap en vivo →</span>
+            </a>
+          </div>
+        </div>
 
         {/* ═══ SHARE BAR ═══ */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 8, padding: '8px 0', margin: '4px 0' }}>

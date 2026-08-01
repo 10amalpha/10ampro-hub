@@ -319,6 +319,12 @@ export default function NosanaTelemetry() {
   return (
     <div style={{ maxWidth: 1180, margin: '0 auto', padding: mb ? '16px 12px 50px' : '22px 20px 60px', fontFamily: "'JetBrains Mono',ui-monospace,monospace", minHeight: '100vh' }}>
 
+      {/* BACK TO 10AM.PRO */}
+      <a href="https://10am.pro?utm_source=nosana&utm_medium=header&utm_campaign=hub" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: 12 }}>
+        <img src="/logo.jpg" alt="10AMPRO" style={{ width: 34, height: 34, borderRadius: 6 }} />
+        <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>← 10am.pro</span>
+      </a>
+
       {/* HEADER */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', border: '1px solid var(--border)', background: 'var(--surface)', padding: '12px 16px', borderRadius: 4 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 800, letterSpacing: '.02em' }}>
@@ -467,6 +473,9 @@ export default function NosanaTelemetry() {
         <b style={{ color: 'var(--text-secondary)' }}>Sources.</b> Network data via server-side proxy to the Nosana API (dashboard.k8s.prd.nos.ci — same backend as <a href="https://explore.nosana.com/" target="_blank" rel="noopener" style={{ color: GRN }}>explore.nosana.com</a>). Market data: CoinGecko.<br />
         <b style={{ color: 'var(--text-secondary)' }}>Green</b> = network fundamentals · <b style={{ color: 'var(--text-secondary)' }}>blue</b> = market. The dashboard's job is to show whether the two converge. The network-evolution chart is native historical series; point-in-time KPIs are snapshotted per visit.<br />
         <b style={{ color: 'var(--text-secondary)' }}>Note.</b> Completed jobs / compute hours include incentivized, grant and charity (Folding@Home) activity — not a clean paid-revenue signal. Watch the tripwires for real materialization. Data & research context, not investment advice.
+        <div style={{ marginTop: 12 }}>
+          <a href="https://10am.pro?utm_source=nosana&utm_medium=footer&utm_campaign=hub" style={{ fontSize: 12, color: 'var(--text-muted)', textDecoration: 'none' }}>← 10am.pro</a>
+        </div>
       </div>
     </div>
   );

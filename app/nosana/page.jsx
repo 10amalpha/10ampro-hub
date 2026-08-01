@@ -226,7 +226,9 @@ export default function NosanaTelemetry() {
       const r = await fetch(`/api/nosana?series=${metric}&period=${period}`, { cache: 'no-store' });
       const j = await r.json();
       let data = Array.isArray(j.data) ? j.data.slice() : [];
-      if (data.length > 2) data = data.slice(1, -1); // drop partial edge buckets (matches explorer)
+      // API returns newest-first — sort ascending so the chart reads old → new
+      data.sort((a, b) => new Date(a.x).getTime() - new Date(b.x).getTime());
+      if (data.length > 2) data = data.slice(1, -1); // drop oldest sliver + newest partial bucket (matches explorer)
       setNet(data.map((p) => ({ t: new Date(p.x).getTime(), y: Math.round(p.y) })));
     } catch { setNet([]); }
   }, [metric, period]);

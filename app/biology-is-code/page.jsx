@@ -64,24 +64,34 @@ const FIN = {
 // via Macrotrends (YTD figures converted to discrete quarters). Per-share uses current
 // diluted shares held constant (HIMS ~231M, TEM ~180M) to isolate the cash trend.
 const FCF = {
-  HIMS: { name: 'Hims & Hers Health', shares: '231M shares',
+  HIMS: { name: 'Hims & Hers Health', shares: '231M sh',
     q: [['Q4\u201924', 61.9], ['Q1\u201925', 53.8], ['Q2\u201925', -65.2], ['Q3\u201925', 83.5], ['Q4\u201925', 1.9], ['Q1\u201926', 59.5]],
-    note: 'Six discrete quarters through Q1 FY26. The Q2\u201925 dip is the capex ramp (facilities + acquisitions); Q3\u201925 rebounded to a record $83.5M. FY25 FCF fell to $74M on $226M of capex \u2014 the D2C machine still prints cash, but reinvestment is eating it. Q2\u201926 reports Aug 10 after close.' },
-  TEM: { name: 'Tempus AI', shares: '180M shares',
+    note: 'The only FCF-positive name in the basket. Q2\u201925 dip = capex ramp; Q3\u201925 record +$83.5M. Q2\u201926 reports Aug 10 after close.' },
+  TEM: { name: 'Tempus AI', shares: '180M sh',
     q: [['Q1\u201925', -109.0], ['Q2\u201925', 34.7], ['Q3\u201925', -127.9], ['Q4\u201925', -43.1], ['Q1\u201926', -83.3], ['Q2\u201926', -18.6]],
-    note: 'Six discrete quarters through Q2 FY26. Lumpy but improving: Q2\u201926 burn of \u2013$18.6M is the smallest cash outflow in the series, and Q2\u201925 was actually FCF-positive. Revenue scale (+83% in FY25) is starting to cover the cash machine.' },
+    note: 'Lumpy but improving: Q2\u201926 burn of \u2013$18.6M is the smallest outflow in the series; Q2\u201925 was FCF-positive.' },
+  IBRX: { name: 'ImmunityBio', shares: '1,047M sh',
+    q: [['Q1\u201925', -87.0], ['Q2\u201925', -80.8], ['Q3\u201925', -69.7], ['Q4\u201925', -71.3], ['Q1\u201926', -77.1], ['Q2\u201926', -70.0]],
+    note: 'Remarkably stable burn (~$70\u201380M/q) despite ANKTIVA revenue ramp. Huge share count keeps per-share burn at pennies.' },
+  RXRX: { name: 'Recursion Pharmaceuticals', shares: '540M sh',
+    q: [['Q1\u201925', -133.8], ['Q2\u201925', -79.6], ['Q3\u201925', -117.6], ['Q4\u201925', -47.3], ['Q1\u201926', -81.4], ['Q2\u201926', -106.0]],
+    note: 'Volatile burn despite 30% opex cuts \u2014 partnership inflows make quarters lumpy. Cash $665M, runway to early 2028.' },
+  NAUT: { name: 'Nautilus Biotechnology', shares: '127M sh',
+    q: [['Q1\u201925', -14.2], ['Q2\u201925', -13.7], ['Q3\u201925', -11.5], ['Q4\u201925', -12.6], ['Q1\u201926', -13.6], ['Q2\u201926', -14.2]],
+    note: 'Metronomic ~$13M/q burn, pre-revenue. FY25 burn actually declined 15% vs FY24 \u2014 disciplined for a platform builder.' },
+  INKT: { name: 'MiNK Therapeutics', shares: '5.0M sh',
+    q: [['Q4\u201924', -1.7], ['Q1\u201925', -1.3], ['Q2\u201925', -1.6], ['Q3\u201925', -0.9], ['Q4\u201925', -2.1], ['Q1\u201926', -1.7]],
+    note: 'Smallest absolute burn of the basket (~$1\u20132M/q), but the ~5M-share float makes each quarter \u2248 \u2013$0.30/sh. Q2\u201926 reports ~Aug 14.' },
+  NGEN: { name: 'NervGen Pharma', shares: '81M sh',
+    q: [['Q1\u201925', -2.9], ['Q2\u201925', -2.8], ['Q3\u201925', -3.9], ['Q4\u201925', -4.5], ['Q1\u201926', -6.0]],
+    note: '5 quarters \u2014 its entire public quarterly history (Nasdaq Jan 2026). Burn accelerating as NVG-291 trials scale; $60M raised May 2026.' },
 };
-const FCF_SH = { HIMS: 231, TEM: 180.4 };
+const FCF_SH = { HIMS: 231, TEM: 180.4, IBRX: 1047, RXRX: 540, NAUT: 126.6, INKT: 5.0, NGEN: 80.9 };
 
-// Pre-revenue / short public history: real burn, no 6-quarter public series yet.
+// IPOs too recent for any public quarterly FCF series \u2014 real annual/TTM burn shown instead.
 const FCF_CARDS = [
-  ['IBRX', '\u2013$142M', 'OCF burn H1 2026 (\u2248 \u2013$0.07/sh per quarter; capex <$2M/q). FY25 OCF \u2013$305M.'],
-  ['CAI', '+3.8%', 'Net margin TTM turned positive; EBITDA TTM +$129M. IPO Jun 2025 \u2014 no 6-quarter FCF series yet.'],
-  ['RXRX', '\u2013$219M', 'Levered FCF TTM (\u2248 \u2013$0.41/sh). Cash $546M \u2014 roughly 2.5 years of runway at this burn.'],
-  ['NAUT', '\u2013$71M', 'FY25 operating burn \u2248 FCF (pre-revenue, minimal capex). \u2248 \u2013$0.56/sh per year.'],
-  ['INKT', '\u2013$11M', 'FY25 operating burn. Tiny float (~5M sh) \u2192 \u2248 \u2013$2.3/sh per year despite the smallest absolute burn.'],
-  ['PBLS', '\u2013$153M', 'Net loss, 12 months to Mar 2026 (S-1). IPO Jun 2026 \u2014 $670M raised, no public quarterly series.'],
-  ['NGEN', '\u2013$0.56', 'EPS TTM as burn proxy. Pre-revenue; $60M raised May 2026 + $50M ATM.'],
+  ['CAI', '\u2013$538M', 'FY25 net loss (distorted by IPO stock comp); net margin TTM already +3.8%, EBITDA TTM +$129M. IPO Jun 2025: first 6-quarter FCF series completes with Q3\u201926 filing.'],
+  ['PBLS', '\u2013$153M', 'Net loss, 12 months to Mar 2026 (S-1). IPO Jun 2026 with $670M raised \u2014 first public quarterly cash flow statement lands with the Q2\u201926 10-Q.'],
 ];
 
 function FcfChart({ sym, mb }) {
@@ -416,11 +426,11 @@ export default function BiologyIsCode() {
       <div style={{ marginBottom: 24 }}>
         <div style={sectionLabel}>FCF POR ACCIÓN · quarterly · last 6 quarters</div>
         <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 8, marginBottom: 8 }}>
-          {['HIMS', 'TEM'].map((sym) => (
+          {Object.keys(FCF).map((sym) => (
             <div key={sym} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
                 <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'Space Grotesk',sans-serif" }}>{FCF[sym].name}</div>
-                <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono',monospace" }}>{sym} · {FCF[sym].shares}</div>
+                <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono',monospace" }}>{sym} · {FCF[sym].shares} · {FCF[sym].q.length}Q</div>
               </div>
               <FcfChart sym={sym} mb={mb} />
               <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 8, lineHeight: 1.5, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{FCF[sym].note}</div>
@@ -437,7 +447,7 @@ export default function BiologyIsCode() {
           ))}
         </div>
         <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: "'Plus Jakarta Sans',sans-serif", lineHeight: 1.5 }}>
-          Only HIMS and TEM have six discrete quarters of auditable public FCF (10-K/10-Q). The rest are pre-revenue or recent IPOs — shown as real TTM/annual burn, not estimates. FCF = operating cash flow − capex.
+          Discrete quarterly FCF (operating cash flow − capex) from 10-K/10-Q filings via Macrotrends, YTD converted to standalone quarters. NGEN shows 5 quarters — its entire public history. CAI and PBLS IPO'd too recently for any public quarterly series; their real annual/TTM burn is shown above instead of an invented one.
         </div>
       </div>
 

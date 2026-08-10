@@ -213,3 +213,8 @@ On every standalone page, the header hub/back button **must link to `https://10a
 - HIMS y TEM: 6 trimestres discretos reales (FCF = OCF − capex, filings vía Macrotrends, YTD convertido a discreto). Barras SVG verde/rojo con línea cero, grid responsive 2-col → 1-col mobile.
 - IBRX/CAI/RXRX/NAUT/INKT/PBLS/NGEN: tabla de burn real TTM/anual (sin serie trimestral pública de 6Q por ser pre-revenue o IPO reciente).
 - Nota de metodología agregada (shares diluidas actuales constantes para aislar tendencia de caja).
+
+## 2026-08-10 (2) — FCF/share: chart para cada ticker
+- Sección FCF POR ACCIÓN ampliada: 7 charts trimestrales (HIMS, TEM, IBRX, RXRX, NAUT, INKT con 6 trimestres discretos; NGEN con 5 = toda su historia pública). Data real de filings vía Macrotrends (YTD→discreto).
+- CAI y PBLS: cards con burn anual/TTM real — IPOs jun'25/jun'26, sin serie trimestral pública de FCF todavía.
+- Shares usadas (constantes): HIMS 231M, TEM 180.4M, IBRX 1,047M, RXRX 540M, NAUT 126.6M, INKT 5.0M, NGEN 80.9M.

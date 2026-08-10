@@ -201,3 +201,9 @@ On every standalone page, the header hub/back button **must link to `https://10a
 5. **Push notifications** — PWA push or WhatsApp bot. Daily 10am trigger.
 6. **Watchlist comments** — Move from hardcoded to Supabase
 7. **Remove `FINNHUB_API_KEY`** from Vercel env vars
+
+## 2026-08-10 — biology-is-code data refresh
+- Snapshot actualizado Jun 25 → Aug 10, 2026 (cierres Aug 7 / intradía Aug 10).
+- Precios y market caps de los 9 tickers actualizados; tabla reordenada por mcap (IBRX $7.7B ahora arriba de HIMS $7.3B).
+- Notas: CAI Q2 récord ($264M, +18% pop), HIMS reporta Q2 el 10-ago tras el cierre.
+- Income statements FY (anuales) sin cambios — no hay cierres fiscales nuevos.

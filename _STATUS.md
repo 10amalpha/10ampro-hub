@@ -207,3 +207,9 @@ On every standalone page, the header hub/back button **must link to `https://10a
 - Precios y market caps de los 9 tickers actualizados; tabla reordenada por mcap (IBRX $7.7B ahora arriba de HIMS $7.3B).
 - Notas: CAI Q2 récord ($264M, +18% pop), HIMS reporta Q2 el 10-ago tras el cierre.
 - Income statements FY (anuales) sin cambios — no hay cierres fiscales nuevos.
+
+## 2026-08-10 — nueva sección FCF/share
+- Sección "FCF POR ACCIÓN · quarterly" agregada entre Income Statements y Compute Bottleneck.
+- HIMS y TEM: 6 trimestres discretos reales (FCF = OCF − capex, filings vía Macrotrends, YTD convertido a discreto). Barras SVG verde/rojo con línea cero, grid responsive 2-col → 1-col mobile.
+- IBRX/CAI/RXRX/NAUT/INKT/PBLS/NGEN: tabla de burn real TTM/anual (sin serie trimestral pública de 6Q por ser pre-revenue o IPO reciente).
+- Nota de metodología agregada (shares diluidas actuales constantes para aislar tendencia de caja).

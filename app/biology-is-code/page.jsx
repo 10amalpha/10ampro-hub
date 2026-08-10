@@ -59,6 +59,67 @@ const FIN = {
     note: 'Limited public financial history. The "GLP-1 of the nervous system" thesis: a 35-amino-acid peptide that removes the chemical brake on axon repair. Pre-revenue, so no income-statement chart yet.' },
 };
 
+
+// FCF per share, quarterly. FCF = operating cash flow minus capex, from 10-K/10-Q filings
+// via Macrotrends (YTD figures converted to discrete quarters). Per-share uses current
+// diluted shares held constant (HIMS ~231M, TEM ~180M) to isolate the cash trend.
+const FCF = {
+  HIMS: { name: 'Hims & Hers Health', shares: '231M shares',
+    q: [['Q4\u201924', 61.9], ['Q1\u201925', 53.8], ['Q2\u201925', -65.2], ['Q3\u201925', 83.5], ['Q4\u201925', 1.9], ['Q1\u201926', 59.5]],
+    note: 'Six discrete quarters through Q1 FY26. The Q2\u201925 dip is the capex ramp (facilities + acquisitions); Q3\u201925 rebounded to a record $83.5M. FY25 FCF fell to $74M on $226M of capex \u2014 the D2C machine still prints cash, but reinvestment is eating it. Q2\u201926 reports Aug 10 after close.' },
+  TEM: { name: 'Tempus AI', shares: '180M shares',
+    q: [['Q1\u201925', -109.0], ['Q2\u201925', 34.7], ['Q3\u201925', -127.9], ['Q4\u201925', -43.1], ['Q1\u201926', -83.3], ['Q2\u201926', -18.6]],
+    note: 'Six discrete quarters through Q2 FY26. Lumpy but improving: Q2\u201926 burn of \u2013$18.6M is the smallest cash outflow in the series, and Q2\u201925 was actually FCF-positive. Revenue scale (+83% in FY25) is starting to cover the cash machine.' },
+};
+const FCF_SH = { HIMS: 231, TEM: 180.4 };
+
+// Pre-revenue / short public history: real burn, no 6-quarter public series yet.
+const FCF_CARDS = [
+  ['IBRX', '\u2013$142M', 'OCF burn H1 2026 (\u2248 \u2013$0.07/sh per quarter; capex <$2M/q). FY25 OCF \u2013$305M.'],
+  ['CAI', '+3.8%', 'Net margin TTM turned positive; EBITDA TTM +$129M. IPO Jun 2025 \u2014 no 6-quarter FCF series yet.'],
+  ['RXRX', '\u2013$219M', 'Levered FCF TTM (\u2248 \u2013$0.41/sh). Cash $546M \u2014 roughly 2.5 years of runway at this burn.'],
+  ['NAUT', '\u2013$71M', 'FY25 operating burn \u2248 FCF (pre-revenue, minimal capex). \u2248 \u2013$0.56/sh per year.'],
+  ['INKT', '\u2013$11M', 'FY25 operating burn. Tiny float (~5M sh) \u2192 \u2248 \u2013$2.3/sh per year despite the smallest absolute burn.'],
+  ['PBLS', '\u2013$153M', 'Net loss, 12 months to Mar 2026 (S-1). IPO Jun 2026 \u2014 $670M raised, no public quarterly series.'],
+  ['NGEN', '\u2013$0.56', 'EPS TTM as burn proxy. Pre-revenue; $60M raised May 2026 + $50M ATM.'],
+];
+
+function FcfChart({ sym, mb }) {
+  const d = FCF[sym];
+  const shares = FCF_SH[sym];
+  const vals = d.q.map((x) => x[1] / shares);
+  const maxAbs = Math.max(...vals.map((v) => Math.abs(v))) * 1.15;
+  const W = 300, H = 150, padL = 6, padR = 40, top = 14, bot = 26;
+  const plotW = W - padL - padR, plotH = H - top - bot;
+  const zeroY = top + plotH * (maxAbs / (2 * maxAbs));
+  const scale = plotH / (2 * maxAbs);
+  const bw = 22, gap = (plotW - d.q.length * bw) / (d.q.length + 1);
+  return (
+    <svg viewBox={'0 0 ' + W + ' ' + H} width="100%" role="img" aria-label={'FCF per share by quarter for ' + d.name}>
+      <desc>Free cash flow per share, last six quarters.</desc>
+      <line x1={padL} y1={zeroY} x2={W - padR + 4} y2={zeroY} stroke="var(--border)" strokeWidth="1.5" />
+      {d.q.map((q, i) => {
+        const v = q[1] / shares;
+        const h = Math.max(Math.abs(v) * scale, 1.5);
+        const x = padL + gap + i * (bw + gap);
+        const y = v >= 0 ? zeroY - h : zeroY;
+        return (
+          <g key={q[0]}>
+            <rect x={x} y={y} width={bw} height={h} rx="2" fill={v >= 0 ? '#22c55e' : '#993556'} />
+            <text x={x + bw / 2} y={v >= 0 ? y - 4 : y + h + 11} textAnchor="middle" fontSize="8.5"
+              fill="var(--text-secondary)" fontFamily="'JetBrains Mono',monospace">
+              {(v >= 0 ? '+' : '\u2013') + '$' + Math.abs(v).toFixed(2)}
+            </text>
+            <text x={x + bw / 2} y={H - 6} textAnchor="middle" fontSize="8.5" fill="var(--text-muted)"
+              fontFamily="'JetBrains Mono',monospace">{q[0]}</text>
+          </g>
+        );
+      })}
+      <text x={W - padR + 6} y={zeroY + 3} fontSize="8.5" fill="var(--text-muted)" fontFamily="'JetBrains Mono',monospace">$0.00</text>
+    </svg>
+  );
+}
+
 const TABS = ['HIMS', 'TEM', 'CAI', 'IBRX', 'RXRX', 'NAUT', 'INKT', 'PBLS', 'NGEN'];
 
 const STACK = [
@@ -351,6 +412,35 @@ export default function BiologyIsCode() {
         </div>
       </div>
 
+      {/* FCF PER SHARE */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={sectionLabel}>FCF POR ACCI\u00d3N \u00b7 quarterly \u00b7 last 6 quarters</div>
+        <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 8, marginBottom: 8 }}>
+          {['HIMS', 'TEM'].map((sym) => (
+            <div key={sym} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'Space Grotesk',sans-serif" }}>{FCF[sym].name}</div>
+                <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono',monospace" }}>{sym} \u00b7 {FCF[sym].shares}</div>
+              </div>
+              <FcfChart sym={sym} mb={mb} />
+              <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 8, lineHeight: 1.5, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{FCF[sym].note}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
+          {FCF_CARDS.map((c, i) => (
+            <div key={c[0]} style={{ display: 'flex', alignItems: 'baseline', gap: 10, padding: '9px 16px', borderTop: i === 0 ? 'none' : '1px solid var(--border-subtle)', background: 'var(--surface)' }}>
+              <div style={{ width: 52, fontSize: 13, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'JetBrains Mono',monospace" }}>{c[0]}</div>
+              <div style={{ width: 72, fontSize: 13, fontWeight: 700, color: c[1].startsWith('+') ? '#22c55e' : '#993556', fontFamily: "'JetBrains Mono',monospace" }}>{c[1]}</div>
+              <div style={{ flex: 1, minWidth: 0, fontSize: 11.5, color: 'var(--text-secondary)', fontFamily: "'Plus Jakarta Sans',sans-serif", lineHeight: 1.45 }}>{c[2]}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: "'Plus Jakarta Sans',sans-serif", lineHeight: 1.5 }}>
+          Only HIMS and TEM have six discrete quarters of auditable public FCF (10-K/10-Q). The rest are pre-revenue or recent IPOs \u2014 shown as real TTM/annual burn, not estimates. FCF = operating cash flow \u2013 capex.
+        </div>
+      </div>
+
       {/* COMPUTE BOTTLENECK */}
       <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border-subtle)', borderRadius: 8, padding: '14px 16px', marginBottom: 24 }}>
         <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'Space Grotesk',sans-serif", marginBottom: 5 }}>The compute required for biology dwarfs today\u2019s AI infrastructure</div>
@@ -368,6 +458,7 @@ export default function BiologyIsCode() {
           <li>CAI (IPO Jun 2025) shows only FY2024–FY2025; its gross profit is estimated from margin and its operating income is approximate (2025 distorted by IPO stock comp).</li>
           <li>IBRX operating income for 2022 and 2025 is approximate (derived from R&D + SG&A).</li>
           <li>PBLS (IPO Jun 2026) and NGEN (Nasdaq Jan 2026) are pre-revenue with limited public history — shown as info cards, not charts.</li>
+          <li>FCF per share uses discrete quarterly FCF (OCF \u2013 capex) from company filings via Macrotrends, divided by current diluted shares held constant across the series to isolate the cash trend. Pre-revenue names show TTM/annual burn because no 6-quarter public series exists.</li>
           <li>This is data and research context, not investment advice.</li>
         </ul>
       </div>

@@ -414,13 +414,13 @@ export default function BiologyIsCode() {
 
       {/* FCF PER SHARE */}
       <div style={{ marginBottom: 24 }}>
-        <div style={sectionLabel}>FCF POR ACCI\u00d3N \u00b7 quarterly \u00b7 last 6 quarters</div>
+        <div style={sectionLabel}>FCF POR ACCIÓN · quarterly · last 6 quarters</div>
         <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 8, marginBottom: 8 }}>
           {['HIMS', 'TEM'].map((sym) => (
             <div key={sym} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
                 <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'Space Grotesk',sans-serif" }}>{FCF[sym].name}</div>
-                <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono',monospace" }}>{sym} \u00b7 {FCF[sym].shares}</div>
+                <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono',monospace" }}>{sym} · {FCF[sym].shares}</div>
               </div>
               <FcfChart sym={sym} mb={mb} />
               <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 8, lineHeight: 1.5, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{FCF[sym].note}</div>
@@ -437,7 +437,7 @@ export default function BiologyIsCode() {
           ))}
         </div>
         <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: "'Plus Jakarta Sans',sans-serif", lineHeight: 1.5 }}>
-          Only HIMS and TEM have six discrete quarters of auditable public FCF (10-K/10-Q). The rest are pre-revenue or recent IPOs \u2014 shown as real TTM/annual burn, not estimates. FCF = operating cash flow \u2013 capex.
+          Only HIMS and TEM have six discrete quarters of auditable public FCF (10-K/10-Q). The rest are pre-revenue or recent IPOs — shown as real TTM/annual burn, not estimates. FCF = operating cash flow − capex.
         </div>
       </div>
 
@@ -458,7 +458,7 @@ export default function BiologyIsCode() {
           <li>CAI (IPO Jun 2025) shows only FY2024–FY2025; its gross profit is estimated from margin and its operating income is approximate (2025 distorted by IPO stock comp).</li>
           <li>IBRX operating income for 2022 and 2025 is approximate (derived from R&D + SG&A).</li>
           <li>PBLS (IPO Jun 2026) and NGEN (Nasdaq Jan 2026) are pre-revenue with limited public history — shown as info cards, not charts.</li>
-          <li>FCF per share uses discrete quarterly FCF (OCF \u2013 capex) from company filings via Macrotrends, divided by current diluted shares held constant across the series to isolate the cash trend. Pre-revenue names show TTM/annual burn because no 6-quarter public series exists.</li>
+          <li>FCF per share uses discrete quarterly FCF (OCF − capex) from company filings via Macrotrends, divided by current diluted shares held constant across the series to isolate the cash trend. Pre-revenue names show TTM/annual burn because no 6-quarter public series exists.</li>
           <li>This is data and research context, not investment advice.</li>
         </ul>
       </div>

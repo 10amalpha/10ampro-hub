@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 // Datos = snapshot puntual (ver AS_OF). Se mueven a diario.
 // ============================================================
 
-const AS_OF = '23 jun 2026';
+const AS_OF = '12 ago 2026';
 
 // Acentos fijos (legibles en claro y oscuro):
 const VEL = '#f2641e';   // calor = velocidad / urgencia (eje Y)
@@ -16,47 +16,47 @@ const PROB = '#2aa3d4';  // frío  = probabilidad (eje X)
 // Seis convicciones, en orden de ranking por VELOCIDAD de 10x.
 // cap/tgt en $B. prob/vel = lectura cualitativa 0–100.
 const A = [
-  { tk: 'HIMS', nm: 'Hims & Hers', rank: 1, price: '$33.64', cap: 7.8, tgt: 78, capL: '$7.8B', tgtL: '$78B',
+  { tk: 'HIMS', nm: 'Hims & Hers', rank: 1, price: '$29.58', cap: 7.0, tgt: 70, capL: '$7.0B', tgtL: '$70B',
     prob: 34, vel: 92, cmp: '≈ farmacéutica mediana',
     onto: 'Alta — modelo del cuerpo a escala de consumo',
-    sc: 'Inflexionando — GLP-1 / telesalud',
-    cat: 'Sí — péptidos, comité FDA 23–24 jul',
-    fuel: '~40% del flotante en corto · FCF positivo',
-    desc: 'Base mínima, curva-S de salud al consumidor inflexionando.',
-    verdict: 'El 10x más rápido, si llega. Base mínima, curva-S empinada y un resorte de cortos listo para dispararse.' },
-  { tk: 'HOOD', nm: 'Robinhood', rank: 2, price: '$104.76', cap: 95.3, tgt: 953, capL: '$95B', tgtL: '$950B',
+    sc: 'Inflexionando — Q2 +38% ($753M), guía FY $3.1–3.3B',
+    cat: 'Se cumplió — PCAC avaló 6 de 7 péptidos (23–24 jul); falta la FDA',
+    fuel: 'Flotante muy corto · el push GLP-1 se comió la utilidad en Q2 (–$86M)',
+    desc: 'Base mínima; la FDA le abrió la puerta a los péptidos, el GLP-1 le cobró el Q2.',
+    verdict: 'El 10x más rápido, si llega. El catalizador FDA ya jugó a su favor, pero el mercado le cobró la pérdida del Q2: ahora la curva-S de péptidos tiene que pagar.' },
+  { tk: 'HOOD', nm: 'Robinhood', rank: 2, price: '$94.38', cap: 85, tgt: 850, capL: '$85B', tgtL: '$850B',
     prob: 48, vel: 78, cmp: '≈ club del billón',
     onto: 'La más alta — predicción, tokenización, banca, agentes',
-    sc: 'Inflexionando — finanzas on-chain',
-    cat: 'Sí — CLARITY Act en el Senado',
-    fuel: 'Ganancias reales (~$1.9B utilidad 2025)',
-    desc: 'La máquina que más rápido expande qué vende. Techo de $950B la frena.',
-    verdict: 'Máquina posiblemente superior a todas. El techo de $950B es lo único que la deja segunda en velocidad.' },
-  { tk: 'SOL', nm: 'Solana', rank: 3, price: '$73', cap: 43, tgt: 430, capL: '$43B', tgtL: '$430B',
+    sc: 'Inflexionando — Robinhood Chain viva ($774M TVL) + Ventures Funds',
+    cat: 'Aplazado — CLARITY sin voto en agosto; el Senado lo retoma el 14 sep',
+    fuel: 'Q2 récord con ganancias reales · corrigió ~40% desde el máximo de oct-25',
+    desc: 'La máquina que más rápido expande qué vende. Techo de $850B la frena.',
+    verdict: 'Máquina posiblemente superior a todas. El Q2 fue récord y la corrección le bajó el techo a $850B — pero sigue siendo el techo lo que la deja segunda en velocidad.' },
+  { tk: 'SOL', nm: 'Solana', rank: 3, price: '$76', cap: 44, tgt: 440, capL: '$44B', tgtL: '$440B',
     prob: 44, vel: 64, cmp: 'ya estuvo sobre $120B',
     onto: 'Alta — donde el dato on-chain se compone más rápido',
     sc: 'Inflexionando — rieles no-fiat',
-    cat: 'Sí — ETF vivos + CLARITY',
+    cat: 'Sí — ETF vivos · CLARITY se corrió a septiembre',
     fuel: 'Beta cripto — arma de doble filo',
-    desc: 'Mejor historia de rieles no-fiat: ~$650B/mes en stablecoins.',
+    desc: 'Mejor historia de rieles no-fiat; el riel de stablecoins sigue componiendo.',
     verdict: 'La mejor historia de rieles no-fiat. Su velocidad está atada a que la marea de Warsh deje de bajar.' },
-  { tk: 'PLTR', nm: 'Palantir', rank: 4, price: '$119.50', cap: 286, tgt: 2860, capL: '$286B', tgtL: '$2.9T',
-    prob: 62, vel: 42, cmp: '> cualquier empresa de hoy',
+  { tk: 'PLTR', nm: 'Palantir', rank: 4, price: '$174.94', cap: 420, tgt: 4200, capL: '$420B', tgtL: '$4.2T',
+    prob: 62, vel: 42, cmp: '≈ la empresa más grande del mundo',
     onto: 'De clase mundial — la que enseñó la palabra',
-    sc: 'Madura en gobierno, acelerando en comercial',
-    cat: 'Mixto — backlash europeo de soberanía',
-    fuel: 'Múltiplo comprimiéndose (40x ventas)',
-    desc: 'Velocidad de ontología de clase mundial, pero múltiplo comprimiéndose.',
-    verdict: 'Gran empresa, pregunta equivocada. Alta probabilidad de 10x algún día; baja velocidad para hacerlo a 24 meses.' },
-  { tk: 'TSLA', nm: 'Tesla', rank: 5, price: '$404', cap: 1500, tgt: 15000, capL: '$1.5T', tgtL: '$15T',
+    sc: 'Acelerando — Q2 arriba de expectativas, guía FY subida a ~$8.15B',
+    cat: 'Mixto — backlash europeo de soberanía · Burry cargado de puts',
+    fuel: 'Múltiplo re-expandido (~50x ventas) tras el salto post-earnings',
+    desc: 'Velocidad de ontología de clase mundial, pero el 10x ahora exige $4.2T.',
+    verdict: 'Gran empresa, pregunta equivocada. El Q2 reafirmó la máquina y el mercado la premió — pero cada dólar de rally le sube el techo del 10x.' },
+  { tk: 'TSLA', nm: 'Tesla', rank: 5, price: '$328', cap: 1310, tgt: 13100, capL: '$1.3T', tgtL: '$13T',
     prob: 78, vel: 24, cmp: '> cualquier empresa de la historia',
     onto: 'Altísima a escala — robotaxi + Optimus + energía',
-    sc: 'Robotaxi temprano, motor multi-año',
-    cat: 'Lento — capex $25B, FCF a negativo',
-    fuel: '—',
-    desc: '10x imposible a 24m ($15T), pero alta probabilidad a la Laffont.',
+    sc: 'Robotaxi ciudad por ciudad · Cybercab production-ready',
+    cat: 'Lento — fab de chips de $16.8B en Texas; el capex sigue comiendo FCF',
+    fuel: 'Especulación de fusión con SpaceX · –26% YTD',
+    desc: '10x imposible a 24m ($13T), pero alta probabilidad a la Laffont.',
     verdict: 'El 10x a 24m es aritméticamente imposible. Pero por probabilidad a la Laffont, de las más altas de la lista.' },
-  { tk: 'BTC', nm: 'Bitcoin', rank: 6, price: '$66K', cap: 1300, tgt: 13000, capL: '$1.3T', tgtL: '$13T',
+  { tk: 'BTC', nm: 'Bitcoin', rank: 6, price: '$64K', cap: 1280, tgt: 12800, capL: '$1.3T', tgtL: '$13T',
     prob: 84, vel: 14, cmp: '≈ todo el oro del mundo',
     onto: 'Cero, por diseño — la anti-máquina',
     sc: 'N/A — monolito que se niega a moverse',
@@ -73,11 +73,11 @@ const VIOL = [
 ];
 
 const MACRO = [
-  { k: 'Fed · Warsh', v: '3.50–3.75%', n: 'Cuarto hold seguido. El dot plot ya muestra alzas, no recortes.' },
-  { k: 'Inflación', v: 'CPI 4.2%', n: 'PCE ~3.6%. La guerra con Irán la volvió a picar; el petróleo enfría al margen.' },
-  { k: 'Bonos', v: '10Y 4.5%', n: '2Y en 4.2%, máximos desde feb-25. Tasa real positiva castiga la opcionalidad.' },
-  { k: 'Pólvora seca', v: '$7.9T', n: 'Récord en money markets. No se mueve: el efectivo todavía paga ~4%.' },
-  { k: 'Petróleo · WTI', v: '~$76', n: 'Mínimos de 3 meses tras el marco de desescalada con Irán. Riesgo: re-escalada.' },
+  { k: 'Fed · Warsh', v: '3.50–3.75%', n: 'Quinto hold seguido, con tres disidentes votando por subir. El mercado pone ~50/50 un alza en septiembre.' },
+  { k: 'Inflación', v: 'CPI 3.4%', n: 'Julio +0.1% m/m; bajó de 4.2% (mayo) por la energía. Sigue arriba del crecimiento salarial (3.2%).' },
+  { k: 'Bonos', v: '10Y 4.68%', n: '2Y en 4.2%, 30Y sobre 5.2%. Tasa real positiva sigue castigando la opcionalidad.' },
+  { k: 'Pólvora seca', v: '$7.91T', n: 'Récord en money markets (ICI, 6 ago). No se mueve: el efectivo todavía paga ~4%.' },
+  { k: 'Petróleo · WTI', v: '~$78', n: 'Hormuz sigue efectivamente cerrado al sexto mes de guerra; el crudo oscila $74–82 con cada titular del acuerdo.' },
   { k: 'Capex IA', v: '~$750B', n: 'Hyperscalers en 2026. Ya no cabe en el FCF: se financia con deuda (~$1.5T por venir).' },
 ];
 
@@ -90,7 +90,7 @@ function velColor(v) {
   return `rgb(${r},${g},${b})`;
 }
 function capDiameter(cap, mb) {
-  const lg = Math.log10(cap), lo = Math.log10(7.8), hi = Math.log10(1500);
+  const lg = Math.log10(cap), lo = Math.log10(7.0), hi = Math.log10(1310);
   const base = mb ? 13 : 16, range = mb ? 22 : 28;
   return Math.round(base + (lg - lo) / (hi - lo) * range);
 }
@@ -366,7 +366,7 @@ export default function ElDiezXMasRapido() {
 
       {/* 05 — MACRO */}
       <div style={{ marginBottom: 30 }}>
-        <SectionHead n="05" title="El Gobernador — macro, jun 2026"
+        <SectionHead n="05" title="El Gobernador — macro, ago 2026"
           sub="En este tape no hay marea que levante a todos. La velocidad tiene que venir de un catalizador propio, no de la liquidez." />
         <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : 'repeat(3,1fr)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
           {MACRO.map((m, i) => (
@@ -415,7 +415,7 @@ export default function ElDiezXMasRapido() {
           <li>Precios y capitalizaciones son un <b style={{ color: 'var(--text-primary)' }}>snapshot del {AS_OF}</b> y se mueven a diario. El ranking relativo es más durable que las cifras absolutas.</li>
           <li>Las posiciones en la matriz son una <b style={{ color: 'var(--text-primary)' }}>lectura cualitativa propia</b>, no una métrica de mercado. <b style={{ color: 'var(--text-primary)' }}>Velocidad</b> = base + posición en la curva-S + catalizador dentro de la ventana de 24m + combustible reflexivo (cortos, narrativa). <b style={{ color: 'var(--text-primary)' }}>Probabilidad</b> = durabilidad/escala demostrada, al estilo de la violación de Laffont.</li>
           <li>Los datos de Coatue (8% / 13% / 31%) provienen de su análisis de empresas tech respaldadas por VC, con un horizonte de apreciación de 5+ años. Miden probabilidad, no velocidad.</li>
-          <li>Cifras macro (Fed, bonos, money markets, petróleo, capex) de fuentes públicas a junio 2026.</li>
+          <li>Cifras macro (Fed, bonos, money markets, petróleo, capex) de fuentes públicas a agosto 2026.</li>
           <li>"10x en 24 meses" es un resultado de cola para <b style={{ color: 'var(--text-primary)' }}>los seis</b>. Esto es contexto de datos y research, no una predicción ni asesoría de inversión.</li>
         </ul>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 18 }}>

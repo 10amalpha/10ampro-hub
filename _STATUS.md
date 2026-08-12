@@ -1,10 +1,14 @@
 # 10AMPRO Hub — _STATUS.md
-**Last updated:** June 25, 2026
+**Last updated:** August 12, 2026
 **Live URL:** https://10ampro-hub.vercel.app · **Prod domain:** https://mercados.10am.pro
 **Repo:** 10amalpha/10ampro-hub
 **Vercel Project ID:** prj_lKkui80lHh4x3Fietp6nC4CRfupB
 
 ---
+
+## Recent changes (Aug 12, 2026)
+
+- **/el-10x-mas-rapido — snapshot refresh 23 jun → 12 ago 2026.** Caps/precios: HIMS $29.58/$7.0B, HOOD $94.38/$85B (techo 10x baja a $850B), SOL $76/$44B, PLTR $174.94/$420B (techo sube a $4.2T), TSLA $328/$1.3T, BTC $64K/$1.28T. Catalizadores: PCAC-FDA avaló 6/7 péptidos (23–24 jul, decisión FDA pendiente) + HIMS Q2 $753M +38% con pérdida de $86M; CLARITY sin voto en agosto (cloture 8 ago, Senado retoma 14 sep); PLTR Q2 beat + guía $8.15B + Burry en puts; TSLA Cybercab production-ready + fab de chips $16.8B. Macro: quinto hold Fed 3.50–3.75% (~50/50 alza en sep), CPI jul 3.4%, 10Y 4.68%, money markets récord $7.91T (ICI 6 ago), WTI ~$78 con Hormuz cerrado al sexto mes. capDiameter recalibrado a nuevos min/max (7.0 / 1310).
 
 ## Architecture
 

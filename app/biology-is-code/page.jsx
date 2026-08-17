@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 // Point-in-time snapshot (see AS_OF). Read · Orchestrate · Write.
 // ============================================================
 
-const AS_OF = 'Aug 10, 2026';
+const AS_OF = 'Aug 17, 2026';
 
 const C_REV = '#85B7EB';
 const C_GP = '#185FA5';
@@ -17,14 +17,14 @@ const LAYER_COLOR = { READ: '#378ADD', ORCHESTRATE: '#D4A843', WRITE: '#22c55e' 
 
 // Market caps / prices: August 2026 snapshot. Moves daily.
 const TICKERS = [
-  { sym: 'TEM', name: 'Tempus AI', layer: 'READ', mcap: '$9.4B', price: '$52', note: 'Deep oncology data, integrated with hospitals.' },
-  { sym: 'IBRX', name: 'ImmunityBio', layer: 'WRITE', mcap: '$7.7B', price: '$7.32', note: 'Immune system reboot (IL-15 superagonist).' },
-  { sym: 'HIMS', name: 'Hims & Hers Health', layer: 'ORCHESTRATE', mcap: '$7.3B', price: '$32', note: 'D2C rails, longitudinal biomarkers, the incentive provider. Q2 report Aug 10 after close.' },
-  { sym: 'CAI', name: 'Caris Life Sciences', layer: 'READ', mcap: '$5.5B', price: '$19', note: 'Molecular profiling, blood + tissue. Record Q2 ($264M rev) sent shares +18%.' },
-  { sym: 'PBLS', name: 'Parabilis Medicines', layer: 'WRITE', mcap: '$4.3B', price: '$35', note: 'Helicon peptides for flat / undruggable proteins. IPO Jun 2026.' },
-  { sym: 'RXRX', name: 'Recursion Pharmaceuticals', layer: 'READ', mcap: '$1.7B', price: '$3.22', note: 'Wetlab simulation; physics→chemistry→biology, lower toxicity.' },
-  { sym: 'NAUT', name: 'Nautilus Biotechnology', layer: 'READ', mcap: '$295M', price: '$2.33', note: '10B-protein mapping. Focus: Tau proteoforms / neuro.' },
-  { sym: 'NGEN', name: 'NervGen Pharma', layer: 'WRITE', mcap: '$131M', price: '$1.62', note: 'Nervous-system regeneration (NVG-291). Nasdaq Jan 2026.' },
+  { sym: 'TEM', name: 'Tempus AI', layer: 'READ', mcap: '$9.3B', price: '$51', note: 'Deep oncology data, integrated with hospitals. Q2 reported Jul 30.' },
+  { sym: 'IBRX', name: 'ImmunityBio', layer: 'WRITE', mcap: '$7.7B', price: '$7.26', note: 'Immune system reboot (IL-15 superagonist). Q2: continued ANKTIVA growth.' },
+  { sym: 'HIMS', name: 'Hims & Hers Health', layer: 'ORCHESTRATE', mcap: '$7.3B', price: '$32', note: 'D2C rails, the incentive provider. Q2 rev $753M (+38%); FY26 guide raised to $3.1–3.3B.' },
+  { sym: 'CAI', name: 'Caris Life Sciences', layer: 'READ', mcap: '$5.5B', price: '$19', note: 'Molecular profiling. Record Q2 ($264M rev, +45%); turned adj-EBITDA positive.' },
+  { sym: 'PBLS', name: 'Parabilis Medicines', layer: 'WRITE', mcap: '$4.5B', price: '$37', note: 'Helicon peptides for flat / undruggable proteins. IPO Jun 2026.' },
+  { sym: 'RXRX', name: 'Recursion Pharmaceuticals', layer: 'READ', mcap: '$1.7B', price: '$3.22', note: 'Wetlab simulation; physics→chemistry→biology. Q2: opex cut ~40%.' },
+  { sym: 'NGEN', name: 'NervGen Pharma', layer: 'WRITE', mcap: '$131M', price: '$1.62', note: 'Nervous-system regeneration (NVG-291). Neural-recovery signal ahead of Ph3.' },
+  { sym: 'NAUT', name: 'Nautilus Biotechnology', layer: 'READ', mcap: '$113M', price: '$0.89', note: '10B-protein mapping (Tau / neuro). Cash (~$129M) now tops its market cap.' },
   { sym: 'INKT', name: 'MiNK Therapeutics', layer: 'WRITE', mcap: '$53M', price: '$10.59', note: 'Immune bypass — iNKT cells target stable lipids, not peptides.' },
 ];
 
@@ -32,22 +32,22 @@ const TICKERS = [
 const FIN = {
   HIMS: { type: 'chart', name: 'Hims & Hers Health', sub: 'HIMS · ≈ $32/sh · ORCHESTRATE', mcap: '$7.3B', years: [2022, 2023, 2024, 2025],
     revenue: [526.9, 872.0, 1476.5, 2347.6], gross: [408.7, 714.9, 1173.1, 1733.4], op: [-68.7, -29.5, 61.9, 105.6],
-    note: 'FY2022–FY2025. The orchestrator: revenue compounded to $2.35B (+59% in 2025) and operating income turned positive in 2024–2025. Real gross margins (~74%) fund the D2C flywheel.' },
+    note: 'FY2022–FY2025 actuals shown. Q2 FY2026 (reported Aug 10): revenue $753M (+38% YoY), ~3.0M subscribers (+19%), adjusted EBITDA $60M (8% margin). GAAP net loss was -$86M, hit by ~$81M of one-time costs (Eucalyptus close, restructuring, FTC accrual); gross margin compressed to 64% on branded-GLP-1 and international mix. Management raised FY2026 revenue guidance to $3.1–3.3B (+32–41%) with $275–325M adj. EBITDA, and reiterated 2030 targets of $6.5B+ revenue / $1.3B+ adj. EBITDA.' },
   TEM: { type: 'chart', name: 'Tempus AI', sub: 'TEM · ≈ $52/sh · READ', mcap: '$9.4B', years: [2022, 2023, 2024, 2025],
     revenue: [320.7, 531.8, 693.4, 1271.8], gross: [130.2, 286.2, 381.1, 797.9], op: [-265.4, -196.1, -691.1, -252.9],
     note: 'FY2022–FY2025. Revenue crossed $1.27B in 2025 (+83% YoY); gross profit scaled with it. The operating loss spiked in 2024 on heavy opex, then narrowed in 2025.' },
   CAI: { type: 'chart', name: 'Caris Life Sciences', sub: 'CAI · ≈ $19/sh · READ', mcap: '$5.5B', years: [2024, 2025],
     revenue: [412.3, 812.0], gross: [227, 528], op: [-378, -538],
-    note: 'IPO Jun 2025, so only FY2024–FY2025 are public. Revenue nearly doubled to $812M (+97%). Gross profit is estimated (~55% / 65% margin); operating income is approximate and the 2025 figure is inflated by IPO-related stock comp.' },
+    note: 'IPO Jun 2025, so only FY2024–FY2025 are public. Revenue nearly doubled to $812M (+97%). Gross profit is estimated (~55% / 65% margin); the FY2025 operating figure is approximate and inflated by IPO-related stock comp. Q2 FY2026 (Aug 5) was a record: revenue $263.7M (+45% YoY), gross margin 68%, and the company turned adjusted-EBITDA positive (~$56M) with GAAP roughly breakeven — a genuine profitability inflection. FY2026 revenue guidance raised to ~$1.03–1.04B.' },
   IBRX: { type: 'chart', name: 'ImmunityBio', sub: 'IBRX · ≈ $7.32/sh · WRITE', mcap: '$7.7B', years: [2022, 2023, 2024, 2025],
     revenue: [0.24, 0.62, 14.7, 113], gross: [0.24, 0.61, 14.6, 112], op: [-405, -361, -344, -250],
-    note: 'FY2022–FY2025. Revenue is ANKTIVA product sales: ~$113M in 2025 (+700% YoY) after FDA approval in Apr 2024. Operating income for 2022 and 2025 is approximate (derived from R&D + SG&A).' },
+    note: 'FY2022–FY2025. Revenue is ANKTIVA product sales: ~$113M in 2025 (+700% YoY) after FDA approval in Apr 2024. Operating income for 2022 and 2025 is approximate (derived from R&D + SG&A). Q2 FY2026 showed continued ANKTIVA sales growth.' },
   RXRX: { type: 'chart', name: 'Recursion Pharmaceuticals', sub: 'RXRX · ≈ $3.22/sh · READ', mcap: '$1.7B', years: [2022, 2023, 2024, 2025],
     revenue: [39.7, 43.9, 58.5, 74.3], gross: [-8.6, 1.3, 13.3, 3.3], op: [-245.7, -350.1, -479.0, -648.1],
-    note: 'FY2022–FY2025. Revenue is mostly partnership / collaboration income. Gross profit is thin and volatile; the operating loss widened sharply as R&D scaled.' },
-  NAUT: { type: 'chart', name: 'Nautilus Biotechnology', sub: 'NAUT · ≈ $2.33/sh · READ', mcap: '$295M', years: [2022, 2023, 2024, 2025],
+    note: 'FY2022–FY2025. Revenue is mostly partnership / collaboration income. Gross profit is thin and volatile; the operating loss widened sharply as R&D scaled. Q2 FY2026 (Aug 5): $10.2M revenue, EPS -$0.23; management cut 2026 opex ~40% and cited >$500M of partnership cash inflows.' },
+  NAUT: { type: 'chart', name: 'Nautilus Biotechnology', sub: 'NAUT · ≈ $0.89/sh · READ', mcap: '$113M', years: [2022, 2023, 2024, 2025],
     revenue: [0, 0, 0, 0], gross: [0, 0, 0, 0], op: [-63.6, -76.2, -81.5, -71.4],
-    note: 'FY2022–FY2025. Pre-revenue (proteomics platform not yet commercial). The chart shows operating loss only; it peaked in 2024 and eased in 2025.' },
+    note: 'FY2022–FY2025. Pre-revenue (proteomics platform not yet commercial); the chart shows operating loss only. Shares have fallen below $1, so the ~$129M cash balance (Q2 FY2026, runway into Q1 2028) now exceeds the ~$113M market cap. Q2 opex ~$15.9M; R&D refocused on proteoform assays.' },
   INKT: { type: 'chart', name: 'MiNK Therapeutics', sub: 'INKT · ≈ $10.59/sh · WRITE', mcap: '$53M', years: [2021, 2022, 2023, 2024, 2025],
     revenue: [0, 0, 0, 0, 0], gross: [0, 0, 0, 0, 0], op: [-18.6, -30.9, -22.9, -10.7, -11.4],
     note: 'FY2021–FY2025. Clinical-stage, no product revenue. The operating loss shrank ~63% from its 2022 peak after aggressive cost cuts.' },
@@ -464,7 +464,8 @@ export default function BiologyIsCode() {
         <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.5px', marginBottom: 8, fontFamily: "'JetBrains Mono',monospace" }}>METODOLOGÍA & NOTAS</div>
         <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.7, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
           <li>Market caps and prices are a point-in-time snapshot ({AS_OF}) and move daily.</li>
-          <li>Income-statement figures are annual GAAP from company filings and Yahoo Finance. NAUT and INKT are pre-revenue, so only operating income is plotted.</li>
+          <li>Income-statement charts are annual GAAP actuals (FY2022–FY2025) from company filings and Yahoo Finance. NAUT and INKT are pre-revenue, so only operating income is plotted.</li>
+          <li>Q2 FY2026 results (HIMS, TEM, CAI, IBRX, RXRX, NAUT reported late Jul–mid Aug 2026) are reflected in each ticker's commentary rather than the annual bars, since FY2026 is not yet complete. HIMS figures are from its Aug 10 Q2 deck and call.</li>
           <li>CAI (IPO Jun 2025) shows only FY2024–FY2025; its gross profit is estimated from margin and its operating income is approximate (2025 distorted by IPO stock comp).</li>
           <li>IBRX operating income for 2022 and 2025 is approximate (derived from R&D + SG&A).</li>
           <li>PBLS (IPO Jun 2026) and NGEN (Nasdaq Jan 2026) are pre-revenue with limited public history — shown as info cards, not charts.</li>

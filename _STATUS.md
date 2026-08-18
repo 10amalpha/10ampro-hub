@@ -224,3 +224,10 @@ On every standalone page, the header hub/back button **must link to `https://10a
 - Sección FCF POR ACCIÓN ampliada: 7 charts trimestrales (HIMS, TEM, IBRX, RXRX, NAUT, INKT con 6 trimestres discretos; NGEN con 5 = toda su historia pública). Data real de filings vía Macrotrends (YTD→discreto).
 - CAI y PBLS: cards con burn anual/TTM real — IPOs jun'25/jun'26, sin serie trimestral pública de FCF todavía.
 - Shares usadas (constantes): HIMS 231M, TEM 180.4M, IBRX 1,047M, RXRX 540M, NAUT 126.6M, INKT 5.0M, NGEN 80.9M.
+
+## 2026-08-18 — HIMS Q2 FY2026: datos oficiales del deck
+- Serie FCF de HIMS reemplazada con la reconciliación oficial del investor deck Q2'26 (slide 38): Q1'25 +50.1, Q2'25 −69.4, Q3'25 +79.4, Q4'25 −2.6, Q1'26 +53.0, Q2'26 −68.2. Los valores previos (Macrotrends) diferían levemente del deck — lección aplicada: el deck del inversionista manda sobre datos scrapeados.
+- Nota FCF actualizada: Q2'26 negativo por working capital del ramp de Wegovy de marca; cubierto con facility de receivables $400M + convertible ~$400M; $840M+ en caja; FCF positivo esperado en H2.
+- Commentary de income statement HIMS enriquecido: ARPU $92 vs $76 (+21%), 2.9M subs (+19%, +300K netos), marketing 34% de revenue (−5 pts YoY), internacional ~17x a $131M (incl. $40M Eucalyptus, +13% QoQ orgánico), UK/Australia/Alemania >$100M anualizados c/u, guía Q3 $880–900M (+47–50% = aceleración), FY26 $3.1–3.3B, provisión FTC $47.5M, piloto AI Hers Weight Loss (3x engagement, 80% respondido por AI, −50% tareas no clínicas, menos cancelaciones, payback 12–18 meses).
+- Item ORCHESTRATE actualizado con el framing del call: "AI load bearing, not decorative", closed loop intake→treatment→follow-up→outcome a escala de ~3M subs, visión de vender el concierge de $50–150K/año por suscripción.
+- Nota de metodología ajustada: FCF de HIMS ahora viene del deck oficial, no de Macrotrends.

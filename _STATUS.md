@@ -1,5 +1,5 @@
 # 10AMPRO Hub — _STATUS.md
-**Last updated:** August 12, 2026
+**Last updated:** August 17, 2026
 **Live URL:** https://10ampro-hub.vercel.app · **Prod domain:** https://mercados.10am.pro
 **Repo:** 10amalpha/10ampro-hub
 **Vercel Project ID:** prj_lKkui80lHh4x3Fietp6nC4CRfupB
@@ -123,13 +123,15 @@ Self-contained client-component pages under `app/<route>/page.jsx`. They reuse t
 - **URL:** https://mercados.10am.pro/biology-is-code
 - **Thesis:** Biology shifting from a discovery lottery to a computable search problem. Framework = **Read · Orchestrate · Write** (Bio-OS value chain).
 - **Sections:** hero (paradigm shift), Healthspan-per-Token scaling law + longevity escape velocity, 5-level proteomic abstraction stack (Atoms→Chemistry→Peptides→Proteins→Clinical), Read/Orchestrate/Write value-chain grid, 9-ticker market-cap table (layer-tagged), tabbed income-statement SVG charts, compute-bottleneck stat (~0.02%), methodology notes (ES), footer.
-- **9 tickers (Jun 2026 snapshot, hardcoded):**
-  - READ: TEM ($9.3B), CAI ($4.9B, IPO Jun 2025), RXRX ($1.4B), NAUT ($286M)
-  - ORCHESTRATE: HIMS ($7.8B — only name with positive operating income)
-  - WRITE: IBRX ($7.4B), PBLS ($3.3B, record IPO Jun 2026), NGEN ($210M), INKT ($60M)
+- **9 tickers (Aug 17, 2026 snapshot — post-Q2 FY2026, hardcoded):**
+  - READ: TEM ($9.3B), CAI ($5.5B — turned adj-EBITDA positive in Q2), RXRX ($1.7B), NAUT ($113M — cash ~$129M now exceeds market cap)
+  - ORCHESTRATE: HIMS ($7.3B — dipped ~7% on Q2 print; raised FY26 rev guide to $3.1–3.3B)
+  - WRITE: IBRX ($7.7B), PBLS ($4.5B, record IPO Jun 2026), NGEN ($131M), INKT ($53M)
 - **Chart data:** 7 tickers with multi-year income statements (HIMS, TEM, CAI, IBRX, RXRX, NAUT, INKT); PBLS + NGEN render as pre-revenue / newly-public info cards (no chart).
-- **Data caveats (in methodology block):** CAI gross profit margin-estimated, 2025 op income distorted by IPO stock comp; IBRX 2022/2025 op income ≈ R&D + SG&A; NAUT/INKT pre-revenue (op-loss only).
-- **History:** built 5-ticker (commit e69177a) → expanded to 9 + Bio-OS framework (36fbb8d) → hub button → 10am.pro (bdb70ee).
+- **HIMS 2026E bar:** HIMS chart includes a dashed/translucent projected revenue bar (FY2026 guidance midpoint ~$3.2B) via a `projIdx` flag on the FIN entry. `IncomeChart` skips null gross/op for projected years; CAGR chips slice to actuals only so the projection never distorts them. Pattern is reusable for any ticker (set `projIdx` + null the unknown series).
+- **Q2 FY2026 handling:** annual bars stay FY2022–FY2025 actuals; each ticker's Q2 result lives in its commentary note (HIMS from the uploaded Aug 10 Q2 deck/transcript; TEM/CAI/IBRX/RXRX/NAUT reported late Jul–mid Aug).
+- **Data caveats (in methodology block):** CAI gross profit margin-estimated, FY2025 op income distorted by IPO stock comp; IBRX 2022/2025 op income ≈ R&D + SG&A; NAUT/INKT pre-revenue (op-loss only).
+- **History:** built 5-ticker (e69177a) → expanded to 9 + Bio-OS framework (36fbb8d) → hub button → 10am.pro (bdb70ee) → Q2 FY2026 refresh + stale-NAUT fix (2c52b5f) → HIMS 2026E guidance bar.
 
 ### `/el-10x-mas-rapido` ✅ LIVE (added separately)
 - Speed-to-10x tearsheet (prob × velocity matrix, Laffont). Cover + paywall CTA funneling to subscribe.

@@ -30,8 +30,8 @@ const TICKERS = [
 
 // Income statements ($M). type:'chart' renders bars; type:'card' is pre-revenue / newly public.
 const FIN = {
-  HIMS: { type: 'chart', name: 'Hims & Hers Health', sub: 'HIMS · ≈ $32/sh · ORCHESTRATE', mcap: '$7.3B', years: [2022, 2023, 2024, 2025],
-    revenue: [526.9, 872.0, 1476.5, 2347.6], gross: [408.7, 714.9, 1173.1, 1733.4], op: [-68.7, -29.5, 61.9, 105.6],
+  HIMS: { type: 'chart', name: 'Hims & Hers Health', sub: 'HIMS · ≈ $32/sh · ORCHESTRATE', mcap: '$7.3B', years: [2022, 2023, 2024, 2025, 2026],
+    revenue: [526.9, 872.0, 1476.5, 2347.6, 3200], gross: [408.7, 714.9, 1173.1, 1733.4, null], op: [-68.7, -29.5, 61.9, 105.6, null], projIdx: 4,
     note: 'FY2022–FY2025 actuals shown. Q2 FY2026 (reported Aug 10): revenue $753M (+38% YoY), ~3.0M subscribers (+19%), adjusted EBITDA $60M (8% margin). GAAP net loss was -$86M, hit by ~$81M of one-time costs (Eucalyptus close, restructuring, FTC accrual); gross margin compressed to 64% on branded-GLP-1 and international mix. Management raised FY2026 revenue guidance to $3.1–3.3B (+32–41%) with $275–325M adj. EBITDA, and reiterated 2030 targets of $6.5B+ revenue / $1.3B+ adj. EBITDA.' },
   TEM: { type: 'chart', name: 'Tempus AI', sub: 'TEM · ≈ $52/sh · READ', mcap: '$9.4B', years: [2022, 2023, 2024, 2025],
     revenue: [320.7, 531.8, 693.4, 1271.8], gross: [130.2, 286.2, 381.1, 797.9], op: [-265.4, -196.1, -691.1, -252.9],
@@ -192,7 +192,8 @@ function Chip({ color, label, s }) {
 
 function IncomeChart({ d, mb }) {
   const W = 640, H = mb ? 280 : 340, padR = 56, padL = 8, padT = 22, padB = 26;
-  const all = [...d.revenue, ...d.gross, ...d.op, 0];
+  const all = [...d.revenue, ...d.gross, ...d.op].filter((v) => v != null);
+  all.push(0);
   let max = Math.max(...all), min = Math.min(...all);
   const span = (max - min) || 1; max += span * 0.06; min -= span * 0.04;
   const y = (v) => padT + (max - v) / (max - min) * (H - padT - padB);
@@ -209,17 +210,20 @@ function IncomeChart({ d, mb }) {
   }
   const bars = [];
   d.years.forEach((yr, i) => {
+    const isProj = d.projIdx === i;
     const gx = padL + i * groupW + (groupW - (bw * 3 + barGap * 2)) / 2;
     series.forEach((s, j) => {
       const v = d[s.k][i], bx = gx + j * (bw + barGap);
+      if (v == null) return;
       if (v === 0) {
         bars.push(<rect key={i + s.k} x={bx} y={y0 - 1} width={bw} height={2} rx={1} fill={s.c} opacity={0.45} />);
       } else {
         const yy = y(v), h = Math.abs(yy - y0), top = v >= 0 ? yy : y0;
-        bars.push(<rect key={i + s.k} x={bx} y={top} width={bw} height={Math.max(h, 1.5)} rx={2} fill={s.c} />);
+        const projStyle = isProj ? { opacity: 0.4, stroke: s.c, strokeWidth: 1.4, strokeDasharray: '3 2' } : {};
+        bars.push(<rect key={i + s.k} x={bx} y={top} width={bw} height={Math.max(h, 1.5)} rx={2} fill={s.c} {...projStyle} />);
       }
     });
-    bars.push(<text key={'yr' + i} x={padL + i * groupW + groupW / 2} y={H - 8} textAnchor="middle" fontSize="11" fill="var(--text-secondary)" fontFamily="'JetBrains Mono',monospace">{yr}</text>);
+    bars.push(<text key={'yr' + i} x={padL + i * groupW + groupW / 2} y={H - 8} textAnchor="middle" fontSize="11" fill={isProj ? 'var(--gold)' : 'var(--text-secondary)'} fontFamily="'JetBrains Mono',monospace">{isProj ? yr + 'E' : yr}</text>);
   });
   return (
     <div style={{ position: 'relative', width: '100%' }}>
@@ -402,11 +406,23 @@ export default function BiologyIsCode() {
           {d.type === 'chart' ? (
             <>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
-                <Chip color={C_REV} label="Revenue" s={stats(d.revenue, d.years)} />
-                <Chip color={C_GP} label="Gross profit" s={stats(d.gross, d.years)} />
-                <Chip color={C_OP} label="Operating income" s={stats(d.op, d.years)} />
+                {(() => {
+                  const aLen = d.projIdx ?? d.years.length;
+                  const yrs = d.years.slice(0, aLen);
+                  return (<>
+                    <Chip color={C_REV} label="Revenue" s={stats(d.revenue.slice(0, aLen), yrs)} />
+                    <Chip color={C_GP} label="Gross profit" s={stats(d.gross.slice(0, aLen), yrs)} />
+                    <Chip color={C_OP} label="Operating income" s={stats(d.op.slice(0, aLen), yrs)} />
+                  </>);
+                })()}
               </div>
               <IncomeChart d={d} mb={mb} />
+              {d.projIdx != null && (
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, fontFamily: "'Plus Jakarta Sans',sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ display: 'inline-block', width: 11, height: 9, borderRadius: 2, border: '1.4px dashed ' + C_REV, background: C_REV, opacity: 0.4 }} />
+                  <span><b style={{ color: 'var(--gold)' }}>2026E</b> = FY2026 revenue guidance midpoint (~$3.2B); CAGR chips use FY2022–FY2025 actuals only.</span>
+                </div>
+              )}
             </>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 8, marginBottom: 4 }}>

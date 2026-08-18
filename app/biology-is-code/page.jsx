@@ -19,7 +19,7 @@ const LAYER_COLOR = { READ: '#378ADD', ORCHESTRATE: '#D4A843', WRITE: '#22c55e' 
 const TICKERS = [
   { sym: 'TEM', name: 'Tempus AI', layer: 'READ', mcap: '$9.3B', price: '$51', note: 'Deep oncology data, integrated with hospitals. Q2 reported Jul 30.' },
   { sym: 'IBRX', name: 'ImmunityBio', layer: 'WRITE', mcap: '$7.7B', price: '$7.26', note: 'Immune system reboot (IL-15 superagonist). Q2: continued ANKTIVA growth.' },
-  { sym: 'HIMS', name: 'Hims & Hers Health', layer: 'ORCHESTRATE', mcap: '$7.3B', price: '$32', note: 'D2C rails, the incentive provider. Q2 rev $753M (+38%); FY26 guide raised to $3.1–3.3B.' },
+  { sym: 'HIMS', name: 'Hims & Hers Health', layer: 'ORCHESTRATE', mcap: '$7.3B', price: '$32', note: 'D2C rails, the incentive provider. Q2 rev $753M (+38%), ARPU $92 (+21%); Q3 guided to +47–50%, FY26 raised to $3.1–3.3B.' },
   { sym: 'CAI', name: 'Caris Life Sciences', layer: 'READ', mcap: '$5.5B', price: '$19', note: 'Molecular profiling. Record Q2 ($264M rev, +45%); turned adj-EBITDA positive.' },
   { sym: 'PBLS', name: 'Parabilis Medicines', layer: 'WRITE', mcap: '$4.5B', price: '$37', note: 'Helicon peptides for flat / undruggable proteins. IPO Jun 2026.' },
   { sym: 'RXRX', name: 'Recursion Pharmaceuticals', layer: 'READ', mcap: '$1.7B', price: '$3.22', note: 'Wetlab simulation; physics→chemistry→biology. Q2: opex cut ~40%.' },
@@ -32,7 +32,7 @@ const TICKERS = [
 const FIN = {
   HIMS: { type: 'chart', name: 'Hims & Hers Health', sub: 'HIMS · ≈ $32/sh · ORCHESTRATE', mcap: '$7.3B', years: [2022, 2023, 2024, 2025, 2026],
     revenue: [526.9, 872.0, 1476.5, 2347.6, 3200], gross: [408.7, 714.9, 1173.1, 1733.4, null], op: [-68.7, -29.5, 61.9, 105.6, null], projIdx: 4,
-    note: 'FY2022–FY2025 actuals shown. Q2 FY2026 (reported Aug 10): revenue $753M (+38% YoY), ~3.0M subscribers (+19%), adjusted EBITDA $60M (8% margin). GAAP net loss was -$86M, hit by ~$81M of one-time costs (Eucalyptus close, restructuring, FTC accrual); gross margin compressed to 64% on branded-GLP-1 and international mix. Management raised FY2026 revenue guidance to $3.1–3.3B (+32–41%) with $275–325M adj. EBITDA, and reiterated 2030 targets of $6.5B+ revenue / $1.3B+ adj. EBITDA.' },
+    note: 'FY2022–FY2025 actuals shown. Q2 FY2026 (reported Aug 10): revenue $753M (+38% YoY), ~2.9M subscribers (+19%, +300K net adds), and monthly revenue per average subscriber of $92 vs $76 a year ago (+21%) — both curves rising while marketing fell 5 pts YoY to 34% of revenue. International revenue grew ~17x to $131M (incl. ~$40M from Eucalyptus, closed June; organic +13% QoQ), with the UK, Australia and Germany each above a $100M annualized run rate. Adjusted EBITDA $60M (8% margin, +1 pt QoQ); GAAP net loss -$86M, hit by ~$81M of one-time costs (Eucalyptus close, restructuring, $47.5M FTC accrual); gross margin compressed to 64% on branded-GLP-1 and international mix. Guidance implies acceleration: Q3 at $880–900M (+47–50% YoY), FY2026 raised to $3.1–3.3B (+32–41%) with $275–325M adj. EBITDA; 2030 targets of $6.5B+ revenue / $1.3B+ adj. EBITDA reiterated. The AI-native Hers Weight Loss rollout (July) showed 3x messaging engagement, 80% of questions answered by AI within clinical protocols, ~50% fewer non-clinical support tasks, and lower cancellations in the new-experience cohorts — management expects AI investment to pay back in 12–18 months.' },
   TEM: { type: 'chart', name: 'Tempus AI', sub: 'TEM · ≈ $52/sh · READ', mcap: '$9.4B', years: [2022, 2023, 2024, 2025],
     revenue: [320.7, 531.8, 693.4, 1271.8], gross: [130.2, 286.2, 381.1, 797.9], op: [-265.4, -196.1, -691.1, -252.9],
     note: 'FY2022–FY2025. Revenue crossed $1.27B in 2025 (+83% YoY); gross profit scaled with it. The operating loss spiked in 2024 on heavy opex, then narrowed in 2025.' },
@@ -65,8 +65,8 @@ const FIN = {
 // diluted shares held constant (HIMS ~231M, TEM ~180M) to isolate the cash trend.
 const FCF = {
   HIMS: { name: 'Hims & Hers Health', shares: '231M sh',
-    q: [['Q4\u201924', 61.9], ['Q1\u201925', 53.8], ['Q2\u201925', -65.2], ['Q3\u201925', 83.5], ['Q4\u201925', 1.9], ['Q1\u201926', 59.5]],
-    note: 'The only FCF-positive name in the basket. Q2\u201925 dip = capex ramp; Q3\u201925 record +$83.5M. Q2\u201926 reports Aug 10 after close.' },
+    q: [['Q1\u201925', 50.1], ['Q2\u201925', -69.4], ['Q3\u201925', 79.4], ['Q4\u201925', -2.6], ['Q1\u201926', 53.0], ['Q2\u201926', -68.2]],
+    note: 'Official Q2\u201926 deck reconciliation. Q2\u201926 FCF of \u2013$68M reflects working capital absorbed by the branded-Wegovy ramp \u2014 covered with a $400M receivables facility plus a ~$400M convertible, ending the quarter with $840M+ in cash. Management expects a return to FCF generation in H2 2026.' },
   TEM: { name: 'Tempus AI', shares: '180M sh',
     q: [['Q1\u201925', -109.0], ['Q2\u201925', 34.7], ['Q3\u201925', -127.9], ['Q4\u201925', -43.1], ['Q1\u201926', -83.3], ['Q2\u201926', -18.6]],
     note: 'Lumpy but improving: Q2\u201926 burn of \u2013$18.6M is the smallest outflow in the series; Q2\u201925 was FCF-positive.' },
@@ -147,7 +147,7 @@ const CHAIN = {
     ['Recursion ($RXRX)', 'Wetlab simulation lowering chemical toxicity.'],
   ] },
   ORCHESTRATE: { tag: 'ORCHESTRATE', sub: 'Distribution & inference', items: [
-    ['Hims ($HIMS)', 'D2C infrastructure, longitudinal biomarker aggregation — the incentive provider that owns the consumer.'],
+    ['Hims ($HIMS)', 'D2C infrastructure, longitudinal biomarker aggregation — the incentive provider that owns the consumer. AI "load bearing, not decorative": the only closed loop of intake → treatment → follow-up → outcome at ~3M-subscriber scale, aiming to sell $50–150K/yr concierge-level care by subscription.'],
   ] },
   WRITE: { tag: 'WRITE', sub: 'Biological intervention', items: [
     ['ImmunityBio ($IBRX)', 'Immune-system reboot (IL-15 superagonist).'],
@@ -485,7 +485,7 @@ export default function BiologyIsCode() {
           <li>CAI (IPO Jun 2025) shows only FY2024–FY2025; its gross profit is estimated from margin and its operating income is approximate (2025 distorted by IPO stock comp).</li>
           <li>IBRX operating income for 2022 and 2025 is approximate (derived from R&D + SG&A).</li>
           <li>PBLS (IPO Jun 2026) and NGEN (Nasdaq Jan 2026) are pre-revenue with limited public history — shown as info cards, not charts.</li>
-          <li>FCF per share uses discrete quarterly FCF (OCF − capex) from company filings via Macrotrends, divided by current diluted shares held constant across the series to isolate the cash trend. Pre-revenue names show TTM/annual burn because no 6-quarter public series exists.</li>
+          <li>FCF per share uses discrete quarterly FCF (OCF − capex) from company filings via Macrotrends — except HIMS, whose series comes directly from the official Q2 FY2026 investor deck reconciliation — divided by current diluted shares held constant across the series to isolate the cash trend. Pre-revenue names show TTM/annual burn because no 6-quarter public series exists.</li>
           <li>This is data and research context, not investment advice.</li>
         </ul>
       </div>

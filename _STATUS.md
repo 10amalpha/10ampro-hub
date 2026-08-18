@@ -231,3 +231,7 @@ On every standalone page, the header hub/back button **must link to `https://10a
 - Commentary de income statement HIMS enriquecido: ARPU $92 vs $76 (+21%), 2.9M subs (+19%, +300K netos), marketing 34% de revenue (−5 pts YoY), internacional ~17x a $131M (incl. $40M Eucalyptus, +13% QoQ orgánico), UK/Australia/Alemania >$100M anualizados c/u, guía Q3 $880–900M (+47–50% = aceleración), FY26 $3.1–3.3B, provisión FTC $47.5M, piloto AI Hers Weight Loss (3x engagement, 80% respondido por AI, −50% tareas no clínicas, menos cancelaciones, payback 12–18 meses).
 - Item ORCHESTRATE actualizado con el framing del call: "AI load bearing, not decorative", closed loop intake→treatment→follow-up→outcome a escala de ~3M subs, visión de vender el concierge de $50–150K/año por suscripción.
 - Nota de metodología ajustada: FCF de HIMS ahora viene del deck oficial, no de Macrotrends.
+
+## 2026-08-18 (2) — OG image para /biology-is-code
+- Nuevo route `app/api/og/biology-is-code/route.jsx` (ImageResponse, 1200×630, divs planos sin SVG inline ni base64 — patrón nosana). Estética terminal oscura: título "Biology is Code", tres cards Read/Orchestrate/Write con sus colores de capa y tickers, tagline Healthspan per Token.
+- Nuevo `app/biology-is-code/layout.jsx` con metadata completa (title, description, canonical, openGraph + twitter card apuntando a https://mercados.10am.pro/api/og/biology-is-code).

@@ -158,15 +158,17 @@ function computeTrend(closes, vols) {
 function TAStructure({ series, ta, mb }) {
   if (!series || series.c.length < 60) return <div style={{ color: 'var(--text-muted)', fontSize: 11, padding: 20 }}>loading structure…</div>;
   const W = 680, H = mb ? 320 : 380, L = 46, R = 58, T = 16, B = 30;
-  const { t, c, v } = series;
   const DAY = 86400000;
+  const keep = 320;
+  const sl = (a) => a.slice(-keep);
+  const t = sl(series.t), c = sl(series.c), v = sl(series.v);
   const t0 = t[0], tEnd = t[t.length - 1] + 120 * DAY;
   const xs = (ts) => L + ((ts - t0) / (tEnd - t0)) * (W - L - R);
   const all = c.concat([ta.structure.measured.up, 0.11]);
   const yMin = Math.min(...all) * 0.9, yMax = Math.max(...all) * 1.08;
   const ys = (p) => T + (1 - (Math.log(p) - Math.log(yMin)) / (Math.log(yMax) - Math.log(yMin))) * (H - T - B);
   const line = (arr) => 'M' + arr.map((p, i) => `${xs(t[i]).toFixed(1)},${ys(p).toFixed(1)}`).join(' L');
-  const e20 = ema(c, 20), e50 = ema(c, 50), e200 = ema(c, 200);
+  const e20 = sl(ema(series.c, 20)), e50 = sl(ema(series.c, 50)), e200 = sl(ema(series.c, 200));
   // trendline helper: through a,b; extended to x2
   const tl = ({ a, b }, extendTo) => {
     const m = (b[1] - a[1]) / (b[0] - a[0]);
@@ -204,7 +206,7 @@ function TAStructure({ series, ta, mb }) {
       <rect x={xs(lastT)} y={T} width={W - R - xs(lastT)} height={H - T - B} fill="rgba(255,255,255,.02)" />
       {lab(xs(lastT) + 4, T + 10, 'PROJECTION →', 'var(--text-muted)')}
       {/* triangle fill */}
-      <path d={`M${xs(ta.structure.support.a[0])},${ys(sup.yAt(ta.structure.support.a[0]))} L${xs(ta.structure.support.a[0])},${ys(res.yAt(ta.structure.support.a[0]))} L${xs(apexT)},${ys(apexY)} Z`} fill={AMB} opacity="0.05" clipPath="url(#taClip)" />
+      <path d={`M${xs(res.x1)},${ys(res.y1)} L${xs(res.x1)},${ys(sup.yAt(res.x1))} L${xs(apexT)},${ys(apexY)} Z`} fill={AMB} opacity="0.07" clipPath="url(#taClip)" />
       {/* volume */}
       <g clipPath="url(#taClip)">
         {v.map((vol, i) => i % 1 === 0 && (
@@ -220,8 +222,8 @@ function TAStructure({ series, ta, mb }) {
       {/* trendlines */}
       <line x1={xs(res.x1)} y1={ys(res.y1)} x2={xs(Math.min(apexT + 30 * DAY, tEnd))} y2={ys(res.yAt(Math.min(apexT + 30 * DAY, tEnd)))} stroke={RED} strokeWidth="1.6" strokeDasharray="5 3" />
       <line x1={xs(sup.x1)} y1={ys(sup.y1)} x2={xs(Math.min(apexT + 30 * DAY, tEnd))} y2={ys(sup.yAt(Math.min(apexT + 30 * DAY, tEnd)))} stroke={GRN} strokeWidth="1.6" strokeDasharray="5 3" />
-      {lab(xs(res.x1) + 6, ys(res.y1) - 6, ta.structure.resistance.label, RED)}
-      {lab(xs(sup.x1) + 6, ys(sup.y1) + 14, ta.structure.support.label, GRN)}
+      {lab(xs(res.x1) - 4, ys(res.y1) - 14, ta.structure.resistance.label, RED, 'end')}
+      {lab(xs(sup.x1) + 14, ys(sup.y1) + 4, ta.structure.support.label, GRN)}
       {/* touches */}
       {ta.structure.touches.map(([ts, p, k]) => (
         <g key={k}>
@@ -231,21 +233,21 @@ function TAStructure({ series, ta, mb }) {
       ))}
       {/* apex */}
       <line x1={xs(apexT)} x2={xs(apexT)} y1={T} y2={H - B} stroke={AMB} strokeWidth="1" strokeDasharray="2 4" />
-      {lab(xs(apexT) + 4, H - B - 40, `APEX ~${new Date(apexT).toLocaleDateString('es', { day: '2-digit', month: 'short' })}`, AMB)}
+      {lab(xs(apexT) + 4, T + 24, `APEX ~${new Date(apexT).toLocaleDateString('es', { day: '2-digit', month: 'short' })}`, AMB)}
       {/* measured moves */}
       <line x1={xs(lastT)} x2={W - R} y1={ys(ta.structure.measured.up)} y2={ys(ta.structure.measured.up)} stroke={GRN} strokeWidth="1" strokeDasharray="3 3" opacity=".7" />
       {lab(W - R - 4, ys(ta.structure.measured.up) - 4, `MEASURED ↑ ${ta.structure.measured.up}`, GRN, 'end')}
       <line x1={xs(lastT)} x2={W - R} y1={ys(ta.structure.measured.down)} y2={ys(ta.structure.measured.down)} stroke={RED} strokeWidth="1" strokeDasharray="3 3" opacity=".7" />
-      {lab(W - R - 4, ys(ta.structure.measured.down) + 11, `MEASURED ↓ ${ta.structure.measured.down}`, RED, 'end')}
+      {lab(W - R - 4, ys(ta.structure.measured.down) - 4, `MEASURED ↓ ${ta.structure.measured.down}`, RED, 'end')}
       {/* invalidation */}
       <line x1={xs(lastT - 30 * DAY)} x2={W - R} y1={ys(ta.invalidation.level)} y2={ys(ta.invalidation.level)} stroke={GRN} strokeWidth="1.2" strokeDasharray="6 3" />
-      {lab(xs(lastT - 28 * DAY), ys(ta.invalidation.level) - 4, `INVALIDATION ${ta.invalidation.level}`, GRN)}
+      {lab(W - R - 4, ys(ta.invalidation.level) - 4, `INVALIDATION ${ta.invalidation.level}`, GRN, 'end')}
       {/* projection */}
       <path d={projD} fill="none" stroke={RED} strokeWidth="2" strokeDasharray="1 0" opacity=".9" />
       {proj.slice(1).map((p, i) => (
         <g key={i}>
           <circle cx={xs(p[0])} cy={ys(p[1])} r="4" fill="#0c0c0e" stroke={RED} strokeWidth="2" />
-          {lab(xs(p[0]), ys(p[1]) + 16, `${ta.path[i].h} $${p[1].toFixed(2)}`, RED, 'middle')}
+          {lab(xs(p[0]) + 8, ys(p[1]) + (i === 0 ? -8 : 14), `${ta.path[i].h} $${p[1].toFixed(2)}`, RED)}
         </g>
       ))}
       {/* last price badge */}

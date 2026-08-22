@@ -15,10 +15,13 @@ const BLU = '#5b8cff';
 const AMB = '#f59e0b';
 const RED = '#ef4444';
 
-// Seed fallbacks (Aug 1 2026 telemetry) if the live feed is unreachable.
+// Seed fallbacks (Aug 22 2026 telemetry) if the live feed is unreachable.
+// Review log: Aug 1 → hosts 965 · price $0.2537 · Jun hrs ~136k (62% of peak)
+//             Aug 22 → hosts 826 · price $0.2823 · Jul hrs ~114k (~52% of peak) — network weaker, price firmer = divergence widening
 const SEED = {
-  completed: 4036795, jobHours: 4040866, hosts: 965, running: 840, queued: 44,
-  price: 0.2537, mcap: 25370000, ath: 7.83, peakHours: 220000,
+  completed: 4115790, jobHours: 4125332, hosts: 826, running: 826, queued: 34,
+  price: 0.2823, mcap: 28233000, ath: 7.83, peakHours: 220000,
+  hostsBaseline: 965, reviewed: '22 Ago 2026',
 };
 
 const PERIODS = [
@@ -305,9 +308,12 @@ export default function NosanaTelemetry() {
       T.push(['watch', '◦', 'Compute hours vs peak', 'Switch the chart to COMPUTE HRS · ALL to read recovery vs the ~220k Oct-25 peak.']);
     }
     const hosts = d?.hosts;
-    T.push(hosts && hosts > 965
-      ? ['pass', '✓', 'Host count above baseline', `${fmtInt(hosts)} online GPU hosts (>965 baseline). Growth toward ~2,000 = supply-side conviction.`]
-      : ['watch', '◦', 'Host count', `${fmtInt(hosts)} online hosts. Track durable growth above the ~965 baseline.`]);
+    const hb = SEED.hostsBaseline;
+    T.push(hosts && hosts > hb
+      ? ['pass', '✓', 'Host count above baseline', `${fmtInt(hosts)} online GPU hosts (>${hb} Aug-1 baseline). Growth toward ~2,000 = supply-side conviction.`]
+      : hosts && hosts < hb * 0.9
+        ? ['fail', '!', 'Host count bleeding', `${fmtInt(hosts)} online hosts — ${Math.round((hosts / hb - 1) * 100)}% vs the ${hb} Aug-1 baseline. Supply leaving after the APR cut; watch for a floor.`]
+        : ['watch', '◦', 'Host count', `${fmtInt(hosts)} online hosts. Track durable growth above the ~${hb} Aug-1 baseline.`]);
     T.push(['watch', '◦', 'Paid revenue disclosure', 'No published USDC/USD paid-compute revenue yet. THE decisive signal — watch for a paid-vs-incentivized split.']);
     T.push(['watch', '◦', 'Staked NOS stabilizing', 'Staking fell ~29.7M → ~14M NOS; APR cut ~20%→~4% (NNP-0001). Watch for it to stop bleeding.']);
     T.push(['watch', '◦', 'Roadmap ships (SSH · confidential compute)', 'Q3/Q4 2026 promises. Confirm they ship, not slip — the $SHDW failure mode is perpetual "upcoming".']);
@@ -455,7 +461,7 @@ export default function NosanaTelemetry() {
       </div>
 
       {/* TRIPWIRES */}
-      <Eyebrow>Thesis tripwires — materialization checklist (from due-diligence)</Eyebrow>
+      <Eyebrow>Thesis tripwires — materialization checklist (from due-diligence) · last review {SEED.reviewed} · stance: hold-to-reduce</Eyebrow>
       <div>
         {trips.map(([cls, ic, t, desc], i) => (
           <div key={i} style={{ display: 'flex', gap: 11, padding: '11px 12px', border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface)', alignItems: 'flex-start', marginBottom: 8 }}>

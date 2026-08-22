@@ -585,8 +585,78 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
                 <span style={{ fontSize: 18 }}>🛰️</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: '#5b8cff', letterSpacing: '0.3px' }}>NOSANA</span>
               </div>
-              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Network telemetry — GPU network + $NOS</span>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Jobs · Hosts · Precio · Market cap en vivo →</span>
+              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>GPU network telemetry + $NOS</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Compute hours · Hosts · On-chain · TA · Decisión →</span>
+            </a>
+            {/* JITO */}
+            <a href="/jto" style={{
+              display: 'flex', flexDirection: 'column', padding: '10px 14px',
+              background: 'linear-gradient(135deg, #22C55E08, #22C55E18)',
+              border: '1px solid #22C55E30', borderRadius: 6, textDecoration: 'none',
+              transition: 'border-color 0.2s',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <span style={{ fontSize: 18 }}>⚡</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>JITO</span>
+              </div>
+              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>MEV tips, JitoSOL TVL, revenue + $JTO</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Tips vs pico · Tesorería · TA · Decisión →</span>
+            </a>
+            {/* JUPITER */}
+            <a href="/jup" style={{
+              display: 'flex', flexDirection: 'column', padding: '10px 14px',
+              background: 'linear-gradient(135deg, #D4A84308, #D4A84318)',
+              border: '1px solid #D4A84330', borderRadius: 6, textDecoration: 'none',
+              transition: 'border-color 0.2s',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <span style={{ fontSize: 18 }}>🪐</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#D4A843', letterSpacing: '0.3px' }}>JUPITER</span>
+              </div>
+              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Agregador: volumen, fees, buyback + $JUP</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Volumen · Revenue · Vote escrow · Decisión →</span>
+            </a>
+            {/* METEORA */}
+            <a href="/met" style={{
+              display: 'flex', flexDirection: 'column', padding: '10px 14px',
+              background: 'linear-gradient(135deg, #f9731608, #f9731618)',
+              border: '1px solid #f9731630', borderRadius: 6, textDecoration: 'none',
+              transition: 'border-color 0.2s',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <span style={{ fontSize: 18 }}>🌊</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#f97316', letterSpacing: '0.3px' }}>METEORA</span>
+              </div>
+              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Capa de liquidez: TVL, fees, unlocks + $MET</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Revenue · Buyback vs unlocks · TA · Decisión →</span>
+            </a>
+            {/* PUMP.FUN */}
+            <a href="/pump" style={{
+              display: 'flex', flexDirection: 'column', padding: '10px 14px',
+              background: 'linear-gradient(135deg, #ef444408, #ef444418)',
+              border: '1px solid #ef444430', borderRadius: 6, textDecoration: 'none',
+              transition: 'border-color 0.2s',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <span style={{ fontSize: 18 }}>💊</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#ef4444', letterSpacing: '0.3px' }}>PUMP.FUN</span>
+              </div>
+              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Launchpad + PumpSwap: revenue, buyback + $PUMP</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Revenue · Launchpad share · TA · Decisión →</span>
+            </a>
+            {/* DOUBLEZERO */}
+            <a href="/2z" style={{
+              display: 'flex', flexDirection: 'column', padding: '10px 14px',
+              background: 'linear-gradient(135deg, #a78bfa08, #a78bfa18)',
+              border: '1px solid #a78bfa30', borderRadius: 6, textDecoration: 'none',
+              transition: 'border-color 0.2s',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <span style={{ fontSize: 18 }}>🔌</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#a78bfa', letterSpacing: '0.3px' }}>DOUBLEZERO</span>
+              </div>
+              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Fibra para validadores: stake weight, burn + $2Z</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Stake % · TCV · Burn on-chain · Decisión →</span>
             </a>
           </div>
         </div>

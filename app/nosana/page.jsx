@@ -316,7 +316,8 @@ export default function NosanaTelemetry() {
         : ['watch', '◦', 'Host count', `${fmtInt(hosts)} online hosts. Track durable growth above the ~${hb} Aug-1 baseline.`]);
     T.push(['watch', '◦', 'Paid revenue disclosure', 'No published USDC/USD paid-compute revenue yet. THE decisive signal — watch for a paid-vs-incentivized split.']);
     T.push(['watch', '◦', 'Staked NOS stabilizing', 'Staking fell ~29.7M → ~14M NOS; APR cut ~20%→~4% (NNP-0001). Watch for it to stop bleeding.']);
-    T.push(['watch', '◦', 'Roadmap ships (SSH · confidential compute)', 'Q3/Q4 2026 promises. Confirm they ship, not slip — the $SHDW failure mode is perpetual "upcoming".']);
+    T.push(['watch', '◦', 'Roadmap ships (SSH · confidential compute · Sombrero billing)', 'Q3/Q4 2026 promises + Sombrero fiat ramps/billing (H2-26) + AMD/Intel/Apple hardware. Confirm they ship, not slip — the $SHDW failure mode is perpetual "upcoming".']);
+    T.push(['watch', '◦', 'Newsflow silence', 'No protocol updates or disclosures in the last 30d (Messari, mid-Aug). Next public touchpoint: Solana Summit Belgrade, 26 Ago. Silence + falling throughput = the pattern not to rationalize.']);
     return T;
   }, [recPct, d]);
 

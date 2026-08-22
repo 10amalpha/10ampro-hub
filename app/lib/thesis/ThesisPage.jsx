@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 
 import { ema, computeTrend, autoStructure, buildForecast } from './ta';
+import RelativeLayer from './RelativeLayer';
 
 const GRN = '#22c55e', BLU = '#5b8cff', AMB = '#f59e0b', RED = '#ef4444', PUR = '#8b5cf6';
 const MONO = "'JetBrains Mono',monospace", SANS = "'Plus Jakarta Sans',system-ui,sans-serif";
@@ -311,6 +312,10 @@ export default function ThesisPage({ TOKEN }) {
           );
         })()}
       </div>
+
+      {/* RELATIVE + POSITIONING */}
+      <Eyebrow dot={PUR}>Relativo y posicionamiento — ¿se mueve solo o sigue a SOL? · beta · dominancia · funding</Eyebrow>
+      <RelativeLayer cgId={TOKEN.cgId} symbol={TOKEN.symbol} mb={mb} />
 
       {/* TECHNICAL ANALYSIS */}
       <Eyebrow dot={fcCol}>Technical analysis — {TOKEN.symbol}/USD 1D · auto-structure + directional forecast 1M / 3M / 1Y · generated {fc?.generated || '…'}</Eyebrow>

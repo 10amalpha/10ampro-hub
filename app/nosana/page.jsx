@@ -873,6 +873,10 @@ export default function NosanaTelemetry() {
         })()}
       </div>
 
+      {/* RELATIVE + POSITIONING */}
+      <Eyebrow dot="#8b5cf6">Relativo y posicionamiento — ¿se mueve solo o sigue a SOL? · beta · dominancia · funding</Eyebrow>
+      <RelativeLayer cgId="nosana" symbol="NOS" mb={mb} />
+
       {/* TECHNICAL ANALYSIS */}
       <Eyebrow dot={RED}>Technical analysis — NOS/USDT 1D · forecast 1M / 3M / 1Y · read {TA.reviewed}</Eyebrow>
       <div style={{ border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface)', padding: 16 }}>

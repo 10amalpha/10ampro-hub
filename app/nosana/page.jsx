@@ -29,76 +29,88 @@ const SEED = {
 // Chart basis: NOS/USDT 1D (Gate) · 22 Ago 2026 · C 0.2819 · EMA20 0.2667 · EMA50 0.2687 · EMA100 0.2733 · EMA200 0.2946 · MACD histo +0.0041
 const TA = {
   reviewed: '22 Ago 2026',
-  read: 'Price sits on the EMA 20/50/100 cluster (0.267–0.273) and got rejected at the EMA200 (0.2946) today — wick to 0.312, close −4.6%. Structure since Feb: higher lows (0.143 → 0.20 → 0.21) against lower highs (0.49 → 0.40 → 0.31) = compressing triangle. MACD barely positive. Resolution usually comes within weeks; direction is the trade, not the level.',
-  levels: {
-    resistance: [[0.2946, 'EMA200 — the line that turns the trend'], [0.312, 'Aug-22 rejection wick'], [0.35, 'Jun range floor / May-Jun supply'], [0.40, 'Jun distribution top'], [0.49, 'Jun spike high']],
-    support: [[0.267, 'EMA 20/50 cluster'], [0.22, 'Aug low · triangle lower rail'], [0.20, 'Apr base'], [0.143, 'Feb-26 cycle low'], [0.10, 'psychological / no structure below']],
-  },
-  horizons: [
-    { h: '1 MES', bear: [0.21, 0.23], base: [0.26, 0.31], bull: [0.33, 0.36],
-      note: 'Range trade inside the cluster. Bull needs a daily close > 0.2946 and hold; bear = loss of 0.26 with volume.' },
-    { h: '3 MESES', bear: [0.15, 0.18], base: [0.24, 0.35], bull: [0.42, 0.49],
-      note: 'Triangle resolves. Upside target = Jun supply zone; downside = retest of the Feb low. Catalyst window: Solana Summit, Q3/Q4 roadmap deliveries.' },
-    { h: '1 AÑO', bear: [0.08, 0.12], base: [0.20, 0.45], bull: [0.60, 0.80],
-      note: 'TA is noise at this horizon — fundamentals drive. Bull case requires compute hours to reclaim the Oct-25 peak AND paid revenue disclosure. Bear case = $SHDW path: hosts keep leaving, 0.143 breaks, no bid.' },
+  bias: 'BEARISH',
+  read: 'Rejected at the EMA200 (0.2946) today — wick to 0.312, close −4.6%. EMA200 falling for 10 months; lower highs 0.49 → 0.40 → 0.31 on shrinking volume = distribution. Higher lows since Feb (0.143 → 0.20 → 0.21) are the only bull argument and they are weak: the Aug rally reached the EMA200 on 166K volume. Off-chart: hosts −14% in 3 weeks, compute hours −50% vs peak. Triangle compressing while the network empties — that rarely resolves up.',
+  invalidation: { level: 0.3125, text: 'Daily close > 0.3125 (above today\'s wick and the EMA200) on >2× avg volume kills this path → next target 0.35–0.40.' },
+  path: [
+    { d: 30, h: '+1M', target: 0.25, how: 'EMA200 rejection → back to the 0.267 cluster → loses it as MACD crosses negative → 0.24–0.25.' },
+    { d: 90, h: '+3M', target: 0.19, how: 'Breaks the triangle lower rail (0.22) → Apr base 0.20 gives → 0.18–0.19. Window: post-Solana Summit with no revenue news.' },
+    { d: 365, h: '+1Y', target: 0.14, how: 'Retest of the 0.143 cycle low. No paid demand = likely undercut to 0.11–0.12.' },
   ],
+  levels: {
+    resistance: [[0.2946, 'EMA200 — the line that turns the trend'], [0.3125, 'INVALIDATION — Aug-22 wick'], [0.35, 'Jun range floor / May-Jun supply'], [0.40, 'Jun distribution top'], [0.49, 'Jun spike high']],
+    support: [[0.267, 'EMA 20/50 cluster'], [0.22, 'Aug low · triangle lower rail'], [0.20, 'Apr base'], [0.143, 'Feb-26 cycle low'], [0.11, 'undercut zone']],
+  },
 };
 
 // ---- TA scenario fan chart (SVG, log-y) ----
 function TAFan({ price, ta, mb }) {
   const W = 680, H = mb ? 300 : 340, L = 50, R = 64, T = 18, B = 34;
   const px = price || 0.28;
-  const hz = [{ d: 0, lab: 'HOY' }, { d: 30, lab: '+1M' }, { d: 90, lab: '+3M' }, { d: 365, lab: '+1Y' }];
-  // x: sqrt-time so 1M/3M aren't crushed against 1Y
   const xs = (days) => L + Math.sqrt(days / 365) * (W - L - R);
-  const yMin = 0.07, yMax = 0.9;
+  const yMin = 0.08, yMax = 0.55;
   const ys = (v) => T + (1 - (Math.log(v) - Math.log(yMin)) / (Math.log(yMax) - Math.log(yMin))) * (H - T - B);
-  const pts = (key, idx) => [[px, px]].concat(ta.horizons.map((h) => h[key])).map((r, i) => [xs(hz[i].d), ys(r[idx])]);
-  const band = (key, col, op) => {
-    const top = pts(key, 1), bot = pts(key, 0).reverse();
-    return <path d={'M' + top.concat(bot).map((p) => p.join(',')).join(' L') + ' Z'} fill={col} opacity={op} />;
-  };
-  const mid = (key) => 'M' + [[px, px]].concat(ta.horizons.map((h) => h[key])).map((r, i) => `${xs(hz[i].d)},${ys((r[0] + r[1]) / 2)}`).join(' L');
-  const gridV = [0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8];
-  const levels = [...ta.levels.resistance, ...ta.levels.support].filter(([v]) => v >= yMin && v <= yMax && Math.abs(v - px) / px > 0.03);
-  const fmt = (v) => (v < 1 ? v.toFixed(v < 0.3 ? 3 : 2) : v.toFixed(2));
+  const P = [{ d: 0, target: px }].concat(ta.path);
+  // smooth path through targets
+  const pts = P.map((p) => [xs(p.d), ys(p.target)]);
+  let dPath = `M${pts[0][0]},${pts[0][1]}`;
+  for (let i = 1; i < pts.length; i++) {
+    const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], cx = (x0 + x1) / 2;
+    dPath += ` C${cx},${y0} ${cx},${y1} ${x1},${y1}`;
+  }
+  // uncertainty cone: ±6% / ±12% / ±22%
+  const tol = [0, 0.06, 0.12, 0.22];
+  const up = P.map((p, i) => [xs(p.d), ys(p.target * (1 + tol[i]))]);
+  const dn = P.map((p, i) => [xs(p.d), ys(p.target * (1 - tol[i]))]).reverse();
+  const cone = 'M' + up.concat(dn).map((q) => q.join(',')).join(' L') + ' Z';
+  const gridV = [0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5];
+  const lv = [...ta.levels.resistance, ...ta.levels.support].filter(([v]) => v >= yMin && v <= yMax && Math.abs(v - px) / px > 0.08 && v !== ta.invalidation.level);
+  const inv = ta.invalidation.level;
+  const pct = (v) => `${v / px - 1 >= 0 ? '+' : ''}${Math.round((v / px - 1) * 100)}%`;
   return (
-    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: "block", height: "auto" }}>
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: 'block', height: 'auto' }}>
+      <defs>
+        <linearGradient id="taCone" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0%" stopColor={RED} stopOpacity="0.05" /><stop offset="100%" stopColor={RED} stopOpacity="0.22" />
+        </linearGradient>
+      </defs>
       {gridV.map((v) => (
         <g key={v}>
           <line x1={L} x2={W - R} y1={ys(v)} y2={ys(v)} stroke="rgba(255,255,255,.05)" />
           <text x={L - 6} y={ys(v) + 3} textAnchor="end" fontSize="10" fill="var(--text-muted)" fontFamily="'JetBrains Mono',monospace">${v.toFixed(2)}</text>
         </g>
       ))}
-      {hz.map((h) => (
-        <g key={h.lab}>
-          <line x1={xs(h.d)} x2={xs(h.d)} y1={T} y2={H - B} stroke="rgba(255,255,255,.07)" strokeDasharray="2 3" />
-          <text x={xs(h.d)} y={H - B + 14} textAnchor={h.d === 0 ? 'start' : 'middle'} fontSize="10.5" fontWeight="700" fill="var(--text-secondary)" fontFamily="'JetBrains Mono',monospace">{h.lab}</text>
+      {P.map((p, i) => (
+        <g key={i}>
+          <line x1={xs(p.d)} x2={xs(p.d)} y1={T} y2={H - B} stroke="rgba(255,255,255,.07)" strokeDasharray="2 3" />
+          <text x={xs(p.d)} y={H - B + 14} textAnchor={i === 0 ? 'start' : 'middle'} fontSize="10.5" fontWeight="700" fill="var(--text-secondary)" fontFamily="'JetBrains Mono',monospace">{i === 0 ? 'HOY' : p.h}</text>
         </g>
       ))}
-      {band('bull', GRN, 0.16)}
-      {band('base', BLU, 0.20)}
-      {band('bear', RED, 0.16)}
-      <path d={mid('bull')} fill="none" stroke={GRN} strokeWidth="1.6" strokeDasharray="4 3" />
-      <path d={mid('base')} fill="none" stroke={BLU} strokeWidth="2" />
-      <path d={mid('bear')} fill="none" stroke={RED} strokeWidth="1.6" strokeDasharray="4 3" />
-      {levels.map(([v, why]) => (
+      {/* invalidation zone */}
+      <rect x={L} y={T} width={W - L - R} height={Math.max(0, ys(inv) - T)} fill={GRN} opacity="0.05" />
+      <line x1={L} x2={W - R} y1={ys(inv)} y2={ys(inv)} stroke={GRN} strokeWidth="1.5" strokeDasharray="6 3" />
+      <text x={L + 6} y={ys(inv) - 5} fontSize="9.5" fontWeight="700" fill={GRN} fontFamily="'JetBrains Mono',monospace">INVALIDATION › ${inv} · path flips to 0.35–0.40</text>
+      {lv.map(([v]) => (
         <g key={v}>
-          <line x1={L} x2={W - R} y1={ys(v)} y2={ys(v)} stroke={v > px ? RED : GRN} strokeOpacity=".45" strokeWidth="1" strokeDasharray="1 3" />
-          <text x={W - R + 4} y={ys(v) + 3} fontSize="9.5" fill={v > px ? RED : GRN} fontFamily="'JetBrains Mono',monospace">{fmt(v)}</text>
+          <line x1={L} x2={W - R} y1={ys(v)} y2={ys(v)} stroke="rgba(255,255,255,.18)" strokeWidth="1" strokeDasharray="1 3" />
+          <text x={W - R + 4} y={ys(v) + 3} fontSize="9.5" fill="var(--text-muted)" fontFamily="'JetBrains Mono',monospace">{v.toFixed(3)}</text>
         </g>
       ))}
-      <line x1={L} x2={W - R} y1={ys(px)} y2={ys(px)} stroke="var(--text-primary)" strokeOpacity=".5" strokeWidth="1" />
-      <circle cx={xs(0)} cy={ys(px)} r="4" fill="#fff" />
+      <path d={cone} fill="url(#taCone)" />
+      <path d={dPath} fill="none" stroke={RED} strokeWidth="2.4" />
+      <line x1={L} x2={W - R} y1={ys(px)} y2={ys(px)} stroke="var(--text-primary)" strokeOpacity=".4" strokeWidth="1" />
+      <circle cx={xs(0)} cy={ys(px)} r="4.5" fill="#fff" />
       <rect x={W - R + 2} y={ys(px) - 8} width={R - 4} height="16" rx="2" fill="#fff" />
       <text x={W - R + R / 2} y={ys(px) + 3.5} textAnchor="middle" fontSize="10" fontWeight="800" fill="#000" fontFamily="'JetBrains Mono',monospace">${px.toFixed(3)}</text>
-      {ta.horizons.map((h, i) => {
-        const x = xs(hz[i + 1].d);
-        const lab = (r, col, dy) => <text x={x} y={ys(r[1]) + dy} textAnchor="middle" fontSize="9.5" fontWeight="700" fill={col} fontFamily="'JetBrains Mono',monospace">{fmt(r[0])}–{fmt(r[1])}</text>;
+      {ta.path.map((p, i) => {
+        const x = xs(p.d), y = ys(p.target);
+        const last = i === ta.path.length - 1;
         return (
-          <g key={h.h}>
-            {lab(h.bull, GRN, -5)}
-            {lab(h.bear, RED, ys(h.bear[0]) - ys(h.bear[1]) + 12)}
+          <g key={p.h}>
+            <circle cx={x} cy={y} r="5" fill="#0c0c0e" stroke={RED} strokeWidth="2" />
+            <rect x={x - (last ? 64 : 32)} y={y + 10} width="64" height="28" rx="3" fill="rgba(239,68,68,.14)" stroke={RED} strokeOpacity=".5" />
+            <text x={x - (last ? 32 : 0)} y={y + 22} textAnchor="middle" fontSize="11" fontWeight="800" fill={RED} fontFamily="'JetBrains Mono',monospace">${p.target.toFixed(2)}</text>
+            <text x={x - (last ? 32 : 0)} y={y + 33} textAnchor="middle" fontSize="9" fill={RED} fontFamily="'JetBrains Mono',monospace">{pct(p.target)}</text>
           </g>
         );
       })}
@@ -515,39 +527,34 @@ export default function NosanaTelemetry() {
 
       {/* SNAPSHOT LOG */}
       {/* TECHNICAL ANALYSIS */}
-      <Eyebrow dot={BLU}>Technical analysis — NOS/USDT 1D · scenarios at 1M / 3M / 1Y · read {TA.reviewed}</Eyebrow>
+      <Eyebrow dot={RED}>Technical analysis — NOS/USDT 1D · forecast 1M / 3M / 1Y · read {TA.reviewed}</Eyebrow>
       <div style={{ border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface)', padding: 16 }}>
         <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>{TA.read}</div>
         <div style={{ marginTop: 14, border: '1px solid var(--border)', borderRadius: 4, padding: '8px 4px 4px' }}>
           <div style={{ display: 'flex', gap: 14, fontSize: 10.5, padding: '0 10px 4px', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
-            <span><span style={{ color: GRN }}>▬</span> bull</span>
-            <span><span style={{ color: BLU }}>▬</span> base</span>
-            <span><span style={{ color: RED }}>▬</span> bear</span>
-            <span style={{ marginLeft: 'auto' }}>log scale · x = √time · dotted = S/R levels</span>
+            <span style={{ color: RED, fontWeight: 800, letterSpacing: '.1em' }}>BIAS: {TA.bias}</span>
+            <span><span style={{ color: RED }}>▬</span> forecast path</span>
+            <span><span style={{ color: GRN }}>╌</span> invalidation</span>
+            <span style={{ marginLeft: 'auto' }}>log scale · x = √time · shade = tolerance</span>
           </div>
           <TAFan price={d?.price} ta={TA} mb={mb} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : 'repeat(3,1fr)', gap: 10, marginTop: 14 }}>
-          {TA.horizons.map((z) => {
+          {TA.path.map((p) => {
             const px = d?.price;
-            const mid = (r) => (r[0] + r[1]) / 2;
-            const pct = (r) => (px ? `${mid(r) / px - 1 >= 0 ? '+' : ''}${Math.round((mid(r) / px - 1) * 100)}%` : '');
-            const row = (label, r, col) => (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '5px 0', borderTop: '1px solid var(--border)' }}>
-                <span style={{ fontSize: 10.5, letterSpacing: '.1em', textTransform: 'uppercase', color: col }}>{label}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>${r[0].toFixed(2)}–${r[1].toFixed(2)} <span style={{ fontSize: 10.5, fontWeight: 500, color: 'var(--text-muted)' }}>{pct(r)}</span></span>
-              </div>
-            );
             return (
-              <div key={z.h} style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
-                <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: '.08em', color: BLU, marginBottom: 6 }}>{z.h}</div>
-                {row('Bull', z.bull, GRN)}
-                {row('Base', z.base, 'var(--text-secondary)')}
-                {row('Bear', z.bear, RED)}
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8, lineHeight: 1.5, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>{z.note}</div>
+              <div key={p.h} style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '.08em', color: 'var(--text-secondary)' }}>{p.h}</span>
+                  <span style={{ fontSize: 18, fontWeight: 800, color: RED }}>${p.target.toFixed(2)} <span style={{ fontSize: 10.5, fontWeight: 500, color: 'var(--text-muted)' }}>{px ? `${p.target / px - 1 >= 0 ? '+' : ''}${Math.round((p.target / px - 1) * 100)}%` : ''}</span></span>
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, lineHeight: 1.5, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>{p.how}</div>
               </div>
             );
           })}
+        </div>
+        <div style={{ marginTop: 10, padding: '9px 12px', border: `1px solid ${GRN}`, borderRadius: 4, background: 'rgba(34,197,94,.06)', fontSize: 11.5, color: 'var(--text-secondary)', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>
+          <b style={{ color: GRN, fontFamily: "'JetBrains Mono',monospace", letterSpacing: '.08em' }}>INVALIDATION ·</b> {TA.invalidation.text}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 10, marginTop: 12 }}>
           {[['Resistance', TA.levels.resistance, RED], ['Support', TA.levels.support, GRN]].map(([t, L, col]) => (
@@ -563,7 +570,7 @@ export default function NosanaTelemetry() {
             </div>
           ))}
         </div>
-        <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 12, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>Scenario ranges, not forecasts. % shown is distance from live price. Refreshed manually on each thesis review. Not investment advice.</div>
+        <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 12, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>Directional TA forecast with an explicit invalidation level. % shown is distance from live price. Refreshed manually on each thesis review. Not investment advice.</div>
       </div>
 
       <Eyebrow>Tracked snapshots — accumulates every visit → your own history</Eyebrow>

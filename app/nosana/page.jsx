@@ -118,6 +118,31 @@ function TAFan({ price, ta, mb }) {
   );
 }
 
+// ---- live trend engine (computed client-side from CoinGecko daily closes) ----
+const ema = (arr, n) => { const k = 2 / (n + 1); let e = arr[0]; const out = [e]; for (let i = 1; i < arr.length; i++) { e = arr[i] * k + e * (1 - k); out.push(e); } return out; };
+function computeTrend(closes) {
+  if (!closes || closes.length < 60) return null;
+  const c = closes, last = c[c.length - 1];
+  const e20 = ema(c, 20), e50 = ema(c, 50), e100 = ema(c, 100), e200 = ema(c, 200);
+  const m12 = ema(c, 12), m26 = ema(c, 26);
+  const macd = m12.map((v, i) => v - m26[i]); const sig = ema(macd, 9);
+  const hist = macd[macd.length - 1] - sig[sig.length - 1];
+  const histPrev = macd[macd.length - 4] - sig[sig.length - 4];
+  let g = 0, l = 0; for (let i = c.length - 14; i < c.length; i++) { const d = c[i] - c[i - 1]; if (d > 0) g += d; else l -= d; }
+  const rsi = l === 0 ? 100 : 100 - 100 / (1 + (g / 14) / (l / 14));
+  const at = (a) => a[a.length - 1];
+  const slope200 = e200.length > 21 ? at(e200) / e200[e200.length - 21] - 1 : 0;
+  const chg30 = c.length > 30 ? last / c[c.length - 31] - 1 : 0;
+  const chg7 = c.length > 7 ? last / c[c.length - 8] - 1 : 0;
+  const checks = [
+    ['Price > EMA20', last > at(e20)], ['Price > EMA50', last > at(e50)], ['Price > EMA200', last > at(e200)],
+    ['EMA50 > EMA200', at(e50) > at(e200)], ['EMA200 rising', slope200 > 0], ['MACD histo > 0', hist > 0], ['RSI > 50', rsi > 50],
+  ];
+  const score = checks.filter((x) => x[1]).length;
+  const regime = score <= 1 ? 'STRONG BEAR' : score <= 3 ? 'BEAR' : score === 4 ? 'NEUTRAL' : score <= 5 ? 'BULL' : 'STRONG BULL';
+  return { last, e20: at(e20), e50: at(e50), e100: at(e100), e200: at(e200), hist, histUp: hist > histPrev, rsi, slope200, chg30, chg7, checks, score, regime };
+}
+
 const PERIODS = [
   { k: '2592000', label: '30D' },
   { k: '7776000', label: '90D' },
@@ -260,6 +285,17 @@ export default function NosanaTelemetry() {
   const [prev, setPrev] = useState(null);     // previous snapshot
   const [net, setNet] = useState([]);         // network series points
   const [pxHist, setPxHist] = useState({ price: [], mcap: [] });
+  const [trend, setTrend] = useState(null);
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await fetch('/api/nosana?history=365', { cache: 'no-store' });
+        const j = await r.json();
+        const pts = (j.price || j.prices || []).map((q) => Array.isArray(q) ? q[1] : q.y).filter((v) => v > 0);
+        setTrend(computeTrend(pts));
+      } catch {}
+    })();
+  }, []);
   const [metric, setMetric] = useState('hours');
   const [period, setPeriod] = useState('31536000');
   const [days, setDays] = useState('365');
@@ -530,6 +566,46 @@ export default function NosanaTelemetry() {
       <Eyebrow dot={RED}>Technical analysis — NOS/USDT 1D · forecast 1M / 3M / 1Y · read {TA.reviewed}</Eyebrow>
       <div style={{ border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface)', padding: 16 }}>
         <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>{TA.read}</div>
+        {/* LIVE TREND */}
+        {(() => {
+          const t = trend;
+          const col = !t ? 'var(--text-muted)' : t.score >= 5 ? GRN : t.score === 4 ? AMB : RED;
+          const inv = d?.price != null && d.price > TA.invalidation.level;
+          const tile = (k, v, sub, c) => (
+            <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '8px 10px', minWidth: 0 }}>
+              <div style={{ fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>{k}</div>
+              <div style={{ fontSize: 15, fontWeight: 800, marginTop: 3, color: c || 'var(--text-primary)' }}>{v}</div>
+              {sub ? <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 2 }}>{sub}</div> : null}
+            </div>
+          );
+          const pc = (x) => `${x >= 0 ? '+' : ''}${(x * 100).toFixed(1)}%`;
+          return (
+            <div style={{ marginTop: 14, border: `1px solid ${col}`, borderRadius: 4, padding: 12, background: 'rgba(255,255,255,.015)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <div style={{ fontSize: 10.5, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Trend now · live</div>
+                <div style={{ fontSize: 16, fontWeight: 800, letterSpacing: '.06em', color: col }}>{t ? t.regime : 'computing…'}</div>
+                {t && <div style={{ display: 'flex', gap: 3 }}>{t.checks.map((x, i) => <span key={i} title={x[0]} style={{ width: 14, height: 6, borderRadius: 2, background: x[1] ? col : 'rgba(255,255,255,.08)' }} />)}</div>}
+                {t && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t.score}/7 bullish checks</span>}
+                <div style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 700, letterSpacing: '.08em', color: inv ? GRN : RED }}>
+                  FORECAST {inv ? 'INVALIDATED ›' : 'INTACT ‹'} ${TA.invalidation.level}
+                </div>
+              </div>
+              {t && (
+                <div style={{ display: 'grid', gridTemplateColumns: mb ? 'repeat(2,1fr)' : 'repeat(6,1fr)', gap: 8, marginTop: 10 }}>
+                  {tile('EMA stack', `${t.last > t.e20 ? '▲' : '▼'}20 ${t.last > t.e50 ? '▲' : '▼'}50 ${t.last > t.e200 ? '▲' : '▼'}200`, `${t.e20.toFixed(3)} · ${t.e50.toFixed(3)} · ${t.e200.toFixed(3)}`, t.last > t.e200 ? GRN : RED)}
+                  {tile('EMA200 slope', pc(t.slope200), '20d change', t.slope200 > 0 ? GRN : RED)}
+                  {tile('MACD histo', (t.hist >= 0 ? '+' : '') + t.hist.toFixed(4), t.histUp ? 'rising' : 'falling', t.hist > 0 ? GRN : RED)}
+                  {tile('RSI 14', t.rsi.toFixed(0), t.rsi > 70 ? 'overbought' : t.rsi < 30 ? 'oversold' : 'neutral zone', t.rsi > 50 ? GRN : RED)}
+                  {tile('7d / 30d', `${pc(t.chg7)} / ${pc(t.chg30)}`, 'momentum', t.chg30 > 0 ? GRN : RED)}
+                  {tile('vs path', d?.price ? pc(d.price / TA.path[0].target - 1) : '—', 'above +1M target', 'var(--text-primary)')}
+                </div>
+              )}
+              <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>
+                Regime is recomputed on every load from 365 daily closes (CoinGecko): EMA 20/50/200, MACD (12,26,9), RSI 14. The forecast below is the {TA.reviewed} read; this strip tells you whether the market is still agreeing with it.
+              </div>
+            </div>
+          );
+        })()}
         <div style={{ marginTop: 14, border: '1px solid var(--border)', borderRadius: 4, padding: '8px 4px 4px' }}>
           <div style={{ display: 'flex', gap: 14, fontSize: 10.5, padding: '0 10px 4px', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
             <span style={{ color: RED, fontWeight: 800, letterSpacing: '.1em' }}>BIAS: {TA.bias}</span>

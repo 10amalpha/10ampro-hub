@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import RelativeLayer from '../lib/thesis/RelativeLayer';
 
 // ============================================================
 // NOSANA // NETWORK TELEMETRY

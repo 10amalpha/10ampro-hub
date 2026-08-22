@@ -31,6 +31,15 @@ const TA = {
   reviewed: '22 Ago 2026',
   bias: 'BEARISH',
   read: 'Rejected at the EMA200 (0.2946) today — wick to 0.312, close −4.6%. EMA200 falling for 10 months; lower highs 0.49 → 0.40 → 0.31 on shrinking volume = distribution. Higher lows since Feb (0.143 → 0.20 → 0.21) are the only bull argument and they are weak: the Aug rally reached the EMA200 on 166K volume. Off-chart: hosts −14% in 3 weeks, compute hours −50% vs peak. Triangle compressing while the network empties — that rarely resolves up.',
+  // Chart structure (anchor points are [timestamp, price]) — drawn on the live series
+  structure: {
+    resistance: { a: [1780358400000, 0.3947], b: [1787356800000, 0.2959], label: 'Lower highs · Jun-1 → Jul-7 → Aug-21' },
+    support: { a: [1770768000000, 0.1784], b: [1785369600000, 0.2431], label: 'Higher lows · Feb-11 → Apr-4 → Jul-28' },
+    touches: [[1780358400000, 0.3947, 'H1'], [1783382400000, 0.3139, 'H2'], [1787356800000, 0.2959, 'H3'], [1770768000000, 0.1784, 'L1'], [1775347200000, 0.1996, 'L2'], [1785369600000, 0.2431, 'L3']],
+    pattern: 'Symmetrical triangle (contracting)',
+    height: 0.19,
+    measured: { up: 0.50, down: 0.143 },
+  },
   invalidation: { level: 0.3125, text: 'Daily close > 0.3125 (above today\'s wick and the EMA200) on >2× avg volume kills this path → next target 0.35–0.40.' },
   path: [
     { d: 30, h: '+1M', target: 0.25, how: 'EMA200 rejection → back to the 0.267 cluster → loses it as MACD crosses negative → 0.24–0.25.' },
@@ -120,7 +129,7 @@ function TAFan({ price, ta, mb }) {
 
 // ---- live trend engine (computed client-side from CoinGecko daily closes) ----
 const ema = (arr, n) => { const k = 2 / (n + 1); let e = arr[0]; const out = [e]; for (let i = 1; i < arr.length; i++) { e = arr[i] * k + e * (1 - k); out.push(e); } return out; };
-function computeTrend(closes) {
+function computeTrend(closes, vols) {
   if (!closes || closes.length < 60) return null;
   const c = closes, last = c[c.length - 1];
   const e20 = ema(c, 20), e50 = ema(c, 50), e100 = ema(c, 100), e200 = ema(c, 200);
@@ -139,8 +148,118 @@ function computeTrend(closes) {
     ['EMA50 > EMA200', at(e50) > at(e200)], ['EMA200 rising', slope200 > 0], ['MACD histo > 0', hist > 0], ['RSI > 50', rsi > 50],
   ];
   const score = checks.filter((x) => x[1]).length;
+  let volRatio = null;
+  if (vols && vols.length > 90) { const avg = (a) => a.reduce((x, y) => x + y, 0) / a.length; volRatio = avg(vols.slice(-20)) / avg(vols.slice(-90)); }
   const regime = score <= 1 ? 'STRONG BEAR' : score <= 3 ? 'BEAR' : score === 4 ? 'NEUTRAL' : score <= 5 ? 'BULL' : 'STRONG BULL';
-  return { last, e20: at(e20), e50: at(e50), e100: at(e100), e200: at(e200), hist, histUp: hist > histPrev, rsi, slope200, chg30, chg7, checks, score, regime };
+  return { last, e20: at(e20), e50: at(e50), e100: at(e100), e200: at(e200), hist, histUp: hist > histPrev, rsi, slope200, chg30, chg7, checks, score, regime, volRatio };
+}
+
+// ---- TA structure chart: price + EMAs + trendlines + levels + projection ----
+function TAStructure({ series, ta, mb }) {
+  if (!series || series.c.length < 60) return <div style={{ color: 'var(--text-muted)', fontSize: 11, padding: 20 }}>loading structure…</div>;
+  const W = 680, H = mb ? 320 : 380, L = 46, R = 58, T = 16, B = 30;
+  const { t, c, v } = series;
+  const DAY = 86400000;
+  const t0 = t[0], tEnd = t[t.length - 1] + 120 * DAY;
+  const xs = (ts) => L + ((ts - t0) / (tEnd - t0)) * (W - L - R);
+  const all = c.concat([ta.structure.measured.up, 0.11]);
+  const yMin = Math.min(...all) * 0.9, yMax = Math.max(...all) * 1.08;
+  const ys = (p) => T + (1 - (Math.log(p) - Math.log(yMin)) / (Math.log(yMax) - Math.log(yMin))) * (H - T - B);
+  const line = (arr) => 'M' + arr.map((p, i) => `${xs(t[i]).toFixed(1)},${ys(p).toFixed(1)}`).join(' L');
+  const e20 = ema(c, 20), e50 = ema(c, 50), e200 = ema(c, 200);
+  // trendline helper: through a,b; extended to x2
+  const tl = ({ a, b }, extendTo) => {
+    const m = (b[1] - a[1]) / (b[0] - a[0]);
+    const yAt = (ts) => a[1] + m * (ts - a[0]);
+    return { m, yAt, x1: a[0], x2: extendTo, y1: a[1], y2: yAt(extendTo) };
+  };
+  const res = tl(ta.structure.resistance, tEnd), sup = tl(ta.structure.support, tEnd);
+  // apex
+  const apexT = ta.structure.resistance.a[0] + (sup.yAt(ta.structure.resistance.a[0]) - res.yAt(ta.structure.resistance.a[0])) / (res.m - sup.m);
+  const apexY = res.yAt(apexT);
+  const last = c[c.length - 1], lastT = t[t.length - 1];
+  // volume bars
+  const vmax = Math.max(...v);
+  const vh = 34;
+  // projection path from forecast
+  const proj = [[lastT, last]].concat(ta.path.map((p) => [lastT + p.d * DAY, p.target])).filter((p) => p[0] <= tEnd);
+  const projD = 'M' + proj.map((p) => `${xs(p[0]).toFixed(1)},${ys(p[1]).toFixed(1)}`).join(' L');
+  const grid = [0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.7, 1.0].filter((g) => g > yMin && g < yMax);
+  const mono = "'JetBrains Mono',monospace";
+  const lab = (x, y, txt, col, anchor = 'start', size = 9.5) => <text x={x} y={y} textAnchor={anchor} fontSize={size} fontWeight="700" fill={col} fontFamily={mono}>{txt}</text>;
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: 'block', height: 'auto' }}>
+      <defs><clipPath id="taClip"><rect x={L} y={T} width={W - L - R} height={H - T - B} /></clipPath></defs>
+      {grid.map((g) => (
+        <g key={g}>
+          <line x1={L} x2={W - R} y1={ys(g)} y2={ys(g)} stroke="rgba(255,255,255,.05)" />
+          <text x={L - 5} y={ys(g) + 3} textAnchor="end" fontSize="9.5" fill="var(--text-muted)" fontFamily={mono}>${g.toFixed(2)}</text>
+        </g>
+      ))}
+      {/* month ticks */}
+      {t.filter((ts, i) => i === 0 || new Date(ts).getUTCMonth() !== new Date(t[i - 1]).getUTCMonth()).map((ts) => (
+        <text key={ts} x={xs(ts)} y={H - B + 13} fontSize="9" fill="var(--text-muted)" fontFamily={mono}>{['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'][new Date(ts).getUTCMonth()]}</text>
+      ))}
+      {/* future shade */}
+      <rect x={xs(lastT)} y={T} width={W - R - xs(lastT)} height={H - T - B} fill="rgba(255,255,255,.02)" />
+      {lab(xs(lastT) + 4, T + 10, 'PROJECTION →', 'var(--text-muted)')}
+      {/* triangle fill */}
+      <path d={`M${xs(ta.structure.support.a[0])},${ys(sup.yAt(ta.structure.support.a[0]))} L${xs(ta.structure.support.a[0])},${ys(res.yAt(ta.structure.support.a[0]))} L${xs(apexT)},${ys(apexY)} Z`} fill={AMB} opacity="0.05" clipPath="url(#taClip)" />
+      {/* volume */}
+      <g clipPath="url(#taClip)">
+        {v.map((vol, i) => i % 1 === 0 && (
+          <rect key={i} x={xs(t[i]) - 0.6} y={H - B - (vol / vmax) * vh} width="1.2" height={(vol / vmax) * vh} fill={i > 0 && c[i] >= c[i - 1] ? GRN : RED} opacity="0.35" />
+        ))}
+      </g>
+      {/* EMAs */}
+      <path d={line(e200)} fill="none" stroke="#3b5bdb" strokeWidth="1.4" clipPath="url(#taClip)" />
+      <path d={line(e50)} fill="none" stroke={AMB} strokeWidth="1" opacity=".8" clipPath="url(#taClip)" />
+      <path d={line(e20)} fill="none" stroke={RED} strokeWidth="1" opacity=".7" clipPath="url(#taClip)" />
+      {/* price */}
+      <path d={line(c)} fill="none" stroke="var(--text-primary)" strokeWidth="1.5" clipPath="url(#taClip)" />
+      {/* trendlines */}
+      <line x1={xs(res.x1)} y1={ys(res.y1)} x2={xs(Math.min(apexT + 30 * DAY, tEnd))} y2={ys(res.yAt(Math.min(apexT + 30 * DAY, tEnd)))} stroke={RED} strokeWidth="1.6" strokeDasharray="5 3" />
+      <line x1={xs(sup.x1)} y1={ys(sup.y1)} x2={xs(Math.min(apexT + 30 * DAY, tEnd))} y2={ys(sup.yAt(Math.min(apexT + 30 * DAY, tEnd)))} stroke={GRN} strokeWidth="1.6" strokeDasharray="5 3" />
+      {lab(xs(res.x1) + 6, ys(res.y1) - 6, ta.structure.resistance.label, RED)}
+      {lab(xs(sup.x1) + 6, ys(sup.y1) + 14, ta.structure.support.label, GRN)}
+      {/* touches */}
+      {ta.structure.touches.map(([ts, p, k]) => (
+        <g key={k}>
+          <circle cx={xs(ts)} cy={ys(p)} r="3.5" fill="#0c0c0e" stroke={k[0] === 'H' ? RED : GRN} strokeWidth="1.5" />
+          {lab(xs(ts), ys(p) + (k[0] === 'H' ? -8 : 15), k, k[0] === 'H' ? RED : GRN, 'middle', 8.5)}
+        </g>
+      ))}
+      {/* apex */}
+      <line x1={xs(apexT)} x2={xs(apexT)} y1={T} y2={H - B} stroke={AMB} strokeWidth="1" strokeDasharray="2 4" />
+      {lab(xs(apexT) + 4, H - B - 40, `APEX ~${new Date(apexT).toLocaleDateString('es', { day: '2-digit', month: 'short' })}`, AMB)}
+      {/* measured moves */}
+      <line x1={xs(lastT)} x2={W - R} y1={ys(ta.structure.measured.up)} y2={ys(ta.structure.measured.up)} stroke={GRN} strokeWidth="1" strokeDasharray="3 3" opacity=".7" />
+      {lab(W - R - 4, ys(ta.structure.measured.up) - 4, `MEASURED ↑ ${ta.structure.measured.up}`, GRN, 'end')}
+      <line x1={xs(lastT)} x2={W - R} y1={ys(ta.structure.measured.down)} y2={ys(ta.structure.measured.down)} stroke={RED} strokeWidth="1" strokeDasharray="3 3" opacity=".7" />
+      {lab(W - R - 4, ys(ta.structure.measured.down) + 11, `MEASURED ↓ ${ta.structure.measured.down}`, RED, 'end')}
+      {/* invalidation */}
+      <line x1={xs(lastT - 30 * DAY)} x2={W - R} y1={ys(ta.invalidation.level)} y2={ys(ta.invalidation.level)} stroke={GRN} strokeWidth="1.2" strokeDasharray="6 3" />
+      {lab(xs(lastT - 28 * DAY), ys(ta.invalidation.level) - 4, `INVALIDATION ${ta.invalidation.level}`, GRN)}
+      {/* projection */}
+      <path d={projD} fill="none" stroke={RED} strokeWidth="2" strokeDasharray="1 0" opacity=".9" />
+      {proj.slice(1).map((p, i) => (
+        <g key={i}>
+          <circle cx={xs(p[0])} cy={ys(p[1])} r="4" fill="#0c0c0e" stroke={RED} strokeWidth="2" />
+          {lab(xs(p[0]), ys(p[1]) + 16, `${ta.path[i].h} $${p[1].toFixed(2)}`, RED, 'middle')}
+        </g>
+      ))}
+      {/* last price badge */}
+      <circle cx={xs(lastT)} cy={ys(last)} r="3.5" fill="#fff" />
+      <rect x={W - R + 2} y={ys(last) - 8} width={R - 4} height="16" rx="2" fill="#fff" />
+      <text x={W - R + R / 2} y={ys(last) + 3.5} textAnchor="middle" fontSize="10" fontWeight="800" fill="#000" fontFamily={mono}>${last.toFixed(3)}</text>
+      {/* legend */}
+      <g transform={`translate(${L + 6},${H - B - 6})`}>
+        {[['#3b5bdb', 'EMA200'], [AMB, 'EMA50'], [RED, 'EMA20']].map(([col, n], i) => (
+          <g key={n} transform={`translate(${i * 62},0)`}><line x1="0" x2="14" y1="-3" y2="-3" stroke={col} strokeWidth="2" /><text x="18" y="0" fontSize="9" fill="var(--text-muted)" fontFamily={mono}>{n}</text></g>
+        ))}
+      </g>
+    </svg>
+  );
 }
 
 const PERIODS = [
@@ -286,13 +405,17 @@ export default function NosanaTelemetry() {
   const [net, setNet] = useState([]);         // network series points
   const [pxHist, setPxHist] = useState({ price: [], mcap: [] });
   const [trend, setTrend] = useState(null);
+  const [series, setSeries] = useState(null);
   useEffect(() => {
     (async () => {
       try {
         const r = await fetch('/api/nosana?history=365', { cache: 'no-store' });
         const j = await r.json();
-        const pts = (j.price || j.prices || []).map((q) => Array.isArray(q) ? q[1] : q.y).filter((v) => v > 0);
-        setTrend(computeTrend(pts));
+        const raw = (j.prices || []).filter((q) => q[1] > 0);
+        const pts = raw.map((q) => q[1]);
+        const vols = (j.volumes || []).map((q) => q[1]);
+        setSeries({ t: raw.map((q) => q[0]), c: pts, v: vols });
+        setTrend(computeTrend(pts, vols));
       } catch {}
     })();
   }, []);
@@ -606,6 +729,30 @@ export default function NosanaTelemetry() {
             </div>
           );
         })()}
+        {/* STRUCTURE CHART */}
+        <div style={{ marginTop: 14, border: '1px solid var(--border)', borderRadius: 4, padding: '8px 4px 4px' }}>
+          <div style={{ display: 'flex', gap: 14, fontSize: 10.5, padding: '0 10px 4px', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
+            <span style={{ color: AMB, fontWeight: 800, letterSpacing: '.1em' }}>STRUCTURE · {TA.structure.pattern.toUpperCase()}</span>
+            <span><span style={{ color: RED }}>╌</span> lower highs</span>
+            <span><span style={{ color: GRN }}>╌</span> higher lows</span>
+            <span><span style={{ color: AMB }}>┆</span> apex</span>
+            <span style={{ marginLeft: 'auto' }}>365d daily closes · log scale · volume at base</span>
+          </div>
+          <TAStructure series={series} ta={TA} mb={mb} />
+        </div>
+        <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 10, fontSize: 11.5, lineHeight: 1.55, color: 'var(--text-secondary)', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>
+          <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
+            <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, marginBottom: 6, fontFamily: "'JetBrains Mono',monospace" }}>Pattern read</div>
+            <b>Symmetrical triangle, 6 months old, 3 touches each side.</b> Lower highs H1→H3 (0.395 → 0.314 → 0.296) against higher lows L1→L3 (0.178 → 0.200 → 0.243). Price is now in the final third of the pattern — the zone where breakouts are statistically valid; past the apex the pattern decays. Height at the widest point ≈ 0.19, so the measured move is 0.50 on a breakout and the 0.143 cycle low on a breakdown (the literal 0.19 projection overshoots where liquidity exists).
+            <div style={{ marginTop: 6 }}><b>Context is the tell.</b> The triangle formed <i>after</i> an 85% decline from the Sep-25 blow-off (1.01). Continuation patterns resolve in the direction of the prior trend ~2:1. The EMA200 is above price and falling; the 50 sits below the 200. That is a bear-market consolidation, not a base.</div>
+          </div>
+          <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
+            <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, marginBottom: 6, fontFamily: "'JetBrains Mono',monospace" }}>What to watch this week</div>
+            <b>Volume.</b> {trend?.volRatio != null ? `20d avg volume is ${Math.round(trend.volRatio * 100)}% of the 90d avg — ${trend.volRatio < 0.85 ? 'drying up into the apex, classic pre-break compression' : trend.volRatio > 1.2 ? 'expanding, a break is close' : 'flat'}.` : 'Loading…'} A valid break needs ≥2× average volume on the break day; anything less is a fake-out and gets sold.
+            <div style={{ marginTop: 6 }}><b>Sequence that confirms the bear path:</b> close below EMA20 (0.267) → lose the rising support line (currently ~{(() => { const a = TA.structure.support.a, b = TA.structure.support.b; const m = (b[1] - a[1]) / (b[0] - a[0]); return (a[1] + m * (Date.now() - a[0])).toFixed(3); })()}) → retest from below fails → 0.22 Aug low goes. Each step is a reduce point.</div>
+            <div style={{ marginTop: 6 }}><b>Sequence that flips it:</b> daily close &gt; 0.3125 on volume → EMA200 becomes support on the retest → 0.35. Only then does 0.40–0.50 open. Until that prints, rallies into 0.29–0.31 are for selling, not buying.</div>
+          </div>
+        </div>
         <div style={{ marginTop: 14, border: '1px solid var(--border)', borderRadius: 4, padding: '8px 4px 4px' }}>
           <div style={{ display: 'flex', gap: 14, fontSize: 10.5, padding: '0 10px 4px', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
             <span style={{ color: RED, fontWeight: 800, letterSpacing: '.1em' }}>BIAS: {TA.bias}</span>

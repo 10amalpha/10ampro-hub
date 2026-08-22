@@ -57,7 +57,7 @@ export async function GET(req) {
       const days = ['90', '365', 'max'].includes(history) ? history : '365';
       const url = `${CG}/coins/nosana/market_chart?vs_currency=usd&days=${days}${days !== 'max' ? '&interval=daily' : ''}`;
       const j = await jget(url, 15000);
-      return json({ ok: true, prices: j.prices || [], market_caps: j.market_caps || [] }, 600);
+      return json({ ok: true, prices: j.prices || [], market_caps: j.market_caps || [], volumes: j.total_volumes || [] }, 600);
     }
 
     // ---- summary KPIs ----

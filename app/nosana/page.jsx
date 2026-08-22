@@ -44,6 +44,68 @@ const TA = {
   ],
 };
 
+// ---- TA scenario fan chart (SVG, log-y) ----
+function TAFan({ price, ta, mb }) {
+  const W = 680, H = mb ? 300 : 340, L = 50, R = 64, T = 18, B = 34;
+  const px = price || 0.28;
+  const hz = [{ d: 0, lab: 'HOY' }, { d: 30, lab: '+1M' }, { d: 90, lab: '+3M' }, { d: 365, lab: '+1Y' }];
+  // x: sqrt-time so 1M/3M aren't crushed against 1Y
+  const xs = (days) => L + Math.sqrt(days / 365) * (W - L - R);
+  const yMin = 0.07, yMax = 0.9;
+  const ys = (v) => T + (1 - (Math.log(v) - Math.log(yMin)) / (Math.log(yMax) - Math.log(yMin))) * (H - T - B);
+  const pts = (key, idx) => [[px, px]].concat(ta.horizons.map((h) => h[key])).map((r, i) => [xs(hz[i].d), ys(r[idx])]);
+  const band = (key, col, op) => {
+    const top = pts(key, 1), bot = pts(key, 0).reverse();
+    return <path d={'M' + top.concat(bot).map((p) => p.join(',')).join(' L') + ' Z'} fill={col} opacity={op} />;
+  };
+  const mid = (key) => 'M' + [[px, px]].concat(ta.horizons.map((h) => h[key])).map((r, i) => `${xs(hz[i].d)},${ys((r[0] + r[1]) / 2)}`).join(' L');
+  const gridV = [0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8];
+  const levels = [...ta.levels.resistance, ...ta.levels.support].filter(([v]) => v >= yMin && v <= yMax && Math.abs(v - px) / px > 0.03);
+  const fmt = (v) => (v < 1 ? v.toFixed(v < 0.3 ? 3 : 2) : v.toFixed(2));
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: "block", height: "auto" }}>
+      {gridV.map((v) => (
+        <g key={v}>
+          <line x1={L} x2={W - R} y1={ys(v)} y2={ys(v)} stroke="rgba(255,255,255,.05)" />
+          <text x={L - 6} y={ys(v) + 3} textAnchor="end" fontSize="10" fill="var(--text-muted)" fontFamily="'JetBrains Mono',monospace">${v.toFixed(2)}</text>
+        </g>
+      ))}
+      {hz.map((h) => (
+        <g key={h.lab}>
+          <line x1={xs(h.d)} x2={xs(h.d)} y1={T} y2={H - B} stroke="rgba(255,255,255,.07)" strokeDasharray="2 3" />
+          <text x={xs(h.d)} y={H - B + 14} textAnchor={h.d === 0 ? 'start' : 'middle'} fontSize="10.5" fontWeight="700" fill="var(--text-secondary)" fontFamily="'JetBrains Mono',monospace">{h.lab}</text>
+        </g>
+      ))}
+      {band('bull', GRN, 0.16)}
+      {band('base', BLU, 0.20)}
+      {band('bear', RED, 0.16)}
+      <path d={mid('bull')} fill="none" stroke={GRN} strokeWidth="1.6" strokeDasharray="4 3" />
+      <path d={mid('base')} fill="none" stroke={BLU} strokeWidth="2" />
+      <path d={mid('bear')} fill="none" stroke={RED} strokeWidth="1.6" strokeDasharray="4 3" />
+      {levels.map(([v, why]) => (
+        <g key={v}>
+          <line x1={L} x2={W - R} y1={ys(v)} y2={ys(v)} stroke={v > px ? RED : GRN} strokeOpacity=".45" strokeWidth="1" strokeDasharray="1 3" />
+          <text x={W - R + 4} y={ys(v) + 3} fontSize="9.5" fill={v > px ? RED : GRN} fontFamily="'JetBrains Mono',monospace">{fmt(v)}</text>
+        </g>
+      ))}
+      <line x1={L} x2={W - R} y1={ys(px)} y2={ys(px)} stroke="var(--text-primary)" strokeOpacity=".5" strokeWidth="1" />
+      <circle cx={xs(0)} cy={ys(px)} r="4" fill="#fff" />
+      <rect x={W - R + 2} y={ys(px) - 8} width={R - 4} height="16" rx="2" fill="#fff" />
+      <text x={W - R + R / 2} y={ys(px) + 3.5} textAnchor="middle" fontSize="10" fontWeight="800" fill="#000" fontFamily="'JetBrains Mono',monospace">${px.toFixed(3)}</text>
+      {ta.horizons.map((h, i) => {
+        const x = xs(hz[i + 1].d);
+        const lab = (r, col, dy) => <text x={x} y={ys(r[1]) + dy} textAnchor="middle" fontSize="9.5" fontWeight="700" fill={col} fontFamily="'JetBrains Mono',monospace">{fmt(r[0])}–{fmt(r[1])}</text>;
+        return (
+          <g key={h.h}>
+            {lab(h.bull, GRN, -5)}
+            {lab(h.bear, RED, ys(h.bear[0]) - ys(h.bear[1]) + 12)}
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
 const PERIODS = [
   { k: '2592000', label: '30D' },
   { k: '7776000', label: '90D' },
@@ -456,6 +518,15 @@ export default function NosanaTelemetry() {
       <Eyebrow dot={BLU}>Technical analysis — NOS/USDT 1D · scenarios at 1M / 3M / 1Y · read {TA.reviewed}</Eyebrow>
       <div style={{ border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface)', padding: 16 }}>
         <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>{TA.read}</div>
+        <div style={{ marginTop: 14, border: '1px solid var(--border)', borderRadius: 4, padding: '8px 4px 4px' }}>
+          <div style={{ display: 'flex', gap: 14, fontSize: 10.5, padding: '0 10px 4px', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
+            <span><span style={{ color: GRN }}>▬</span> bull</span>
+            <span><span style={{ color: BLU }}>▬</span> base</span>
+            <span><span style={{ color: RED }}>▬</span> bear</span>
+            <span style={{ marginLeft: 'auto' }}>log scale · x = √time · dotted = S/R levels</span>
+          </div>
+          <TAFan price={d?.price} ta={TA} mb={mb} />
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : 'repeat(3,1fr)', gap: 10, marginTop: 14 }}>
           {TA.horizons.map((z) => {
             const px = d?.price;

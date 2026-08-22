@@ -638,6 +638,62 @@ export default function NosanaTelemetry() {
       </div>
 
       {/* KPIs */}
+      {/* DECISION CARD — qué hacer con esto */}
+      {(() => {
+        const px = d?.price; const st = chain?.staking; const ho = chain?.holders;
+        const inv = px != null && px > TA.invalidation.level;
+        const supLine = (() => { const a = TA.structure.support.a, b = TA.structure.support.b; const m = (b[1] - a[1]) / (b[0] - a[0]); return a[1] + m * (Date.now() - a[0]); })();
+        const zone = px == null ? null : inv ? 'breakout' : px > 0.2946 ? 'ema200' : px > supLine ? 'triangle' : px > 0.22 ? 'broken' : 'capitulation';
+        const Z = {
+          breakout: ['INVALIDADO — forecast bajista anulado', GRN, 'Cierre diario sobre 0.3125. El path bajista queda sin efecto; siguiente resistencia 0.35 y luego 0.40.'],
+          ema200: ['EN LA EMA200 — zona de decisión', AMB, 'Entre 0.295 y 0.3125. Aquí se define el triángulo. No es zona de entrar ni de salir: es zona de esperar el cierre.'],
+          triangle: ['DENTRO DEL TRIÁNGULO — sesgo bajista', AMB, `Entre la trendline de soporte (~${supLine.toFixed(3)}) y la EMA200 (0.295). Rallies a 0.29–0.31 son para reducir, no para comprar.`],
+          broken: ['SOPORTE ROTO — path bajista activo', RED, `Perdió la trendline (~${supLine.toFixed(3)}). Siguiente: 0.22 → 0.20 → 0.19. No promediar a la baja hasta ver volumen de capitulación.`],
+          capitulation: ['CAPITULACIÓN — zona de retest del piso', RED, 'Bajo 0.22. Objetivo 0.143 (mínimo de ciclo). Aquí empieza a tener sentido la watchlist de compra, no antes.'],
+        };
+        const z = zone ? Z[zone] : ['CARGANDO', 'var(--text-muted)', ''];
+        const B = ({ c, children }) => <div style={{ display: 'flex', gap: 8, fontSize: 11.5, lineHeight: 1.5, marginTop: 4 }}><span style={{ color: c, fontWeight: 800 }}>›</span><span>{children}</span></div>;
+        const H = ({ c, children }) => <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: c, marginBottom: 4, fontFamily: "'JetBrains Mono',monospace" }}>{children}</div>;
+        const bleed = st ? st.unstaking.nosRemaining / st.unstaking.nosTotal : null;
+        return (
+          <div style={{ marginTop: 14, border: `1px solid ${z[1]}`, borderRadius: 4, background: 'var(--surface)', padding: 14, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap', fontFamily: "'JetBrains Mono',monospace" }}>
+              <span style={{ fontSize: 10.5, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Qué hacer con esto · hoy</span>
+              <span style={{ fontSize: 14, fontWeight: 800, color: z[1], letterSpacing: '.04em' }}>{z[0]}</span>
+              {px != null && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>NOS {fmtPx(px)} · stance <b style={{ color: 'var(--text-primary)' }}>HOLD-TO-REDUCE</b></span>}
+            </div>
+            <div style={{ fontSize: 11.5, color: 'var(--text-secondary)', marginTop: 6 }}>{z[2]}</div>
+            <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : 'repeat(3,1fr)', gap: 12, marginTop: 12, color: 'var(--text-secondary)' }}>
+              <div>
+                <H c={RED}>Si ya tenés NOS</H>
+                <B c={RED}>Reducí en rallies a <b>0.29–0.31</b>. No vendas el pánico, vendé la euforia.</B>
+                <B c={RED}>Stop mental: cierre diario bajo <b>{supLine.toFixed(3)}</b> (trendline) = bajar otro tramo.</B>
+                <B c={RED}>Lo que te devuelve a HOLD: cierre &gt; <b>0.3125</b> con volumen ≥2× promedio.</B>
+                <B c={RED}>Si estás staked 181–365d: ya pagaste el costo. No rompas el lock por el chart.</B>
+              </div>
+              <div>
+                <H c={GRN}>Si querés entrar</H>
+                <B c={GRN}>Todavía no. El triángulo resuelve en semanas (apex ~18 sept). Comprar adentro es pagar por incertidumbre.</B>
+                <B c={GRN}>Zona de watchlist: <b>0.19–0.22</b> con volumen de capitulación, o retest exitoso del <b>0.143</b>.</B>
+                <B c={GRN}>Entrada por fuerza: cierre &gt; 0.3125 y retest de la EMA200 que aguante. Entrás más caro, pero con confirmación.</B>
+                <B c={GRN}>Sizing: 25% de la posición objetivo por trigger. Nunca full size en un alt de $28M.</B>
+              </div>
+              <div>
+                <H c={AMB}>Lo que cambia la tesis</H>
+                <B c={AMB}><b>Revenue pagado publicado</b> — el único dato que convierte esto en inversión y no en trade. Hoy: no existe.</B>
+                <B c={AMB}>Compute hours volviendo sobre <b>150k/mes</b> (hoy ~{netHours ? fmtInt(netHours.latest) : '114k'}). Mientras cae, la red no valida el precio.</B>
+                <B c={AMB}>{st ? <>Stake activo bajo <b>{(st.active.nos * 0.9 / 1e6).toFixed(1)}M</b> o las 12 ballenas empezando a deshacer → acelerar salida.</> : 'Stake activo cayendo o ballenas deshaciendo → acelerar salida.'}</B>
+                <B c={AMB}>{ho ? <>Movimiento de las 3 wallets treasury-shaped ({(ho.treasuryLikeNos / 1e6).toFixed(0)}M NOS) hacia Gate/MEXC = salir sin esperar el chart.</> : 'Tesorería moviéndose a exchanges = salir.'}</B>
+              </div>
+            </div>
+            <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text-muted)', display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'baseline' }}>
+              <span>Niveles y triggers se recalculan con el precio vivo. Marco y sizing son del research de 10AMPRO, no consejo de inversión.</span>
+              <a href="https://10am.pro?utm_source=nosana&utm_medium=decision&utm_campaign=hub" style={{ color: GRN, textDecoration: 'none', marginLeft: 'auto', fontFamily: "'JetBrains Mono',monospace" }}>más tesis en 10am.pro →</a>
+            </div>
+          </div>
+        );
+      })()}
+
       <Eyebrow>Core data points</Eyebrow>
       <div style={{ display: 'grid', gridTemplateColumns: mb ? 'repeat(2,1fr)' : 'repeat(6,1fr)', gap: 10 }}>
         {kpi('NOS Price', fmtPx(d?.price), <>
@@ -802,6 +858,12 @@ export default function NosanaTelemetry() {
                   <div style={{ marginTop: 6 }}><b>The overhang is {pc(ho.treasuryLikeNos)} of supply in {ho.top.filter((h) => h.kind === 'treasury_like').length} unlabeled wallets</b> — allocation-shaped (company / team / mining reserve per the tokenomics). No vesting program holds them; they are signer-controlled and can move any day. Plus {pc(ho.exchangeNos)} already sitting on Gate and MEXC — the two venues that print the price. That exchange float is the ammunition for any breakdown.</div>
                   <div style={{ marginTop: 6 }}><b>Conviction is real but small:</b> {M(st.durationMix[3].nos)} NOS locked 181–365d by holders who took the APR cut and stayed. {st.whales.count} whale stakes hold {(st.whales.nos / st.active.nos * 100).toFixed(0)}% of active stake — the floor is a dozen wallets. If those start unstaking, the queue refills and the TA path accelerates. Watch this number, not the chart.</div>
                   {ho.roundLots > 0 && <div style={{ marginTop: 6 }}><b>{ho.roundLots} wallets hold exact 250k multiples</b> (e.g. 750,000) — allocation tranches, not market buys. Treat as latent supply.</div>}
+                  <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(245,158,11,.25)' }}>
+                    <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, fontFamily: "'JetBrains Mono',monospace", marginBottom: 3 }}>Decisión</div>
+                    <div>› El unstake ya no es argumento para vender: <b>no uses "el staking sangra" como razón</b>.</div>
+                    <div>› Alerta real = las 3 wallets grandes moviéndose o el stake activo perforando {(st.active.nos * 0.9 / 1e6).toFixed(1)}M. <b>Eso sí es salir.</b></div>
+                    <div>› {(ho.exchangeNos / 1e6).toFixed(1)}M en exchanges = ~{d?.price && series?.v?.length ? (ho.exchangeNos / ((series.v.slice(-20).reduce((a, b) => a + b, 0) / 20) / d.price)).toFixed(1) : '2'} días de volumen. Un breakdown tiene munición; <b>no compres el primer rebote bajo 0.22</b>.</div>
+                  </div>
                 </div>
               )}
               {chain.errors?.length > 0 && <div style={{ fontSize: 10.5, color: RED, marginTop: 8 }}>partial: {chain.errors.join(' · ')}</div>}
@@ -877,6 +939,12 @@ export default function NosanaTelemetry() {
             <b>Volume.</b> {trend?.volRatio != null ? `20d avg volume is ${Math.round(trend.volRatio * 100)}% of the 90d avg — ${trend.volRatio < 0.85 ? 'drying up into the apex, classic pre-break compression' : trend.volRatio > 1.2 ? 'expanding, a break is close' : 'flat'}.` : 'Loading…'} A valid break needs ≥2× average volume on the break day; anything less is a fake-out and gets sold.
             <div style={{ marginTop: 6 }}><b>Sequence that confirms the bear path:</b> close below EMA20 (0.267) → lose the rising support line (currently ~{(() => { const a = TA.structure.support.a, b = TA.structure.support.b; const m = (b[1] - a[1]) / (b[0] - a[0]); return (a[1] + m * (Date.now() - a[0])).toFixed(3); })()}) → retest from below fails → 0.22 Aug low goes. Each step is a reduce point.</div>
             <div style={{ marginTop: 6 }}><b>Sequence that flips it:</b> daily close &gt; 0.3125 on volume → EMA200 becomes support on the retest → 0.35. Only then does 0.40–0.50 open. Until that prints, rallies into 0.29–0.31 are for selling, not buying.</div>
+            <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(245,158,11,.25)' }}>
+              <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, fontFamily: "'JetBrains Mono',monospace", marginBottom: 3 }}>Decisión</div>
+              <div>› Con posición: <b>vender 0.29–0.31</b>, no esperar 0.35.</div>
+              <div>› Sin posición: <b>esperar la resolución</b>. Comprar dentro del triángulo es la peor relación riesgo/retorno del año.</div>
+              <div>› Trigger único que cambia todo: <b>cierre diario &gt; 0.3125 con 2× volumen</b>. Si no pasa, el sesgo sigue bajista.</div>
+            </div>
           </div>
         </div>
         <div style={{ marginTop: 14, border: '1px solid var(--border)', borderRadius: 4, padding: '8px 4px 4px' }}>
@@ -969,6 +1037,7 @@ export default function NosanaTelemetry() {
       <div style={{ marginTop: 26, borderTop: '1px solid var(--border)', paddingTop: 14, color: 'var(--text-muted)', fontSize: 11, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif", lineHeight: 1.6 }}>
         <b style={{ color: 'var(--text-secondary)' }}>Sources.</b> Network data via server-side proxy to the Nosana API (dashboard.k8s.prd.nos.ci — same backend as <a href="https://explore.nosana.com/" target="_blank" rel="noopener" style={{ color: GRN }}>explore.nosana.com</a>). Market data: CoinGecko.<br />
         <b style={{ color: 'var(--text-secondary)' }}>Green</b> = network fundamentals · <b style={{ color: 'var(--text-secondary)' }}>blue</b> = market. The dashboard's job is to show whether the two converge. The network-evolution chart is native historical series; point-in-time KPIs are snapshotted per visit.<br />
+        <b style={{ color: 'var(--text-secondary)' }}>Cómo leer los tripwires.</b> ✓ = la tesis se confirma en ese eje · ! = se rompe · ◦ = sin datos concluyentes. Regla de 10AMPRO: <b>dos "!" simultáneos en compute hours y hosts = reducir sin esperar el chart</b>; revenue pagado publicado = subir la posición aunque el chart esté feo.<br/>
         <b style={{ color: 'var(--text-secondary)' }}>Note.</b> Completed jobs / compute hours include incentivized, grant and charity (Folding@Home) activity — not a clean paid-revenue signal. Watch the tripwires for real materialization. Data & research context, not investment advice.
         <div style={{ marginTop: 12 }}>
           <a href="https://10am.pro?utm_source=nosana&utm_medium=footer&utm_campaign=hub" style={{ fontSize: 12, color: 'var(--text-muted)', textDecoration: 'none' }}>← 10am.pro</a>

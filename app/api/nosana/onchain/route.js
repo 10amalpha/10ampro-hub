@@ -37,6 +37,15 @@ const LABELS = {
   '5PAhQiYdLBd6SVdjzBQDxUAEFyDdF5ExNPQfcscnPRj5': 'Bitvavo',
 };
 
+const PROGRAMS = {
+  CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK: 'Raydium CLMM pool',
+  '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8': 'Raydium AMM pool',
+  whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc: 'Orca Whirlpool',
+  LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo: 'Meteora DLMM',
+  strmRqUCoQUgGUan5YhzUZa6KqQ3M2DU7D9PcVJiNZi: 'Streamflow vesting',
+  TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA: 'Self-owned token acct (vesting-like)',
+};
+
 async function rpc(method, params, { timeout = 25000 } = {}) {
   let lastErr; const errs = [];
   for (const url of RPCS) {
@@ -163,7 +172,8 @@ export async function GET() {
     owners.forEach((o, i) => { ownerProgram[o] = ownerInfos.value[i]?.owner || null; });
     holders.forEach((h) => {
       if (h.owner && ownerProgram[h.owner] === STAKING) { h.kind = 'staking_vault'; h.label = 'Staking vault'; }
-      else if (h.owner && ownerProgram[h.owner] && ownerProgram[h.owner] !== '11111111111111111111111111111111') { h.kind = 'program'; h.label = h.label || 'Program/DEX'; h.program = ownerProgram[h.owner]; }
+      else if (h.owner && ownerProgram[h.owner] && ownerProgram[h.owner] !== '11111111111111111111111111111111') { h.kind = 'program'; h.program = ownerProgram[h.owner]; h.label = h.label || PROGRAMS[h.program] || 'Program'; if (/pool|Whirlpool|DLMM/.test(h.label)) h.kind = 'dex'; }
+      else if (!h.label && h.pct >= 5) { h.kind = 'treasury_like'; h.label = 'Unlabeled ≥5% (treasury/team-shaped)'; }
     });
     const by = (k) => holders.filter((h) => h.kind === k).reduce((x, h) => x + h.nos, 0);
     out.holders = {
@@ -171,9 +181,11 @@ export async function GET() {
       top10pct: +holders.slice(0, 10).reduce((x, h) => x + h.pct, 0).toFixed(2),
       top20pct: +holders.reduce((x, h) => x + h.pct, 0).toFixed(2),
       exchangeNos: by('exchange'),
-      stakingVaultNos: by('staking_vault'),
+      treasuryLikeNos: by('treasury_like'),
+      dexNos: by('dex'),
       programNos: by('program'),
       unlabeledNos: by('unlabeled'),
+      roundLots: holders.filter((h) => h.nos % 250000 === 0 && h.kind === 'unlabeled').length,
     };
   } catch (e) { out.errors.push('holders: ' + (e.message || String(e))); }
 

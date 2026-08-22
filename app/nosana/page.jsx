@@ -408,6 +408,8 @@ export default function NosanaTelemetry() {
   const [pxHist, setPxHist] = useState({ price: [], mcap: [] });
   const [trend, setTrend] = useState(null);
   const [series, setSeries] = useState(null);
+  const [chain, setChain] = useState(null);
+  useEffect(() => { (async () => { try { const r = await fetch('/api/nosana/onchain', { cache: 'no-store' }); setChain(await r.json()); } catch {} })(); }, []);
   useEffect(() => {
     (async () => {
       try {
@@ -570,11 +572,18 @@ export default function NosanaTelemetry() {
         ? ['fail', '!', 'Host count bleeding', `${fmtInt(hosts)} online hosts — ${Math.round((hosts / hb - 1) * 100)}% vs the ${hb} Aug-1 baseline. Supply leaving after the APR cut; watch for a floor.`]
         : ['watch', '◦', 'Host count', `${fmtInt(hosts)} online hosts. Track durable growth above the ~${hb} Aug-1 baseline.`]);
     T.push(['watch', '◦', 'Paid revenue disclosure', 'No published USDC/USD paid-compute revenue yet. THE decisive signal — watch for a paid-vs-incentivized split.']);
-    T.push(['watch', '◦', 'Staked NOS stabilizing', 'Staking fell ~29.7M → ~14M NOS; APR cut ~20%→~4% (NNP-0001). Watch for it to stop bleeding.']);
+    if (chain?.staking) {
+      const st = chain.staking; const left = st.unstaking.nosRemaining / st.unstaking.nosTotal;
+      T.push(left < 0.2
+        ? ['pass', '✓', 'Staked NOS — bleed exhausted', `${(st.active.nos / 1e6).toFixed(1)}M active (from ~29.7M pre-NNP-0001). Unstake queue ${(left * 100).toFixed(0)}% left → floor forming. Flip to fail if active stake drops below ${(st.active.nos * 0.9 / 1e6).toFixed(1)}M.`]
+        : ['fail', '!', 'Staked NOS still bleeding', `${(st.active.nos / 1e6).toFixed(1)}M active; ${(st.unstaking.nosRemaining / 1e6).toFixed(1)}M still in cooldown.`]);
+    } else {
+      T.push(['watch', '◦', 'Staked NOS stabilizing', 'Staking fell ~29.7M → ~14M NOS; APR cut ~20%→~4% (NNP-0001). Watch for it to stop bleeding.']);
+    }
     T.push(['watch', '◦', 'Roadmap ships (SSH · confidential compute · Sombrero billing)', 'Q3/Q4 2026 promises + Sombrero fiat ramps/billing (H2-26) + AMD/Intel/Apple hardware. Confirm they ship, not slip — the $SHDW failure mode is perpetual "upcoming".']);
     T.push(['watch', '◦', 'Newsflow silence', 'No protocol updates or disclosures in the last 30d (Messari, mid-Aug). Next public touchpoint: Solana Summit Belgrade, 26 Ago. Silence + falling throughput = the pattern not to rationalize.']);
     return T;
-  }, [recPct, d]);
+  }, [recPct, d, chain]);
 
   const tripStyle = { pass: [GRN, 'rgba(34,197,94,.12)'], fail: [RED, 'rgba(239,68,68,.12)'], watch: [AMB, 'rgba(245,158,11,.13)'] };
 
@@ -687,6 +696,121 @@ export default function NosanaTelemetry() {
       </div>
 
       {/* SNAPSHOT LOG */}
+      {/* ON-CHAIN SUPPLY OVERHANG */}
+      <Eyebrow dot={AMB}>Supply overhang — who has to sell · on-chain (Solana) · live</Eyebrow>
+      <div style={{ border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface)', padding: 16 }}>
+        {!chain ? <div style={{ color: 'var(--text-muted)', fontSize: 11 }}>scanning staking program + top holders…</div> : (() => {
+          const st = chain.staking, ho = chain.holders, S = chain.supply || 100e6;
+          const M = (n) => (n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(0) + 'k' : String(n));
+          const pc = (n) => (n / S * 100).toFixed(1) + '%';
+          const dailyNos = d?.price && trend?.volRatio != null && series?.v?.length ? (series.v.slice(-20).reduce((a, b) => a + b, 0) / 20) / d.price : null;
+          const segs = st && ho ? [
+            ['Treasury-shaped ≥5%', ho.treasuryLikeNos, '#8b5cf6'],
+            ['Staked (active)', st.active.nos, GRN],
+            ['Unstake cooldown', st.unstaking.nosRemaining, AMB],
+            ['On exchanges', ho.exchangeNos, RED],
+            ['DEX pools', ho.dexNos, BLU],
+            ['Vesting-like', ho.programNos, '#a78bfa'],
+          ] : [];
+          const known = segs.reduce((a, b) => a + b[1], 0);
+          const seriesRow = (label, val, sub, col) => (
+            <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '8px 10px' }}>
+              <div style={{ fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>{label}</div>
+              <div style={{ fontSize: 16, fontWeight: 800, marginTop: 3, color: col || 'var(--text-primary)' }}>{val}</div>
+              {sub && <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 2 }}>{sub}</div>}
+            </div>
+          );
+          return (
+            <>
+              {/* supply map */}
+              {segs.length > 0 && (
+                <>
+                  <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Supply map · 100M NOS · where the tokens sit</div>
+                  <div style={{ display: 'flex', height: 22, borderRadius: 3, overflow: 'hidden', border: '1px solid var(--border)' }}>
+                    {segs.map(([l, v, c]) => <div key={l} title={`${l}: ${M(v)} (${pc(v)})`} style={{ width: `${v / S * 100}%`, background: c, opacity: .85 }} />)}
+                    <div style={{ flex: 1, background: 'rgba(255,255,255,.05)' }} title={`Float / unlabeled: ${M(S - known)}`} />
+                  </div>
+                  <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 6, fontSize: 10.5, color: 'var(--text-muted)' }}>
+                    {segs.map(([l, v, c]) => <span key={l}><span style={{ color: c }}>■</span> {l} <b style={{ color: 'var(--text-primary)' }}>{pc(v)}</b></span>)}
+                    <span><span style={{ color: 'rgba(255,255,255,.25)' }}>■</span> Float/unlabeled <b style={{ color: 'var(--text-primary)' }}>{pc(S - known)}</b></span>
+                  </div>
+                </>
+              )}
+              {st && (
+                <div style={{ display: 'grid', gridTemplateColumns: mb ? 'repeat(2,1fr)' : 'repeat(6,1fr)', gap: 8, marginTop: 14 }}>
+                  {seriesRow('Staked · active', M(st.active.nos), `${st.active.count.toLocaleString()} stakes · avg lock ${st.avgDurationDays}d`, GRN)}
+                  {seriesRow('Unstake queue left', M(st.unstaking.nosRemaining), `of ${M(st.unstaking.nosTotal)} unstaked · ${M(st.unstaking.nosReleased)} already out`, AMB)}
+                  {seriesRow('Drip next 30d', M(st.unstaking.release[1].nos), dailyNos ? `≈ ${(st.unstaking.release[1].nos / 30 / dailyNos * 100).toFixed(1)}% of daily volume` : 'linear vesting', AMB)}
+                  {seriesRow('Locked 181–365d', M(st.durationMix[3].nos), `${(st.durationMix[3].nos / st.active.nos * 100).toFixed(0)}% of stake · conviction`, GRN)}
+                  {seriesRow('Flight-ready ≤14d', M(st.durationMix[0].nos), `${st.durationMix[0].count.toLocaleString()} stakes · can exit fast`, RED)}
+                  {seriesRow('Whale stakes ≥100k', `${st.whales.count} · ${M(st.whales.nos)}`, `${(st.whales.nos / st.active.nos * 100).toFixed(0)}% of active stake`, 'var(--text-primary)')}
+                </div>
+              )}
+              {st && (
+                <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 10, marginTop: 12 }}>
+                  <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
+                    <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, marginBottom: 8 }}>Unstake release schedule · forced supply</div>
+                    {st.unstaking.release.map((r, i) => {
+                      const prev = i ? st.unstaking.release[i - 1].nos : 0; const inc = r.nos - prev; const max = st.unstaking.release[3].nos || 1;
+                      return (
+                        <div key={r.days} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, marginBottom: 5 }}>
+                          <span style={{ width: 52, color: 'var(--text-muted)' }}>+{r.days}d</span>
+                          <div style={{ flex: 1, height: 10, background: 'rgba(255,255,255,.05)', borderRadius: 2 }}><div style={{ width: `${r.nos / max * 100}%`, height: '100%', background: AMB, borderRadius: 2 }} /></div>
+                          <span style={{ width: 120, textAlign: 'right', fontWeight: 700 }}>{M(r.nos)} <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>(+{M(inc)})</span></span>
+                        </div>
+                      );
+                    })}
+                    <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 6, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>Cumulative NOS becoming withdrawable from cooldown. Each unstake vests linearly over its original lock.</div>
+                  </div>
+                  <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
+                    <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: GRN, marginBottom: 8 }}>Active stake by lock duration</div>
+                    {st.durationMix.map((b) => (
+                      <div key={b.label} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, marginBottom: 5 }}>
+                        <span style={{ width: 66, color: 'var(--text-muted)' }}>{b.label}</span>
+                        <div style={{ flex: 1, height: 10, background: 'rgba(255,255,255,.05)', borderRadius: 2 }}><div style={{ width: `${b.nos / st.active.nos * 100}%`, height: '100%', background: b.label === '≤14d' ? RED : GRN, borderRadius: 2 }} /></div>
+                        <span style={{ width: 120, textAlign: 'right', fontWeight: 700 }}>{M(b.nos)} <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>· {b.count.toLocaleString()}</span></span>
+                      </div>
+                    ))}
+                    <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 6, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>Long locks = holders who accepted the APR cut and stayed. ≤14d = yield tourists one click from the exit.</div>
+                  </div>
+                </div>
+              )}
+              {ho && (
+                <div style={{ marginTop: 12 }}>
+                  <div style={{ display: 'flex', gap: 14, fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6, flexWrap: 'wrap' }}>
+                    <span>Top 20 token accounts</span><span>top10 = <b style={{ color: 'var(--text-primary)' }}>{ho.top10pct}%</b></span><span>top20 = <b style={{ color: 'var(--text-primary)' }}>{ho.top20pct}%</b></span>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: '2px 14px', fontSize: 11 }}>
+                    {ho.top.map((h, i) => {
+                      const col = { exchange: RED, treasury_like: '#8b5cf6', dex: BLU, program: '#a78bfa', staking_vault: GRN, unlabeled: 'var(--text-muted)' }[h.kind];
+                      return (
+                        <div key={h.tokenAccount} style={{ display: 'flex', gap: 8, alignItems: 'baseline', padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,.04)' }}>
+                          <span style={{ width: 18, color: 'var(--text-muted)' }}>{i + 1}</span>
+                          <a href={`https://solscan.io/account/${h.owner || h.tokenAccount}`} target="_blank" rel="noopener" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontFamily: "'JetBrains Mono',monospace" }}>{(h.owner || h.tokenAccount).slice(0, 4)}…{(h.owner || h.tokenAccount).slice(-4)}</a>
+                          <span style={{ color: col, fontSize: 10.5, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.label || '—'}</span>
+                          <span style={{ fontWeight: 700 }}>{M(h.nos)}</span>
+                          <span style={{ width: 44, textAlign: 'right', color: 'var(--text-muted)' }}>{h.pct}%</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              {st && ho && (
+                <div style={{ marginTop: 12, padding: '10px 12px', border: `1px solid ${AMB}`, borderRadius: 4, background: 'rgba(245,158,11,.05)', fontSize: 11.5, lineHeight: 1.55, color: 'var(--text-secondary)', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>
+                  <b style={{ color: AMB, fontFamily: "'JetBrains Mono',monospace", letterSpacing: '.08em' }}>READ ·</b> <b>The unstake bleed is {st.unstaking.nosRemaining / st.unstaking.nosTotal < 0.2 ? 'mostly spent' : 'still running'}.</b> {M(st.unstaking.nosReleased)} of the {M(st.unstaking.nosTotal)} that left staking is already withdrawable; only {M(st.unstaking.nosRemaining)} is still in cooldown, dripping ~{M(st.unstaking.release[1].nos)} over the next 30 days{dailyNos ? ` (≈${(st.unstaking.release[1].nos / 30 / dailyNos * 100).toFixed(1)}% of daily volume — absorbable)` : ''}. The forced seller from NNP-0001 is not the overhang anymore.
+                  <div style={{ marginTop: 6 }}><b>The overhang is {pc(ho.treasuryLikeNos)} of supply in {ho.top.filter((h) => h.kind === 'treasury_like').length} unlabeled wallets</b> — allocation-shaped (company / team / mining reserve per the tokenomics). No vesting program holds them; they are signer-controlled and can move any day. Plus {pc(ho.exchangeNos)} already sitting on Gate and MEXC — the two venues that print the price. That exchange float is the ammunition for any breakdown.</div>
+                  <div style={{ marginTop: 6 }}><b>Conviction is real but small:</b> {M(st.durationMix[3].nos)} NOS locked 181–365d by holders who took the APR cut and stayed. {st.whales.count} whale stakes hold {(st.whales.nos / st.active.nos * 100).toFixed(0)}% of active stake — the floor is a dozen wallets. If those start unstaking, the queue refills and the TA path accelerates. Watch this number, not the chart.</div>
+                  {ho.roundLots > 0 && <div style={{ marginTop: 6 }}><b>{ho.roundLots} wallets hold exact 250k multiples</b> (e.g. 750,000) — allocation tranches, not market buys. Treat as latent supply.</div>}
+                </div>
+              )}
+              {chain.errors?.length > 0 && <div style={{ fontSize: 10.5, color: RED, marginTop: 8 }}>partial: {chain.errors.join(' · ')}</div>}
+              <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>Source: Solana RPC, read on every load — staking program <code>nosS…rTJE</code> (all StakeAccounts decoded) + largest token accounts of <code>nosX…oo7</code>. Exchange labels are community labels (Solscan), unverified. Cached 10 min.</div>
+            </>
+          );
+        })()}
+      </div>
+
       {/* TECHNICAL ANALYSIS */}
       <Eyebrow dot={RED}>Technical analysis — NOS/USDT 1D · forecast 1M / 3M / 1Y · read {TA.reviewed}</Eyebrow>
       <div style={{ border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface)', padding: 16 }}>

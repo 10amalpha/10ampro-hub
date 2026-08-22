@@ -24,6 +24,26 @@ const SEED = {
   hostsBaseline: 965, reviewed: '22 Ago 2026',
 };
 
+
+// ---- Technical analysis (manual read, refreshed on each review) ----
+// Chart basis: NOS/USDT 1D (Gate) · 22 Ago 2026 · C 0.2819 · EMA20 0.2667 · EMA50 0.2687 · EMA100 0.2733 · EMA200 0.2946 · MACD histo +0.0041
+const TA = {
+  reviewed: '22 Ago 2026',
+  read: 'Price sits on the EMA 20/50/100 cluster (0.267–0.273) and got rejected at the EMA200 (0.2946) today — wick to 0.312, close −4.6%. Structure since Feb: higher lows (0.143 → 0.20 → 0.21) against lower highs (0.49 → 0.40 → 0.31) = compressing triangle. MACD barely positive. Resolution usually comes within weeks; direction is the trade, not the level.',
+  levels: {
+    resistance: [[0.2946, 'EMA200 — the line that turns the trend'], [0.312, 'Aug-22 rejection wick'], [0.35, 'Jun range floor / May-Jun supply'], [0.40, 'Jun distribution top'], [0.49, 'Jun spike high']],
+    support: [[0.267, 'EMA 20/50 cluster'], [0.22, 'Aug low · triangle lower rail'], [0.20, 'Apr base'], [0.143, 'Feb-26 cycle low'], [0.10, 'psychological / no structure below']],
+  },
+  horizons: [
+    { h: '1 MES', bear: [0.21, 0.23], base: [0.26, 0.31], bull: [0.33, 0.36],
+      note: 'Range trade inside the cluster. Bull needs a daily close > 0.2946 and hold; bear = loss of 0.26 with volume.' },
+    { h: '3 MESES', bear: [0.15, 0.18], base: [0.24, 0.35], bull: [0.42, 0.49],
+      note: 'Triangle resolves. Upside target = Jun supply zone; downside = retest of the Feb low. Catalyst window: Solana Summit, Q3/Q4 roadmap deliveries.' },
+    { h: '1 AÑO', bear: [0.08, 0.12], base: [0.20, 0.45], bull: [0.60, 0.80],
+      note: 'TA is noise at this horizon — fundamentals drive. Bull case requires compute hours to reclaim the Oct-25 peak AND paid revenue disclosure. Bear case = $SHDW path: hosts keep leaving, 0.143 breaks, no bid.' },
+  ],
+};
+
 const PERIODS = [
   { k: '2592000', label: '30D' },
   { k: '7776000', label: '90D' },
@@ -432,6 +452,49 @@ export default function NosanaTelemetry() {
       </div>
 
       {/* SNAPSHOT LOG */}
+      {/* TECHNICAL ANALYSIS */}
+      <Eyebrow dot={BLU}>Technical analysis — NOS/USDT 1D · scenarios at 1M / 3M / 1Y · read {TA.reviewed}</Eyebrow>
+      <div style={{ border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface)', padding: 16 }}>
+        <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>{TA.read}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : 'repeat(3,1fr)', gap: 10, marginTop: 14 }}>
+          {TA.horizons.map((z) => {
+            const px = d?.price;
+            const mid = (r) => (r[0] + r[1]) / 2;
+            const pct = (r) => (px ? `${mid(r) / px - 1 >= 0 ? '+' : ''}${Math.round((mid(r) / px - 1) * 100)}%` : '');
+            const row = (label, r, col) => (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '5px 0', borderTop: '1px solid var(--border)' }}>
+                <span style={{ fontSize: 10.5, letterSpacing: '.1em', textTransform: 'uppercase', color: col }}>{label}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>${r[0].toFixed(2)}–${r[1].toFixed(2)} <span style={{ fontSize: 10.5, fontWeight: 500, color: 'var(--text-muted)' }}>{pct(r)}</span></span>
+              </div>
+            );
+            return (
+              <div key={z.h} style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
+                <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: '.08em', color: BLU, marginBottom: 6 }}>{z.h}</div>
+                {row('Bull', z.bull, GRN)}
+                {row('Base', z.base, 'var(--text-secondary)')}
+                {row('Bear', z.bear, RED)}
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8, lineHeight: 1.5, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>{z.note}</div>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 10, marginTop: 12 }}>
+          {[['Resistance', TA.levels.resistance, RED], ['Support', TA.levels.support, GRN]].map(([t, L, col]) => (
+            <div key={t}>
+              <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: col, marginBottom: 4 }}>{t}</div>
+              {L.map(([lv, why]) => (
+                <div key={lv} style={{ display: 'flex', gap: 10, fontSize: 11.5, padding: '3px 0', color: 'var(--text-muted)' }}>
+                  <span style={{ fontWeight: 700, color: 'var(--text-primary)', minWidth: 58 }}>${lv.toFixed(lv < 0.3 ? 4 : 2)}</span>
+                  <span style={{ fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>{why}</span>
+                  {d?.price ? <span style={{ marginLeft: 'auto', fontSize: 10.5 }}>{lv / d.price - 1 >= 0 ? '+' : ''}{Math.round((lv / d.price - 1) * 100)}%</span> : null}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+        <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 12, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>Scenario ranges, not forecasts. % shown is distance from live price. Refreshed manually on each thesis review. Not investment advice.</div>
+      </div>
+
       <Eyebrow>Tracked snapshots — accumulates every visit → your own history</Eyebrow>
       <div style={panel}>
         <div style={{ marginBottom: 8 }}><span style={{ fontSize: 13, fontWeight: 700 }}>Data-point log</span> <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>· auto-saved in this browser (max 1 per 6h). Deltas above are vs the previous row.</span></div>

@@ -38,7 +38,7 @@ const LABELS = {
 };
 
 async function rpc(method, params, { timeout = 25000 } = {}) {
-  let lastErr;
+  let lastErr; const errs = [];
   for (const url of RPCS) {
     try {
       const ctrl = new AbortController();
@@ -50,12 +50,13 @@ async function rpc(method, params, { timeout = 25000 } = {}) {
         signal: ctrl.signal,
       });
       clearTimeout(t);
-      const j = await r.json();
-      if (j.error) throw new Error(`${url}: ${j.error.message}`);
+      const txt = await r.text();
+      let j; try { j = JSON.parse(txt); } catch { throw new Error(`${url}: HTTP ${r.status} ${txt.slice(0, 80)}`); }
+      if (j.error) throw new Error(`${url}: ${j.error.message || JSON.stringify(j.error)}`);
       return { result: j.result, rpc: url };
-    } catch (e) { lastErr = e; }
+    } catch (e) { lastErr = e; errs.push(String(e.message || e)); }
   }
-  throw lastErr || new Error('all RPCs failed');
+  throw new Error('all RPCs failed: ' + errs.join(' | '));
 }
 
 const u64 = (b, o) => Number(b.readBigUInt64LE(o));
@@ -140,9 +141,12 @@ export async function GET() {
 
   // ---------- 2. largest token accounts -> owners -> labels ----------
   try {
-    const { result } = await rpc('getTokenLargestAccounts', [MINT, { commitment: 'confirmed' }]);
-    const accts = result.value.slice(0, 20);
-    const { result: infos } = await rpc('getMultipleAccounts', [accts.map((a) => a.address), { encoding: 'jsonParsed', commitment: 'confirmed' }]);
+    let accts;
+    try { const { result } = await rpc('getTokenLargestAccounts', [MINT, { commitment: 'confirmed' }]); accts = result.value.slice(0, 20); }
+    catch (e) { throw new Error('largest: ' + e.message); }
+    let infos;
+    try { ({ result: infos } = await rpc('getMultipleAccounts', [accts.map((a) => a.address), { encoding: 'jsonParsed', commitment: 'confirmed' }])); }
+    catch (e) { throw new Error('multi: ' + e.message); }
     const holders = accts.map((a, i) => {
       const info = infos.value[i]?.data?.parsed?.info || {};
       const owner = info.owner || null;

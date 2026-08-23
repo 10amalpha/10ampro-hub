@@ -38,6 +38,15 @@ const json = (b, ttl = 600) => new Response(JSON.stringify(b), { status: 200, he
 
 export async function GET(req, { params }) {
   const TOKEN = getHub(params.hub); if (!TOKEN) return new Response('{"ok":false,"error":"unknown hub"}', { status: 404, headers: { 'content-type': 'application/json' } });
+  if (TOKEN.onchain.native) {
+    // Native asset (SOL): no SPL mint to scan. Supply dynamics instead: emission, stake, circulating split.
+    const out = { ok: true, ts: Date.now(), native: true, mint: 'So11111111111111111111111111111111111111112', supply: null, errors: [] };
+    try { const s = await rpc('getSupply', [{ excludeNonCirculatingAccountsList: true }]); out.totalSupply = s.value.total / 1e9; out.circulating = s.value.circulating / 1e9; out.nonCirculating = s.value.nonCirculating / 1e9; out.supply = out.totalSupply; } catch (e) { out.errors.push('supply: ' + e.message); }
+    try { const v = await rpc('getVoteAccounts', [{ commitment: 'confirmed' }], 20000); const cur = v.current || [], del = v.delinquent || []; out.stake = cur.concat(del).reduce((a, b) => a + (b.activatedStake || 0), 0) / 1e9; out.validators = cur.length; out.delinquent = del.length; } catch (e) { out.errors.push('stake: ' + e.message); }
+    try { out.inflation = await rpc('getInflationRate', []); } catch (e) { out.errors.push('inflation: ' + e.message); }
+    if (out.stake && out.supply) out.staking = { total: Math.round(out.stake), pct: +(out.stake / out.supply * 100).toFixed(1), label: 'Staked SOL', note: 'activated stake · getVoteAccounts' };
+    return json(out, 600);
+  }
   const { mint, supply, treasuryPct = 3, staking } = TOKEN.onchain;
   const LABELS = { ...BASE_LABELS, ...(TOKEN.onchain.labels || {}) }; const PROGRAMS = { ...BASE_PROGRAMS, ...(TOKEN.onchain.programs || {}) };
   const out = { ok: true, ts: Date.now(), mint, supply, errors: [] };

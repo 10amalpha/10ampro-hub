@@ -299,6 +299,13 @@ export default function ThesisPage({ TOKEN }) {
                 {tile(stk?.label || 'Staking', stk ? fmtNum(stk.total) + (stk.pct ? ` · ${stk.pct}%` : '') : '—', stk?.note || (stk?.manual ? 'manual · ' + (stk.source || '') : 'program-owned vaults'), GRN)}
                 {tile('On-chain supply', fmtNum(chain.onchainSupply), chain.onchainSupply && S ? `${((1 - chain.onchainSupply / S) * 100).toFixed(2)}% burned vs minted` : '', 'var(--text-primary)')}
               </div>}
+              {chain.native && <div style={{ display: 'grid', gridTemplateColumns: mb ? 'repeat(2,1fr)' : 'repeat(5,1fr)', gap: 8 }}>
+                {tile('Circulating', fmtNum(chain.circulating), chain.totalSupply ? `${(chain.circulating / chain.totalSupply * 100).toFixed(1)}% de ${fmtNum(chain.totalSupply)} total` : 'getSupply', 'var(--text-primary)')}
+                {tile('Non-circulating', fmtNum(chain.nonCirculating), 'cuentas foundation / locked', PUR)}
+                {tile('Staked', chain.stake ? `${fmtNum(chain.stake)} · ${chain.staking?.pct ?? '—'}%` : '—', 'activated stake · en vivo', GRN)}
+                {tile('Inflación anual', chain.inflation ? (chain.inflation.total * 100).toFixed(2) + '%' : '—', chain.inflation ? `a validadores ${(chain.inflation.validator * 100).toFixed(2)}% · epoch ${chain.inflation.epoch}` : 'getInflationRate', AMB)}
+                {tile('Validators', chain.validators ?? '—', chain.delinquent != null ? `${chain.delinquent} delinquent` : 'getVoteAccounts', 'var(--text-primary)')}
+              </div>}
               {ho && <div style={{ marginTop: 12 }}>
                 <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Top 20 token accounts</div>
                 <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: '2px 14px', fontSize: 11 }}>
@@ -315,7 +322,7 @@ export default function ThesisPage({ TOKEN }) {
                 <b style={{ color: AMB, fontFamily: MONO, letterSpacing: '.08em' }}>READ ·</b> <span dangerouslySetInnerHTML={{ __html: TOKEN.onchain.read({ chain, d, fmtNum, pctS }) }} />
               </div>
               {chain.errors?.length > 0 && <div style={{ fontSize: 10.5, color: RED, marginTop: 8 }}>partial: {chain.errors.join(' · ')}</div>}
-              <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: SANS }}>Source: Solana RPC on every load — largest token accounts of <code>{chain.mint.slice(0, 4)}…{chain.mint.slice(-4)}</code>, owner programs resolved. Exchange labels are community labels (Solscan), unverified. Cached 10 min.</div>
+              <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: SANS }}>{chain.native ? <>Source: Solana RPC on every load — <code>getSupply</code>, <code>getVoteAccounts</code>, <code>getInflationRate</code>. Circulating / non-circulating según la lista de cuentas de la Solana Foundation. Cached 10 min.</> : <>Source: Solana RPC on every load — largest token accounts of <code>{chain.mint.slice(0, 4)}…{chain.mint.slice(-4)}</code>, owner programs resolved. Exchange labels are community labels (Solscan), unverified. Cached 10 min.</>}</div>
             </>
           );
         })()}

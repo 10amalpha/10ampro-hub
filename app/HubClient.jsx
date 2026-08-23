@@ -574,6 +574,20 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
               <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>The Biological OS — Read · Orchestrate · Write</span>
               <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>$TEM · $IBRX · $HIMS · $CAI · $PBLS · $RXRX · $NGEN · $NAUT · $INKT →</span>
             </a>
+            {/* SOLANA */}
+            <a href="/sol" style={{
+              display: 'flex', flexDirection: 'column', padding: '10px 14px',
+              background: 'linear-gradient(135deg, #9945FF08, #14F19512)',
+              border: '1px solid #9945FF30', borderRadius: 6, textDecoration: 'none',
+              transition: 'border-color 0.2s',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <span style={{ fontSize: 18 }}>◎</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#9945FF', letterSpacing: '0.3px' }}>SOLANA</span>
+              </div>
+              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>El benchmark: fees, inflación vs burn, ETFs + $SOL</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Gobernanza SGP-1/2/3 · SOL/BTC · Staking · Decisión →</span>
+            </a>
             {/* NOSANA */}
             <a href="/nosana" style={{
               display: 'flex', flexDirection: 'column', padding: '10px 14px',

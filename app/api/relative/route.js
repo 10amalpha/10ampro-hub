@@ -33,9 +33,12 @@ export async function GET(req) {
   if (!cgId) return json({ ok: false, error: 'cg required' }, 0);
   const out = { ok: true, ts: Date.now(), errors: [] };
   try {
+    // For SOL itself the "vs SOL" slot is degenerate (1x flat); benchmark rotates to ETH (L1 war), BTC stays.
+    const benchCg = cgId === 'solana' ? 'ethereum' : 'solana';
+    out.bench = cgId === 'solana' ? 'ETH' : 'SOL';
     const [tok, sol, btc, glob] = await Promise.all([
       cg(`/coins/${cgId}/market_chart?vs_currency=usd&days=365&interval=daily`),
-      cg(`/coins/solana/market_chart?vs_currency=usd&days=365&interval=daily`),
+      cg(`/coins/${benchCg}/market_chart?vs_currency=usd&days=365&interval=daily`),
       cg(`/coins/bitcoin/market_chart?vs_currency=usd&days=365&interval=daily`),
       cg(`/global`).catch(() => null),
     ]);

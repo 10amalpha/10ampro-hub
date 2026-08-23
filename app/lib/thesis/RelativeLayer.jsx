@@ -35,6 +35,7 @@ export default function RelativeLayer({ cgId, symbol, mb }) {
   const [r, setR] = useState(null);
   useEffect(() => { (async () => { try { const j = await (await fetch(`/api/relative?cg=${cgId}&sym=${symbol}`, { cache: 'no-store' })).json(); setR(j); } catch { setR({ ok: false, errors: ['fetch failed'] }); } })(); }, [cgId, symbol]);
   const s = r?.stats, m = r?.macro, d = r?.derivs;
+  const BS = r?.bench || 'SOL', isL1 = BS !== 'SOL'; // for SOL itself, the API rotates the benchmark to ETH
   const tile = (k, v, sub, c) => <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '8px 10px', minWidth: 0 }}><div style={{ fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>{k}</div><div style={{ fontSize: 15, fontWeight: 800, marginTop: 3, color: c || 'var(--text-primary)' }}>{v}</div>{sub ? <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 2 }}>{sub}</div> : null}</div>;
 
   // ---- lectura en español, sin jerga ----
@@ -45,6 +46,27 @@ export default function RelativeLayer({ cgId, symbol, mb }) {
     const relSol = s.relSol90, relBtc = s.relBtc90;
     const ratioAtLow = s.vsSolNow <= s.vsSolLow365 * 1.05;
     const ratioStrong = s.vsSolNow >= s.vsSolHigh365 * 0.9;
+    if (isL1) {
+      // Benchmark narrative: relSol slot = vs ETH, chart a = SOL/ETH. SOL/BTC = risk appetite, SOL/ETH = L1 war.
+      const cb = s.corrBtc90, bb = s.betaBtc90;
+      L.push(`<b>${symbol} es la punta de riesgo de las majors.</b> En 90 días, ${Math.round(cb * 100)}% de sus movimientos van en la misma dirección que Bitcoin, amplificados ${bb.toFixed(1)}× (beta = cuánto amplifica: si BTC se mueve 10%, ${symbol} tiende a moverse ${Math.round(bb * 10)}%). No es un token que se mueve solo: es el mercado cripto con el volumen al máximo — sube más en los rallies y cae más en las correcciones.`);
+      if (relBtc != null) {
+        if (relBtc < -0.15) L.push(`<b>Contra BTC está perdiendo: ${pc(relBtc)} en 90 días.</b> El ratio ${symbol}/BTC es el termómetro del apetito por riesgo: mientras caiga, el dinero paga por refugio (BTC), no por crecimiento (${symbol}). Tener ${symbol} acá es apostar a que ese ratio da vuelta — y eso necesita un catalizador, no paciencia.`);
+        else if (relBtc > 0.15) L.push(`<b>Contra BTC está ganando: ${pc(relBtc)} en 90 días.</b> El apetito por riesgo está volviendo: el dinero rota de refugio (BTC) a crecimiento (${symbol}). Es el entorno donde ${symbol} y todo su ecosistema rinden mejor.`);
+        else L.push(`<b>Contra BTC va parejo</b> (${pc(relBtc)} en 90 días). Sin rotación clara hacia el riesgo ni hacia el refugio; el mercado está esperando algo.`);
+      }
+      if (relSol != null) {
+        if (relSol > 0.15) L.push(`<b>La guerra de L1s la va ganando: ${pc(relSol)} contra ETH en 90 días.</b> El ratio ${symbol}/ETH mide hacia qué chain rota el capital que ya decidió estar en cripto.${ratioStrong ? ' Está cerca de máximos del año: el mercado le paga prima a Solana sobre Ethereum.' : ''}`);
+        else if (relSol < -0.15) L.push(`<b>Contra ETH está perdiendo: ${pc(relSol)} en 90 días.</b> El capital de L1s está rotando hacia Ethereum.${ratioAtLow ? ' Y el ratio está en mínimos del año — la tesis de que Solana le come terreno a ETH no la está pagando el mercado ahora mismo.' : ''}`);
+        else L.push(`<b>Contra ETH va parejo</b> (${pc(relSol)} en 90 días). La guerra de L1s está en pausa: ninguna de las dos se lleva el flujo.`);
+      }
+      if (m?.btcDominance != null) L.push(`<b>Contexto:</b> BTC domina el ${m.btcDominance.toFixed(1)}% del mercado cripto${m.solDominance != null ? ` y ${symbol} pesa ${m.solDominance.toFixed(1)}%` : ''}. ${m.btcDominance > 58 ? `Con dominancia alta, los rallies de ${symbol} nacen cansados: necesita flujo propio (ETFs, tesorerías) o que la dominancia gire para sostener una tendencia.` : m.btcDominance < 50 ? `Dominancia baja = el dinero rota fuera de BTC. Es el viento de cola donde ${symbol} históricamente lidera.` : `Dominancia media: el mercado no definió dirección y ${symbol} depende de sus propios catalizadores.`}`);
+      if (d?.venue) {
+        const f = d.funding, ann = f * 3 * 365;
+        L.push(`<b>Posicionamiento en futuros (${d.venue}):</b> open interest ${fmtUsd(d.oiUsd)}, funding ${(f * 100).toFixed(4)}% cada 8h (${pc(ann)} anualizado). ${f > 0.0005 ? 'Funding alto y positivo = los que están largos pagan caro por mantener la posición. Demasiada gente apostando a que sube; es combustible para una caída rápida si no sube.' : f < -0.0003 ? 'Funding negativo = los cortos pagan a los largos. Si el precio sube un poco, esos cortos cierran comprando y el movimiento se acelera (short squeeze).' : 'Funding cerca de cero = nadie está sobreapalancado. El próximo movimiento va a depender de spot — y en ' + symbol + ' spot hoy significa ETFs.'}`);
+      } else if (d) L.push(`<b>Futuros:</b> ${d.note}.`);
+      return L;
+    }
     // 1. ¿Se mueve solo o sigue a SOL?
     if (corr > 0.6) L.push(`<b>${symbol} no se mueve solo: sigue a SOL.</b> En los últimos 90 días, ${Math.round(corr * 100)}% de sus movimientos van en la misma dirección que Solana, y los amplifica ${beta.toFixed(1)}× (si SOL sube 10%, ${symbol} tiende a subir ${Math.round(beta * 10)}%; si baja 10%, baja ${Math.round(beta * 10)}%). Traducido: antes de mirar el chart de ${symbol}, mirá el de SOL.`);
     else if (corr > 0.3) L.push(`<b>${symbol} sigue parcialmente a SOL</b> (correlación ${Math.round(corr * 100)}%, beta ${beta.toFixed(1)}×). Hay algo propio en su precio — noticias del protocolo, unlocks, buyback — que pesa tanto como el mercado.`);
@@ -63,12 +85,25 @@ export default function RelativeLayer({ cgId, symbol, mb }) {
       L.push(`<b>Posicionamiento en futuros (${d.venue}):</b> open interest ${fmtUsd(d.oiUsd)}, funding ${(f * 100).toFixed(4)}% cada 8h (${pc(ann)} anualizado). ${f > 0.0005 ? 'Funding alto y positivo = los que están largos pagan caro por mantener la posición. Demasiada gente apostando a que sube; es combustible para una caída rápida si no sube.' : f < -0.0003 ? 'Funding negativo = los cortos pagan a los largos. Hay mucha gente apostando a la baja; si el precio sube un poco, esos cortos tienen que cerrar comprando y el movimiento se acelera (short squeeze). Riesgo para quien está corto, oportunidad táctica para quien está largo.' : 'Funding cerca de cero = nadie está sobreapalancado en ninguna dirección. El próximo movimiento va a depender de spot, no de liquidaciones.'}`);
     } else if (d) L.push(`<b>Futuros:</b> ${d.note}. Sin perps, no hay apalancamiento que liquidar: los movimientos son más lentos pero también más "honestos" (spot puro).`);
     return L;
-  }, [s, m, d, symbol]);
+  }, [s, m, d, symbol, isL1]);
 
   const decision = useMemo(() => {
     if (!s) return [];
     const D = [];
     const beta = s.betaSol90, corr = s.corrSol90, relSol = s.relSol90;
+    if (isL1) {
+      const bb = s.betaBtc90, relBtc = s.relBtc90;
+      if (s.corrBtc90 > 0.6) D.push(`Con beta ${bb.toFixed(1)}× a BTC, <b>tu posición en ${symbol} ya es una apuesta apalancada al mercado cripto</b>. Los alts del ecosistema (JTO, JUP, PUMP…) le agregan beta encima de esta beta — ordená el riesgo total del portafolio desde BTC hacia afuera, no cada token por separado.`);
+      if (relBtc != null && relBtc < -0.15) D.push(`Mientras ${symbol}/BTC haga mínimos, <b>las posiciones grandes se construyen cuando el ratio deja de caer, no antes</b>. Acumular contra el ratio es pelearse con el flujo.`);
+      if (relBtc != null && relBtc > 0.15) D.push(`${symbol}/BTC subiendo = apetito por riesgo confirmado. <b>Mantener mientras el ratio haga máximos crecientes</b>; si el ratio quiebra su tendencia, reducí aunque el precio en USD siga subiendo.`);
+      if (relSol != null && relSol > 0.15) D.push(`Ganarle a ETH es la señal de que <b>el capital de L1s rota hacia Solana</b> — el mejor entorno para sobreponderar el ecosistema entero, no solo ${symbol}.`);
+      if (relSol != null && relSol < -0.15) D.push(`Perder contra ETH sostenido = <b>el mercado prefiere la otra L1</b>. ${symbol} necesita un catalizador propio (ETF flows, gobernanza, upgrades) para dar vuelta el ratio.`);
+      if (m?.btcDominance > 58) D.push(`Con BTC.D sobre 58%, <b>no persigas rallies</b>: suelen ser rebotes. Esperá dominancia girando o flujo ETF sostenido antes de subir tamaño.`);
+      if (d?.venue && d.funding > 0.0005) D.push(`Funding alto = <b>no abras largos con apalancamiento</b> acá; si estás largo, tené stop.`);
+      if (d?.venue && d.funding < -0.0003) D.push(`Funding negativo = <b>no abras cortos ahora</b>; el squeeze te saca.`);
+      if (!D.length) D.push(`Nada extremo en relativo ni en posicionamiento. <b>La decisión la marcan los fundamentales y el chart</b>, no esta capa.`);
+      return D;
+    }
     if (corr > 0.6) D.push(`Con beta ${beta.toFixed(1)}× a SOL, <b>tu posición en ${symbol} es una posición apalancada en SOL</b>. Si ya tenés SOL, estás duplicando el mismo riesgo — contá ${symbol} como ${beta.toFixed(1)}× su peso en el portafolio.`);
     if (relSol != null && relSol < -0.2) D.push(`Perder contra SOL 90 días seguidos significa que <b>el mercado no compra la tesis todavía</b>. Si querés exposición a Solana, SOL es mejor vehículo hoy; ${symbol} solo tiene sentido si creés que el ratio va a dar vuelta — y eso necesita un catalizador con fecha.`);
     if (relSol != null && relSol > 0.2) D.push(`Ganar contra SOL es la señal más limpia de que <b>hay demanda propia</b>. Mientras el ratio ${symbol}/SOL haga máximos crecientes, el sesgo es mantener; si el ratio rompe su tendencia, reducir aunque el precio en USD siga subiendo.`);
@@ -77,24 +112,24 @@ export default function RelativeLayer({ cgId, symbol, mb }) {
     if (d?.venue && d.funding < -0.0003) D.push(`Funding negativo = <b>no abras cortos ahora</b>; el squeeze te saca. Para largos, es un momento de menor riesgo relativo.`);
     if (!D.length) D.push(`Nada extremo en relativo ni en posicionamiento. <b>La decisión la marcan los fundamentales y el chart</b>, no esta capa.`);
     return D;
-  }, [s, m, d, symbol]);
+  }, [s, m, d, symbol, isL1]);
 
   return (
     <div style={{ border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface)', padding: 16 }}>
       {!r ? <div style={{ color: 'var(--text-muted)', fontSize: 11 }}>computing relative performance…</div> : (
         <>
           <div style={{ fontSize: 11.5, lineHeight: 1.55, color: 'var(--text-secondary)', fontFamily: SANS, marginBottom: 12, padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 4, background: 'rgba(255,255,255,.015)' }}>
-            <b style={{ color: 'var(--text-primary)' }}>Por qué importa esto.</b> Un alt casi nunca se mueve solo: sigue a SOL y a BTC. Si {symbol} sube 20% pero SOL subió 30%, no ganaste — perdiste contra la alternativa más simple. Esta sección mide eso: cuánto sigue {symbol} al mercado, si le gana o le pierde, y si los traders apalancados están cargados de un lado (lo que anticipa movimientos bruscos).
+            <b style={{ color: 'var(--text-primary)' }}>Por qué importa esto.</b> {isL1 ? <>El precio en dólares de {symbol} cuenta media historia. La otra media son dos ratios: {symbol}/BTC (¿el mercado paga riesgo o refugio?) y {symbol}/ETH (¿hacia qué L1 rota el capital?). Si {symbol} sube 20% pero BTC subió 30%, no ganaste — perdiste contra la alternativa más simple. Esta sección mide eso, más el posicionamiento apalancado que anticipa movimientos bruscos.</> : <>Un alt casi nunca se mueve solo: sigue a SOL y a BTC. Si {symbol} sube 20% pero SOL subió 30%, no ganaste — perdiste contra la alternativa más simple. Esta sección mide eso: cuánto sigue {symbol} al mercado, si le gana o le pierde, y si los traders apalancados están cargados de un lado (lo que anticipa movimientos bruscos).</>}
           </div>
           {r.series && <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>{symbol}/SOL vs {symbol}/BTC · 365 días · base 1x = hace un año · log</div>
-            <RatioChart t={r.series.t} a={r.series.vsSol} b={r.series.vsBtc} labelA={`${symbol}/SOL`} labelB={`${symbol}/BTC`} />
-            <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 4, fontFamily: SANS }}>Lectura: si la línea sube, {symbol} le gana a SOL (o a BTC); si baja, le pierde. Bajo 1x = hoy compra menos SOL que hace un año.</div>
+            <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>{symbol}/{BS} vs {symbol}/BTC · 365 días · base 1x = hace un año · log</div>
+            <RatioChart t={r.series.t} a={r.series.vsSol} b={r.series.vsBtc} labelA={`${symbol}/${BS}`} labelB={`${symbol}/BTC`} />
+            <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 4, fontFamily: SANS }}>Lectura: si la línea sube, {symbol} le gana a {BS} (o a BTC); si baja, le pierde. Bajo 1x = hoy compra menos {BS} que hace un año.</div>
           </div>}
           {s && <div style={{ display: 'grid', gridTemplateColumns: mb ? 'repeat(2,1fr)' : 'repeat(6,1fr)', gap: 8 }}>
-            {tile('vs SOL · 30d / 90d', `${pc(s.relSol30)} / ${pc(s.relSol90)}`, 'rendimiento relativo', s.relSol90 > 0 ? GRN : RED)}
+            {tile(`vs ${BS} · 30d / 90d`, `${pc(s.relSol30)} / ${pc(s.relSol90)}`, 'rendimiento relativo', s.relSol90 > 0 ? GRN : RED)}
             {tile('vs BTC · 90d', pc(s.relBtc90), 'rendimiento relativo', s.relBtc90 > 0 ? GRN : RED)}
-            {tile('Beta a SOL · 90d', `${s.betaSol90.toFixed(2)}×`, `corr ${Math.round(s.corrSol90 * 100)}% · 30d: ${s.betaSol30.toFixed(2)}×`, s.betaSol90 > 1.5 ? AMB : 'var(--text-primary)')}
+            {isL1 ? tile('Beta a BTC · 90d', `${s.betaBtc90.toFixed(2)}×`, `corr ${Math.round(s.corrBtc90 * 100)}% · vs ETH: ${s.betaSol90.toFixed(2)}×`, s.betaBtc90 > 1.5 ? AMB : 'var(--text-primary)') : tile('Beta a SOL · 90d', `${s.betaSol90.toFixed(2)}×`, `corr ${Math.round(s.corrSol90 * 100)}% · 30d: ${s.betaSol30.toFixed(2)}×`, s.betaSol90 > 1.5 ? AMB : 'var(--text-primary)')}
             {tile('BTC dominance', m?.btcDominance != null ? `${m.btcDominance.toFixed(1)}%` : '—', m?.solDominance != null ? `SOL ${m.solDominance.toFixed(1)}% · total ${fmtUsd(m.totalMcap)}` : '', m?.btcDominance > 58 ? RED : m?.btcDominance < 50 ? GRN : 'var(--text-primary)')}
             {tile('Funding · 8h', d?.venue ? `${(d.funding * 100).toFixed(4)}%` : '—', d?.venue ? `${d.venue} · ${pc(d.funding * 3 * 365)} anual` : (d?.note || ''), d?.funding > 0.0005 ? RED : d?.funding < -0.0003 ? GRN : 'var(--text-primary)')}
             {tile('Open interest', d?.venue ? fmtUsd(d.oiUsd) : '—', d?.venue ? 'posiciones abiertas en perps' : '', 'var(--text-primary)')}
@@ -107,7 +142,7 @@ export default function RelativeLayer({ cgId, symbol, mb }) {
             </div>
           </div>}
           {r.errors?.length > 0 && <div style={{ fontSize: 10.5, color: RED, marginTop: 8 }}>partial: {r.errors.join(' · ')}</div>}
-          <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: SANS }}>Fuentes: CoinGecko (precios diarios de {symbol}, SOL, BTC y dominancia), funding/OI del primer exchange que responde (Bybit → Binance → MEXC → Gate). Beta y correlación sobre retornos diarios. Recalculado en cada carga, cache 10 min.</div>
+          <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: SANS }}>Fuentes: CoinGecko (precios diarios de {symbol}, {BS}, BTC y dominancia), funding/OI del primer exchange que responde (Bybit → Binance → MEXC → Gate). Beta y correlación sobre retornos diarios. Recalculado en cada carga, cache 10 min.</div>
         </>
       )}
     </div>

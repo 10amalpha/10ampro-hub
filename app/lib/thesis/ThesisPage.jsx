@@ -430,7 +430,7 @@ export default function ThesisPage({ TOKEN }) {
         <b style={{ color: 'var(--text-secondary)' }}>Sources.</b> {TOKEN.sources} Market data: CoinGecko. On-chain: Solana RPC.<br />
         <b style={{ color: 'var(--text-secondary)' }}>Cómo leer los tripwires.</b> ✓ = la tesis se confirma en ese eje · ! = se rompe · ◦ = sin datos concluyentes. Regla de 10AMPRO: <b>{TOKEN.rule}</b><br />
         Data & research context, not investment advice.
-        <div style={{ marginTop: 12 }}><a href={utm('footer')} style={{ fontSize: 12, color: 'var(--text-muted)', textDecoration: 'none' }}>← 10am.pro</a> · {['nosana', 'jto', 'jup', 'met', 'pump', '2z'].filter((s) => s !== TOKEN.slug).map((s) => <a key={s} href={`/${s}`} style={{ fontSize: 12, color: 'var(--text-muted)', textDecoration: 'none', marginRight: 10 }}>/{s}</a>)}</div>
+        <div style={{ marginTop: 12 }}><a href={utm('footer')} style={{ fontSize: 12, color: 'var(--text-muted)', textDecoration: 'none' }}>← 10am.pro</a> · {['sol', 'nosana', 'jto', 'jup', 'met', 'pump', '2z'].filter((s) => s !== TOKEN.slug).map((s) => <a key={s} href={`/${s}`} style={{ fontSize: 12, color: 'var(--text-muted)', textDecoration: 'none', marginRight: 10 }}>/{s}</a>)}</div>
       </div>
     </div>
   );

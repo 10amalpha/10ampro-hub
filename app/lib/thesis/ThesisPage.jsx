@@ -236,6 +236,14 @@ export default function ThesisPage({ TOKEN }) {
         );
       })()}
 
+      {/* CATALYST — optional per-hub live event, renders only if TOKEN.catalyst exists */}
+      {TOKEN.catalyst && <>
+        <Eyebrow dot={AMB}>Catalizador en curso — {TOKEN.catalyst.title}{TOKEN.catalyst.date ? ` · ${TOKEN.catalyst.date}` : ''}</Eyebrow>
+        <div style={{ ...panel, borderColor: AMB, fontFamily: SANS, fontSize: 12.5, lineHeight: 1.65, color: 'var(--text-secondary)' }}>
+          {TOKEN.catalyst.body.map((p, i) => <p key={i} style={{ margin: i ? '8px 0 0' : 0 }} dangerouslySetInnerHTML={{ __html: p }} />)}
+        </div>
+      </>}
+
       {/* KPIs */}
       <Eyebrow>Core data points</Eyebrow>
       <div style={{ display: 'grid', gridTemplateColumns: mb ? 'repeat(2,1fr)' : 'repeat(6,1fr)', gap: 10 }}>

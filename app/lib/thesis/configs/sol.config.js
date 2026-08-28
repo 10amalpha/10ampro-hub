@@ -11,7 +11,7 @@ export const TOKEN = {
   stance: 'core-accumulate', reviewed: '27 Ago 2026',
   catalyst: {
     title: 'Primera gobernanza on-chain de Solana — SGP-1 · SGP-2 · SGP-3',
-    date: 'votación on-chain · cierra hoy 27 Ago 2026 ~15:30 UTC (fin de epoch 1023)',
+    date: 'votación cerrada 27 Ago 2026 ~15:30 UTC (fin de epoch 1023) · resultado oficial pendiente',
     body: [
       '<b>Qué se vota.</b> Tres propuestas a la vez, votadas por los validadores ponderados por stake, en la primera gobernanza on-chain formal de la red. <b>SGP-1</b> adopta la "Constitución de Solana" (el marco de cómo se vota de acá en adelante). <b>SGP-2</b> es la "double disinflation": el grifo de emisión se cierra al doble de velocidad (de -15% a -30% por año), el piso de 1.5% de inflación llega en 2029 en vez de 2032, y ~18.9M SOL que estaban programados nunca se emiten. <b>SGP-3</b> cambia la mecánica de fees y podría multiplicar el burn diario de ~648 a ~9.000 SOL. Ojo: el frontend de gobernanza mostró por error un quorum de 60% — el quorum real es un tercio del stake.',
       '<b>Por qué importa.</b> Hoy la red imprime ~60.000 SOL por día para pagar el staking, y ese SOL impreso es la venta estructural de Solana: validadores y stakers venden una parte todos los días para cubrir costos. SGP-2 achica el grifo; SGP-3 agranda el desagüe. Aprobadas las dos, la matemática de supply de SOL empieza a parecerse a la de ETH después del merge: emisión cayendo contra un burn creciendo. Para un activo cuyo mayor overhang es su propia emisión, es el cambio estructural más grande desde el lanzamiento.',

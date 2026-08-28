@@ -5,7 +5,7 @@ export const TOKEN = {
   sector: 'Solana memecoin launchpad & AMM',
   tagline: 'Revenue de launches + PumpSwap, buyback agresivo — el token más ligado al ciclo de memes.',
   description: 'Pump.fun ($PUMP) en vivo: fees y revenue del launchpad y PumpSwap, buyback, supply overhang on-chain (tesorería, ICO, exchanges), TA con forecast y tripwires. 10AMPRO.',
-  stance: 'trade-the-cycle', reviewed: '22 Ago 2026',
+  stance: 'trade-the-cycle', reviewed: '27 Ago 2026',
   sources: 'Network telemetry: DefiLlama (pump.fun fees/revenue, PumpSwap volume).',
   rule: 'revenue mensual <40% del pico + buyback cayendo = salir del todo (no hay tesis de largo plazo sin volumen de memes); revenue en máximos con buyback ≥ 2% del supply/mes = mantener.',
   thesis: [

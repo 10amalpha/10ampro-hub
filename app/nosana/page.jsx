@@ -22,14 +22,14 @@ const RED = '#ef4444';
 const SEED = {
   completed: 4115790, jobHours: 4125332, hosts: 826, running: 826, queued: 34,
   price: 0.2823, mcap: 28233000, ath: 7.83, peakHours: 220000,
-  hostsBaseline: 965, reviewed: '22 Ago 2026',
+  hostsBaseline: 965, reviewed: '27 Ago 2026',
 };
 
 
 // ---- Technical analysis (manual read, refreshed on each review) ----
 // Chart basis: NOS/USDT 1D (Gate) · 22 Ago 2026 · C 0.2819 · EMA20 0.2667 · EMA50 0.2687 · EMA100 0.2733 · EMA200 0.2946 · MACD histo +0.0041
 const TA = {
-  reviewed: '22 Ago 2026',
+  reviewed: '27 Ago 2026',
   bias: 'BEARISH',
   read: 'Rejected at the EMA200 (0.2946) today — wick to 0.312, close −4.6%. EMA200 falling for 10 months; lower highs 0.49 → 0.40 → 0.31 on shrinking volume = distribution. Higher lows since Feb (0.143 → 0.20 → 0.21) are the only bull argument and they are weak: the Aug rally reached the EMA200 on 166K volume. Off-chart: hosts −14% in 3 weeks, compute hours −50% vs peak. Triangle compressing while the network empties — that rarely resolves up.',
   // Chart structure (anchor points are [timestamp, price]) — drawn on the live series

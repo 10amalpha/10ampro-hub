@@ -5,7 +5,7 @@ export const TOKEN = {
   sector: 'Solana liquidity layer (DLMM / DAMM)',
   tagline: 'TVL, volumen y fees de la capa de liquidez — con buyback y 52% del supply todavía por emitir.',
   description: 'Meteora ($MET) en vivo: TVL, volumen DLMM/DAMM, fees y revenue, unlocks y buyback, supply overhang on-chain, TA con forecast y tripwires. 10AMPRO.',
-  stance: 'wait-for-unlock-absorption', reviewed: '22 Ago 2026',
+  stance: 'wait-for-unlock-absorption', reviewed: '27 Ago 2026',
   sources: 'Network telemetry: DefiLlama (Meteora TVL, DEX volume, fees, revenue). Unlocks: Tokenomist via CoinGecko.',
   rule: 'revenue mensual <50% del pico + unlock mensual no absorbido en 72h = reducir; buyback trimestral ≥ unlocks del trimestre = mantener aunque el chart esté feo.',
   thesis: [

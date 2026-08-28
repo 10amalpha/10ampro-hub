@@ -8,7 +8,7 @@ export const TOKEN = {
   sector: 'DePIN · fiber network for validators',
   tagline: 'Stake de Solana sobre fibra dedicada, seat fees en 2Z y burn — la red que Solana ya usa, con un token que todavía no lo refleja.',
   description: 'DoubleZero ($2Z) en vivo: % del stake de Solana conectado, validadores, TCV, burn de seat fees, unlocks, supply overhang on-chain, TA con forecast y tripwires. 10AMPRO.',
-  stance: 'accumulate-slowly-below-unlocks', reviewed: '22 Ago 2026',
+  stance: 'accumulate-slowly-below-unlocks', reviewed: '27 Ago 2026',
   sources: 'Network telemetry: DoubleZero quarterly updates (Q4-25 → Q2-26), data.malbeclabs.com. Burn: on-chain supply vs 10B minted.',
   rule: 'stake weight conectado cayendo trimestre a trimestre = tesis rota, salir; burn acelerando + stake >60% + Edge con suscriptores pagando = subir posición aunque el chart esté feo.',
   thesis: [

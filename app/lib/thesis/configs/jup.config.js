@@ -5,7 +5,7 @@ export const TOKEN = {
   sector: 'Solana DEX aggregation & perps',
   tagline: 'Volumen, fees y buyback — el agregador que procesa la mayoría de los swaps de Solana.',
   description: 'Jupiter ($JUP) en vivo: volumen del agregador, fees, revenue y buyback, supply overhang on-chain (vote escrow, tesorería, exchanges), TA con forecast y tripwires. 10AMPRO.',
-  stance: 'hold-and-add-on-fee-growth', reviewed: '22 Ago 2026',
+  stance: 'hold-and-add-on-fee-growth', reviewed: '27 Ago 2026',
   sources: 'Network telemetry: DefiLlama (Jupiter aggregator volume, fees, revenue).',
   rule: 'volumen mensual <50% del pico + buyback reducido = reducir; share del agregador estable y fees en máximos = mantener aunque el chart esté feo.',
   thesis: [

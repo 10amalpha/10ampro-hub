@@ -5,12 +5,13 @@ export const TOKEN = {
   sector: 'Solana MEV & liquid staking',
   tagline: 'MEV tips, JitoSOL TVL y revenue real — ¿el token captura lo que la red genera?',
   description: 'Jito ($JTO) en vivo: tips MEV, TVL de JitoSOL, fees y revenue del protocolo, supply overhang on-chain, TA con forecast y tripwires de la tesis. 10AMPRO.',
-  stance: 'accumulate-on-weakness', reviewed: '23 Ago 2026',
+  stance: 'accumulate-on-weakness', reviewed: '27 Ago 2026',
   catalyst: {
     title: 'SGP-0002 «Double Disinflation» (SIMD-0550)',
-    date: 'votación on-chain en vivo · cierra ~29 Ago 2026',
+    date: 'votación on-chain · cierra hoy 27 Ago 2026 ~15:30 UTC (fin de epoch 1023)',
     body: [
-      '<b>Qué se vota.</b> Solana está votando si cierra el grifo al doble de velocidad: la desinflación pasa de -15% a -30% por año. En criollo: hoy la red imprime ~60.000 SOL por día para pagar staking, y ese grifo se achica el doble de rápido. El piso de 1.5% de inflación llega en 2029 en vez de 2032 — ~18.9M SOL que nunca se emiten. La propuesta vive en <a href="https://governance.solana.com/proposals" style="color:inherit">governance.solana.com</a> y cierra ~29 de agosto.',
+      '<b>Qué se vota.</b> Solana está votando si cierra el grifo al doble de velocidad: la desinflación pasa de -15% a -30% por año. En criollo: hoy la red imprime ~60.000 SOL por día para pagar staking, y ese grifo se achica el doble de rápido. El piso de 1.5% de inflación llega en 2029 en vez de 2032 — ~18.9M SOL que nunca se emiten. La propuesta vive en <a href="https://governance.solana.com/proposals" style="color:inherit">governance.solana.com</a> y cierra hoy, 27 de agosto (~15:30 UTC).',
+      '<b>Cómo viene el conteo.</b> El snapshot del 26 de agosto mostraba ~83.7M SOL a favor, ~12M en contra y ~8.3M en abstención: <b>~87% de apoyo entre los votos decisivos</b>. Pinta bien, pero ojo: el umbral es supermayoría de dos tercios y hay ruido público sobre cómo se cuenta el quorum, así que el resultado oficial es el que manda, no el tablero.',
       '<b>Por qué le sirve a JTO.</b> El yield de staking en Solana son dos cosas: SOL impreso + tips MEV — las propinas que pagan los traders por prioridad, o sea, el negocio de Jito. Los propios autores modelan el yield base cayendo de ~5.8% a ~2.2% en tres años. Los tips no dependen de la emisión: cuando lo impreso se achica, el MEV deja de ser el condimento y pasa a ser el plato. Stakear sin Jito rinde cada vez menos; si stakeás con Jito, la parte que solo Jito reparte pesa cada vez más.',
       'Segundo efecto: los validadores cobran menos por emisión y necesitan más el ingreso MEV para no fundirse. Más dependencia del cliente Jito y de BAM. El peaje se vuelve más caro de esquivar, no menos.',
       'Tercero: menos SOL nuevo = menos venta estructural de recompensas de staking. Viento a favor para SOL — y ya lo viste en la capa relativa: JTO no se mueve solo, sigue a SOL. Lo que le hace bien a SOL le llega a JTO con beta.',
@@ -55,7 +56,7 @@ export const TOKEN = {
     tw.concentration(chain, { exchangeWarnPct: 10, treasuryWarnPct: 30 }),
     tw.trend(trend, fc),
     tw.custom('watch', '◦', 'Revenue → JTO link', 'La DAO cobra fee sobre tips y sobre JitoSOL, pero JTO no recibe nada todavía. Sin fee switch / buyback, el token es gobernanza pura. Esto es el tripwire que convierte trade en inversión.'),
-    tw.custom('watch', '◦', 'SGP-0002 double disinflation', 'Cierra ~29 Ago 2026. Si pasa: la emisión de SOL cae al doble de velocidad, el MEV pesa más en el yield y los validadores dependen más del cliente Jito. Si falla como SIMD-228 en 2025: no cambió nada. El dato: resultado + fecha de activación.'),
+    tw.custom('watch', '◦', 'SGP-0002 double disinflation', 'Cierra hoy 27 Ago 2026 (~15:30 UTC). Si pasa: la emisión de SOL cae al doble de velocidad, el MEV pesa más en el yield y los validadores dependen más del cliente Jito. Si falla como SIMD-228 en 2025: no cambió nada. El dato: resultado + fecha de activación.'),
     tw.custom('watch', '◦', 'Client share', 'Firedancer y clientes alternativos sin el módulo Jito erosionarían el monopolio de tips. Si el share del cliente Jito cae bajo 80%, la tesis de "peaje de Solana" se debilita.'),
   ],
   decision: decisionBuilder('JTO', {
@@ -66,7 +67,7 @@ export const TOKEN = {
         `MEV tips mensuales ${f?.peak ? `volviendo sobre <b>${U(f.peak * 0.85)}</b> (85% del pico; hoy ${U(f.latest)})` : 'recuperando el pico'}. Mientras caen, JTO es beta a SOL sin prima.`,
         `Tesorería / investor wallets moviéndose a exchanges antes del unlock = salir sin esperar el chart.`,
         `Pérdida de share del cliente Jito (Firedancer sin tips) = tesis rota, no solo bajista.`,
-        `<b>SGP-0002 aprobado</b> (doble desinflación de SOL, cierra ~29 Ago) — se imprime menos SOL y el MEV pesa más en el yield: viento estructural para Jito. Si falla, no cambió nada.`,
+        `<b>SGP-0002 aprobado</b> (doble desinflación de SOL, cerró 27 Ago) — se imprime menos SOL y el MEV pesa más en el yield: viento estructural para Jito. Si falla, no cambió nada.`,
       ];
     },
   }),

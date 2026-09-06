@@ -235,3 +235,12 @@ On every standalone page, the header hub/back button **must link to `https://10a
 ## 2026-08-18 (2) — OG image para /biology-is-code
 - Nuevo route `app/api/og/biology-is-code/route.jsx` (ImageResponse, 1200×630, divs planos sin SVG inline ni base64 — patrón nosana). Estética terminal oscura: título "Biology is Code", tres cards Read/Orchestrate/Write con sus colores de capa y tickers, tagline Healthspan per Token.
 - Nuevo `app/biology-is-code/layout.jsx` con metadata completa (title, description, canonical, openGraph + twitter card apuntando a https://mercados.10am.pro/api/og/biology-is-code).
+
+## 2026-09-06 — biology-is-code: refresh completo de los 9 tickers (snapshot Sep 4)
+- `AS_OF` Aug 17 → Sep 4, 2026 (cierres del viernes Sep 4; NGEN cierre Sep 3).
+- Precios / mcaps actualizados y tabla reordenada: TEM $11.7B ($64.62, +70% en 30 días por el Ph3 de Merck/Moderna vía Personalis) ahora arriba; IBRX $8.6B; CAI $7.1B; HIMS baja a $6.4B ($27.71, −13% desde mid-Aug); PBLS $5.0B; RXRX $1.95B; NGEN $249M; NAUT $115M; INKT $55M.
+- Commentary Q2 FY2026 completado para TEM (rev $382.5M +22%, primer trimestre GAAP positivo, guía $1.595–1.605B, Personalis, ECG-PH, PRISM2), IBRX (ANKTIVA $50.7M +92%, 8º trimestre secuencial, cash $357M, PDUFA Jan 6 2027), NAUT (primer revenue $190K, paper Nature Methods tau Sep 4), INKT (net loss $3.1M, cash $8.8M, Ph2 aleatorizado en ARDS), PBLS (net loss $52.5M, cash $1.1B, 123.5M shares), NGEN (cash US$61.1M hasta readout 1H28, RESTORE Ph3 screening Sep 2026), CAI (Caris Detect, buyback $100M, TTM net income +$105M).
+- HIMS: agregado el post-Q2 — demanda FTC (Jul 29), Visa Acquirer Monitoring Program (Aug 21), rebote 14% por entrevista CNBC de Dudum (Aug 19), lanzamiento Australia (Aug 31), 4 trimestres seguidos de compresión de margen.
+- Corrección RXRX: revenue Q2 era $7.7M / EPS −$0.25 (no $10.2M / −$0.23); cash $557M.
+- FCF/share: INKT y NGEN ahora con 6 trimestres — Q2'26 son ESTIMADOS (INKT −$2.5M desde net loss; NGEN −$8.5M desde opex C$12.2M) y así están flagueados en nota y metodología; reemplazar con el cash-flow del 10-Q cuando Macrotrends lo tenga. PBLS card pasa de net loss TTM S-1 a Q2 real.
+- Fuente de precios: stockanalysis.com (cierre Sep 4). Lección: fetch de `stockanalysis.com/stocks/{sym}/` da precio de cierre + mcap + shares en una sola llamada; más limpio que Yahoo/Google snippets.

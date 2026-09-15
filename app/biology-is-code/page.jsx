@@ -130,6 +130,70 @@ function FcfChart({ sym, mb }) {
   );
 }
 
+// Quarterly revenue ($M), Q1'25 – Q2'26: the six most recent reported quarters, so 2026 executed
+// revenue (Q1+Q2) is visible next to its 2025 comps. Source: company 8-K/10-Q press releases.
+// guide = FY2026 revenue guidance midpoint ($M) where the company gives one.
+const QL = ['Q1\u201925', 'Q2\u201925', 'Q3\u201925', 'Q4\u201925', 'Q1\u201926', 'Q2\u201926'];
+const QREV = {
+  HIMS: { name: 'Hims & Hers Health', q: [586.0, 544.8, 599.0, 617.8, 608.1, 753.0], guide: 3200, guideTxt: '$3.1\u20133.3B', next: 'Q3 · Nov 9 · guided $880\u2013900M (+47\u201350%)',
+    note: 'Q1\u201926 was the trough (+4% YoY) as compounded GLP-1s were pulled for branded Wegovy; Q2\u201926 re-accelerated to +38% on ~$131M international and 2.9M subscribers. H1\u201926 = $1.36B, 42.5% of the $3.2B guidance midpoint \u2014 back-half loaded, so Q3 has to print the guided $880\u2013900M.' },
+  TEM: { name: 'Tempus AI', q: [255.7, 314.6, 334.2, 367.3, 348.1, 382.5], guide: 1600, guideTxt: '$1.595\u20131.605B', next: 'Q3 · early Nov',
+    note: 'Six straight quarters of growth; Q1\u201926 +36%, Q2\u201926 +22% (tougher comp). H1\u201926 = $731M, 45.7% of the $1.6B guide. Q4\u201925 is derived from FY2025 ($1,271.8M) minus the three reported quarters.' },
+  CAI: { name: 'Caris Life Sciences', q: [120.9, 181.4, 216.8, 292.9, 216.2, 263.7], guide: 1035, guideTxt: '$1.03\u20131.04B', next: 'Q3 · early Nov',
+    note: 'Q4\u201925 ($292.9M) included ~$81M of prior-period reimbursement true-ups, which is why Q1\u201926 stepped down sequentially while still growing +79% YoY. Q2\u201926 +45%. H1\u201926 = $480M, 46.4% of the ~$1.035B guide.' },
+  IBRX: { name: 'ImmunityBio', q: [16.5, 26.4, 31.8, 38.3, 44.2, 50.7], guide: null, guideTxt: 'no guidance', next: 'Q3 · early Nov · prelim revenue usually pre-announced',
+    note: 'ANKTIVA net product revenue only. Eight consecutive sequential increases since launch; +15% QoQ in both 2026 quarters, +168% / +92% YoY. H1\u201926 = $94.8M vs $113M for all of FY2025 \u2014 2026 will more than double. Q3\u201925 is derived from FY2025 minus reported quarters.' },
+  RXRX: { name: 'Recursion Pharmaceuticals', q: [14.7, 19.2, 5.2, 35.5, 6.5, 7.7], guide: null, guideTxt: 'no guidance', next: 'Q3 · early Nov',
+    note: 'Collaboration revenue, so timing-driven and lumpy: Q4\u201925 spiked on the second Roche/Genentech phenomap milestone ($30M); Q1\u201926 $6.5M and Q2\u201926 $7.7M both missed consensus. H1\u201926 = $14.2M vs $33.9M in H1\u201925. Read the cash ($557M, runway to 2028), not the revenue line.' },
+};
+// Revenue-negligible or pre-revenue names: what 2026 actually printed.
+const QREV_CARDS = [
+  ['NAUT', '$0.19M', 'Q2\u201926 (Jul 28): first revenue ever, from the Voyager early-access program. Q1\u201926 and all of 2025 were $0. Not a revenue story until the platform is commercial (targeted 2027).'],
+  ['PBLS', '$0.15M', 'Q2\u201926 (Aug 13): $148K of collaboration revenue in the first public quarter after the Jun 10 IPO. Pre-revenue; watch the $50M Regeneron upfront and milestones instead.'],
+  ['INKT', '$0', 'No revenue in 2025 or 2026. Clinical-stage; a paid named-patient access program launched in Q2\u201926 but has not produced reported revenue yet.'],
+  ['NGEN', '$0', 'No revenue in 2025 or 2026. Phase 3-ready; the only 2026 cash inflows are financings ($60M May raise + $50M ATM).'],
+];
+
+function fmtQ(v) {
+  if (v >= 1000) return '$' + (v / 1000).toFixed(2) + 'B';
+  if (v >= 100) return '$' + Math.round(v) + 'M';
+  return '$' + v.toFixed(1) + 'M';
+}
+
+function QRevChart({ sym }) {
+  const d = QREV[sym];
+  const max = Math.max(...d.q) * 1.22;
+  const W = 300, H = 160, padL = 6, padR = 6, top = 22, bot = 26;
+  const plotW = W - padL - padR, plotH = H - top - bot;
+  const bw = 34, gap = (plotW - d.q.length * bw) / (d.q.length + 1);
+  return (
+    <svg viewBox={'0 0 ' + W + ' ' + H} width="100%" role="img" aria-label={'Quarterly revenue for ' + d.name}>
+      <desc>Revenue by quarter, last six reported quarters; 2026 bars highlighted with year-over-year change.</desc>
+      <line x1={padL} y1={H - bot} x2={W - padR} y2={H - bot} stroke="var(--border)" strokeWidth="1.5" />
+      {d.q.map((v, i) => {
+        const is26 = i >= 4;
+        const h = Math.max(v / max * plotH, 1.5);
+        const x = padL + gap + i * (bw + gap);
+        const y = H - bot - h;
+        const yoy = is26 ? (v / d.q[i - 4] - 1) * 100 : null;
+        return (
+          <g key={QL[i]}>
+            <rect x={x} y={y} width={bw} height={h} rx="2" fill={C_REV} opacity={is26 ? 1 : 0.42} />
+            <text x={x + bw / 2} y={y - 4} textAnchor="middle" fontSize="8.5" fontWeight={is26 ? 700 : 400}
+              fill={is26 ? 'var(--text-bright)' : 'var(--text-secondary)'} fontFamily="'JetBrains Mono',monospace">{fmtQ(v)}</text>
+            {is26 && (
+              <text x={x + bw / 2} y={y - 13} textAnchor="middle" fontSize="8" fontWeight="700"
+                fill={yoy >= 0 ? '#22c55e' : '#993556'} fontFamily="'JetBrains Mono',monospace">{(yoy >= 0 ? '+' : '') + Math.round(yoy) + '% YoY'}</text>
+            )}
+            <text x={x + bw / 2} y={H - 6} textAnchor="middle" fontSize="8.5" fontWeight={is26 ? 700 : 400}
+              fill={is26 ? 'var(--gold)' : 'var(--text-muted)'} fontFamily="'JetBrains Mono',monospace">{QL[i]}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
 const TABS = ['HIMS', 'TEM', 'CAI', 'IBRX', 'RXRX', 'NAUT', 'INKT', 'PBLS', 'NGEN'];
 
 const STACK = [
@@ -438,6 +502,66 @@ export default function BiologyIsCode() {
         </div>
       </div>
 
+      {/* QUARTERLY REVENUE — 2026 EXECUTED */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={sectionLabel}>INGRESOS POR TRIMESTRE · Q1\u201925 \u2192 Q2\u201926 · lo ejecutado en 2026 vs. sus comps</div>
+        <div style={{ overflowX: 'auto', border: '1px solid var(--border)', borderRadius: 8, marginBottom: 10 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'JetBrains Mono',monospace", fontSize: mb ? 11 : 12, minWidth: 560 }}>
+            <thead>
+              <tr style={{ background: 'var(--surface-2)' }}>
+                {['Ticker', 'Q1\u201926', 'YoY', 'Q2\u201926', 'YoY', 'H1\u201926', 'H1 YoY', 'FY26 guide', '% guide'].map((h, i) => (
+                  <th key={h} style={{ textAlign: i === 0 ? 'left' : 'right', padding: '8px 10px', color: 'var(--text-muted)', fontWeight: 600, fontSize: 10.5, borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {Object.keys(QREV).map((sym, ri) => {
+                const d = QREV[sym];
+                const q1 = d.q[4], q2 = d.q[5], h1 = q1 + q2, h1p = d.q[0] + d.q[1];
+                const y1 = (q1 / d.q[0] - 1) * 100, y2 = (q2 / d.q[1] - 1) * 100, yh = (h1 / h1p - 1) * 100;
+                const P = ({ v }) => <span style={{ color: v >= 0 ? '#22c55e' : '#993556', fontWeight: 600 }}>{(v >= 0 ? '+' : '') + Math.round(v) + '%'}</span>;
+                const td = { textAlign: 'right', padding: '8px 10px', borderTop: ri === 0 ? 'none' : '1px solid var(--border-subtle)', whiteSpace: 'nowrap', color: 'var(--text-primary)' };
+                return (
+                  <tr key={sym} style={{ background: 'var(--surface)' }}>
+                    <td style={{ ...td, textAlign: 'left', fontWeight: 700, color: 'var(--text-bright)' }}>{sym}</td>
+                    <td style={td}>{fmtQ(q1)}</td><td style={td}><P v={y1} /></td>
+                    <td style={{ ...td, fontWeight: 700, color: 'var(--text-bright)' }}>{fmtQ(q2)}</td><td style={td}><P v={y2} /></td>
+                    <td style={td}>{fmtQ(h1)}</td><td style={td}><P v={yh} /></td>
+                    <td style={{ ...td, color: 'var(--text-secondary)' }}>{d.guideTxt}</td>
+                    <td style={{ ...td, color: d.guide ? 'var(--gold)' : 'var(--text-muted)', fontWeight: d.guide ? 700 : 400 }}>{d.guide ? Math.round(h1 / d.guide * 1000) / 10 + '%' : '\u2014'}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 8, marginBottom: 8 }}>
+          {Object.keys(QREV).map((sym) => (
+            <div key={sym} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6, gap: 8, flexWrap: 'wrap' }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'Space Grotesk',sans-serif" }}>{QREV[sym].name}</div>
+                <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono',monospace" }}>{sym} · revenue $M · 6Q</div>
+              </div>
+              <QRevChart sym={sym} />
+              <div style={{ fontSize: 11, color: 'var(--gold)', marginTop: 4, fontFamily: "'JetBrains Mono',monospace" }}>Next print: {QREV[sym].next}</div>
+              <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 6, lineHeight: 1.5, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{QREV[sym].note}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
+          {QREV_CARDS.map((c, i) => (
+            <div key={c[0]} style={{ display: 'flex', alignItems: 'baseline', gap: 10, padding: '9px 16px', borderTop: i === 0 ? 'none' : '1px solid var(--border-subtle)', background: 'var(--surface)' }}>
+              <div style={{ width: 52, fontSize: 13, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'JetBrains Mono',monospace" }}>{c[0]}</div>
+              <div style={{ width: 72, fontSize: 13, fontWeight: 700, color: c[1] === '$0' ? 'var(--text-muted)' : C_REV, fontFamily: "'JetBrains Mono',monospace" }}>{c[1]}</div>
+              <div style={{ flex: 1, minWidth: 0, fontSize: 11.5, color: 'var(--text-secondary)', fontFamily: "'Plus Jakarta Sans',sans-serif", lineHeight: 1.45 }}>{c[2]}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: "'Plus Jakarta Sans',sans-serif", lineHeight: 1.5 }}>
+          Reported GAAP revenue by quarter from each company\u2019s 8-K / 10-Q (IBRX = ANKTIVA net product revenue). 2026 bars are solid, 2025 comps faded. TEM Q4\u201925 and IBRX Q3\u201925 are derived from the FY2025 total minus the other three reported quarters. \u201c% guide\u201d = H1\u201926 revenue over the FY2026 guidance midpoint; a healthy back-half-weighted business sits around 42\u201347% at this point.
+        </div>
+      </div>
+
       {/* FCF PER SHARE */}
       <div style={{ marginBottom: 24 }}>
         <div style={sectionLabel}>FCF POR ACCIÓN · quarterly · last 6 quarters</div>
@@ -481,7 +605,7 @@ export default function BiologyIsCode() {
         <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.7, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
           <li>Market caps and prices are a point-in-time snapshot ({AS_OF}) and move daily.</li>
           <li>Income-statement charts are annual GAAP actuals (FY2022–FY2025) from company filings and Yahoo Finance. NAUT and INKT are pre-revenue, so only operating income is plotted.</li>
-          <li>Q2 FY2026 results for all nine tickers (reported Jul 28 – Aug 13, 2026) are reflected in each ticker's commentary rather than the annual bars, since FY2026 is not yet complete. HIMS figures are from its Aug 10 Q2 deck and call; the rest from company press releases and 10-Q/8-K filings. Post-quarter developments through Sep 4 (FTC/Visa at HIMS, Merck–Moderna readout for TEM, Nature Methods for NAUT) are noted where material.</li>
+          <li>2026 executed revenue is charted in the INGRESOS POR TRIMESTRE section (Q1'25–Q2'26, reported GAAP revenue from 8-K/10-Q releases); the annual bars stop at FY2025 because FY2026 is not yet complete. Q2 FY2026 results for all nine tickers (reported Jul 28 – Aug 13, 2026) are also reflected in each ticker's commentary. HIMS figures are from its Aug 10 Q2 deck and call; the rest from company press releases and 10-Q/8-K filings. Post-quarter developments through Sep 4 (FTC/Visa at HIMS, Merck–Moderna readout for TEM, Nature Methods for NAUT) are noted where material.</li>
           <li>CAI (IPO Jun 2025) shows only FY2024–FY2025; its gross profit is estimated from margin and its operating income is approximate (2025 distorted by IPO stock comp).</li>
           <li>IBRX operating income for 2022 and 2025 is approximate (derived from R&D + SG&A).</li>
           <li>PBLS (IPO Jun 2026) and NGEN (Nasdaq Jan 2026) are pre-revenue with limited public history — shown as info cards, not charts.</li>

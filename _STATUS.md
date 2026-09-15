@@ -244,3 +244,10 @@ On every standalone page, the header hub/back button **must link to `https://10a
 - Corrección RXRX: revenue Q2 era $7.7M / EPS −$0.25 (no $10.2M / −$0.23); cash $557M.
 - FCF/share: INKT y NGEN ahora con 6 trimestres — Q2'26 son ESTIMADOS (INKT −$2.5M desde net loss; NGEN −$8.5M desde opex C$12.2M) y así están flagueados en nota y metodología; reemplazar con el cash-flow del 10-Q cuando Macrotrends lo tenga. PBLS card pasa de net loss TTM S-1 a Q2 real.
 - Fuente de precios: stockanalysis.com (cierre Sep 4). Lección: fetch de `stockanalysis.com/stocks/{sym}/` da precio de cierre + mcap + shares en una sola llamada; más limpio que Yahoo/Google snippets.
+
+## 2026-09-15 — biology-is-code: sección INGRESOS POR TRIMESTRE (2026 ejecutado)
+- Problema: la página solo mostraba revenue anual FY2022–FY2025; los trimestres ya ejecutados de 2026 estaban enterrados en texto. No servía para decidir.
+- Nueva sección entre Income Statements y FCF/share: tabla resumen (Q1'26, Q2'26, H1'26 con YoY, guía FY26 y % de guía ejecutado) + 5 charts de 6 trimestres (Q1'25→Q2'26, barras 2026 sólidas con YoY, comps 2025 atenuados) para HIMS, TEM, CAI, IBRX, RXRX + cards para NAUT/PBLS/INKT/NGEN con lo que realmente imprimieron en 2026.
+- Data (revenue $M): HIMS 586.0/544.8/599.0/617.8/608.1/753.0 (H1'26 42.5% de $3.2B); TEM 255.7/314.6/334.2/367.3*/348.1/382.5 (45.7% de $1.6B); CAI 120.9/181.4/216.8/292.9/216.2/263.7 (46.4% de $1.035B); IBRX 16.5/26.4/31.8*/38.3/44.2/50.7; RXRX 14.7/19.2/5.2/35.5/6.5/7.7. (*derivado de FY2025 menos trimestres reportados.)
+- Fuentes: 8-K/10-Q y press releases oficiales (SEC EDGAR, IR sites). Metodología actualizada.
+- Lección 22: cuando FY en curso está a mitad, el anual no sirve para decidir — siempre mostrar trimestres ejecutados vs. comps y % de guía consumido.

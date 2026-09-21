@@ -22,7 +22,7 @@ const RED = '#ef4444';
 const SEED = {
   completed: 4115790, jobHours: 4125332, hosts: 826, running: 826, queued: 34,
   price: 0.2823, mcap: 28233000, ath: 7.83, peakHours: 220000,
-  hostsBaseline: 965, reviewed: '27 Ago 2026',
+  hostsBaseline: 965, reviewed: '21 Sep 2026',
 };
 
 
@@ -1043,7 +1043,7 @@ export default function NosanaTelemetry() {
         <b style={{ color: 'var(--text-secondary)' }}>Sources.</b> Network data via server-side proxy to the Nosana API (dashboard.k8s.prd.nos.ci — same backend as <a href="https://explore.nosana.com/" target="_blank" rel="noopener" style={{ color: GRN }}>explore.nosana.com</a>). Market data: CoinGecko.<br />
         <b style={{ color: 'var(--text-secondary)' }}>Green</b> = network fundamentals · <b style={{ color: 'var(--text-secondary)' }}>blue</b> = market. The dashboard's job is to show whether the two converge. The network-evolution chart is native historical series; point-in-time KPIs are snapshotted per visit.<br />
         <b style={{ color: 'var(--text-secondary)' }}>Cómo leer los tripwires.</b> ✓ = la tesis se confirma en ese eje · ! = se rompe · ◦ = sin datos concluyentes. Regla de 10AMPRO: <b>dos "!" simultáneos en compute hours y hosts = reducir sin esperar el chart</b>; revenue pagado publicado = subir la posición aunque el chart esté feo.<br/>
-        <b style={{ color: 'var(--text-secondary)' }}>Note.</b> Completed jobs / compute hours include incentivized, grant and charity (Folding@Home) activity — not a clean paid-revenue signal. Watch the tripwires for real materialization. Data & research context, not investment advice.
+        <b style={{ color: 'var(--text-secondary)' }}>Note.</b> Completed jobs / compute hours include incentivized, grant and charity (Folding@Home) activity — not a clean paid-revenue signal. La campana RTX 4090/5090 (17 Sep 2026) paga el equivalente a 20% de utilizacion diaria: demanda incentivada por Nosana, no organica — descontala del growth que veas arriba. Watch the tripwires for real materialization. Data & research context, not investment advice.
         <div style={{ marginTop: 12 }}>
           <a href="https://10am.pro?utm_source=nosana&utm_medium=footer&utm_campaign=hub" style={{ fontSize: 12, color: 'var(--text-muted)', textDecoration: 'none' }}>← 10am.pro</a>
         </div>

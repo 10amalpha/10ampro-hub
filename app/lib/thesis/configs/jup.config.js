@@ -5,12 +5,20 @@ export const TOKEN = {
   sector: 'Solana DEX aggregation & perps',
   tagline: 'Volumen, fees y buyback — el agregador que procesa la mayoría de los swaps de Solana.',
   description: 'Jupiter ($JUP) en vivo: volumen del agregador, fees, revenue y buyback, supply overhang on-chain (vote escrow, tesorería, exchanges), TA con forecast y tripwires. 10AMPRO.',
-  stance: 'hold-and-add-on-fee-growth', reviewed: '27 Ago 2026',
+  stance: 'hold-and-add-on-fee-growth', reviewed: '21 Sep 2026',
   sources: 'Network telemetry: DefiLlama (Jupiter aggregator volume, fees, revenue).',
   rule: 'volumen mensual <50% del pico + buyback reducido = reducir; share del agregador estable y fees en máximos = mantener aunque el chart esté feo.',
+  forecast: {
+    updated: '21 Sep 2026', score1m: 60, score3m: 64,
+    body: [
+      '<b>1M · 60/100.</b> El mejor momento fundamental del token desde el TGE: 3B quemados y net-zero (cero unlocks por delante), Litterbox comprando con el 50% del revenue (un dia de $822K de revenue el 30 Ago = ~$400K a compra), JupUSD lanzado con Ethena y respaldo del fondo tokenizado de BlackRock, y la mania de StonkFun pagandole el routing. Bonus politico: voto contra SGP-3 defendiendo a las apps — y gano.',
+      '<b>3M · 64/100.</b> El buyback anualizado (~$17M ≈ 2–3% del mcap) es real pero no alcanza solo: necesita share del agregador estable y perps/lending creciendo para que el multiplo comprima. Sigue debajo de SOL y arriba de todo lo demas de esta pagina.',
+      '<b>Invalidacion ·</b> revenue cayendo mas rapido que el volumen (compresion de take rate), la DAO tocando el % del Litterbox, o perdida de share contra routing directo.',
+    ],
+  },
   thesis: [
     '<b>Qué es.</b> Jupiter enruta la mayor parte de los swaps en Solana (agregador), corre perps, DCA, límite y un launchpad. Cobra fees sobre ese flujo y destina el 50% del revenue a comprar JUP (buyback), que va al lock de 3 años (Litterbox).',
-    '<b>La tesis.</b> Es el único activo de Solana donde revenue → token ya está cableado y es verificable. La pregunta no es si captura valor, sino a qué múltiplo y con qué dilución: el supply total es grande y la tesorería/equipo tienen una porción enorme. El caso alcista es compresión de múltiplo cuando el buyback supera las emisiones.',
+    '<b>La tesis.</b> Es el único activo de Solana donde revenue → token ya está cableado y es verificable. Y en 2026 arreglo el otro lado de la ecuacion: quemo 3B JUP (supply de 10B a ~6.9B) y decidio net-zero — no quedan unlocks programados. La pregunta ya no es la dilucion: es a que multiplo pagas un buyback de ~$17M anualizados (~2–3% del mcap).',
     '<b>Lo que valida.</b> Volumen mensual del agregador estable o creciendo vs Solana total (share), fees y revenue en máximos, JUP staked (vote escrow) creciendo, buyback ≥ unlocks mensuales.',
     '<b>Lo que rompe.</b> Pérdida de share frente a routing directo / otros agregadores, DAO diluyendo con emisiones (airdrops grandes), tesorería vendiendo, o fees cayendo más rápido que el volumen (compresión de take rate).',
   ],
@@ -43,7 +51,7 @@ export const TOKEN = {
     tw.concentration(chain, { exchangeWarnPct: 10, treasuryWarnPct: 35 }),
     tw.trend(trend, fc),
     tw.custom('pass', '✓', 'Revenue → JUP link exists', '50% del revenue del protocolo compra JUP (Litterbox, lock 3 años). Es el único de los 5 hubs con el cable puesto. Tripwire pasa a ! si la DAO reduce el % o pausa el buyback.'),
-    tw.custom('watch', '◦', 'Emisiones vs buyback', 'Airdrops y grants de la DAO son dilución. Mientras las emisiones mensuales superen el buyback, el flotante crece. Mirar propuestas de la DAO, no solo el chart.'),
+    tw.custom('pass', '✓', 'Emisiones vs buyback — resuelto por diseno', 'Burn de 3B JUP + decision net-zero: no quedan unlocks programados. El flotante ya no crece por calendario; solo crece si la DAO emite (airdrops/grants). Pasa a ! si aparece una emision nueva que supere el buyback del mes.'),
   ],
   decision: decisionBuilder('JUP', {
     flips: ({ net, U }) => {

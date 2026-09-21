@@ -244,6 +244,14 @@ export default function ThesisPage({ TOKEN }) {
         </div>
       </>}
 
+      {/* EDITOR FORECAST — optional per-hub editorial outlook, renders only if TOKEN.forecast exists */}
+      {TOKEN.forecast && <>
+        <Eyebrow dot={PUR}>Forecast del editor — 1M / 3M · conviccion {TOKEN.forecast.score1m} / {TOKEN.forecast.score3m} (0–100) · {TOKEN.forecast.updated}</Eyebrow>
+        <div style={{ ...panel, borderColor: PUR, fontFamily: SANS, fontSize: 12.5, lineHeight: 1.65, color: 'var(--text-secondary)' }}>
+          {TOKEN.forecast.body.map((p, i) => <p key={i} style={{ margin: i ? '8px 0 0' : 0 }} dangerouslySetInnerHTML={{ __html: p }} />)}
+        </div>
+      </>}
+
       {/* KPIs */}
       <Eyebrow>Core data points</Eyebrow>
       <div style={{ display: 'grid', gridTemplateColumns: mb ? 'repeat(2,1fr)' : 'repeat(6,1fr)', gap: 10 }}>

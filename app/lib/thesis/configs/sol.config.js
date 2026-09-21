@@ -8,25 +8,31 @@ export const TOKEN = {
   sector: 'Layer 1 · el benchmark del ecosistema',
   tagline: 'Fees de red, economía de apps, inflación vs burn, SOL/BTC y flujo ETF — el activo contra el que se mide todo lo demás en esta página.',
   description: 'Solana ($SOL) en vivo: fees de la red y de las apps, volumen DEX, TVL, inflación y staking on-chain, ratios SOL/BTC y SOL/ETH, posicionamiento en futuros, TA con forecast y tripwires de la tesis. 10AMPRO.',
-  stance: 'core-accumulate', reviewed: '27 Ago 2026',
+  stance: 'core-accumulate', reviewed: '21 Sep 2026',
   catalyst: {
-    title: 'Primera gobernanza on-chain de Solana — SGP-1 · SGP-2 · SGP-3',
-    date: 'votación cerrada 27 Ago 2026 ~15:30 UTC (fin de epoch 1023) · resultado oficial pendiente',
+    title: 'Gobernanza SGP-1/2/3 — RESULTADO',
+    date: 'cerro 28 Ago 2026 (epoch 1024) · SGP-1 ✓ 86% · SGP-2 ✓ 67.0% · SGP-3 ✗ 53.9%',
     body: [
-      '<b>Qué se vota.</b> Tres propuestas a la vez, votadas por los validadores ponderados por stake, en la primera gobernanza on-chain formal de la red. <b>SGP-1</b> adopta la "Constitución de Solana" (el marco de cómo se vota de acá en adelante). <b>SGP-2</b> es la "double disinflation": el grifo de emisión se cierra al doble de velocidad (de -15% a -30% por año), el piso de 1.5% de inflación llega en 2029 en vez de 2032, y ~18.9M SOL que estaban programados nunca se emiten. <b>SGP-3</b> cambia la mecánica de fees y podría multiplicar el burn diario de ~648 a ~9.000 SOL. Ojo: el frontend de gobernanza mostró por error un quorum de 60% — el quorum real es un tercio del stake.',
-      '<b>Por qué importa.</b> Hoy la red imprime ~60.000 SOL por día para pagar el staking, y ese SOL impreso es la venta estructural de Solana: validadores y stakers venden una parte todos los días para cubrir costos. SGP-2 achica el grifo; SGP-3 agranda el desagüe. Aprobadas las dos, la matemática de supply de SOL empieza a parecerse a la de ETH después del merge: emisión cayendo contra un burn creciendo. Para un activo cuyo mayor overhang es su propia emisión, es el cambio estructural más grande desde el lanzamiento.',
-      '<b>El costo.</b> Los propios autores modelan el yield base de staking cayendo de ~5.8% a ~2.2% en tres años. Menos yield puede achicar el % del supply en staking (mirá la capa on-chain de arriba: hoy ronda dos tercios) y presionar el TVL de los pools líquidos. Segundo efecto: con menos emisión, los tips MEV pesan más en el yield — esa es exactamente la tesis de <a href="/jto" style="color:inherit">JTO</a>, que se beneficia del mismo voto por otra vía.',
-      '<b>El precedente.</b> Es el tercer intento de la misma idea: SIMD-228 falló en marzo 2025 con 61.4% (necesitaba 66.7%) y SIMD-411 murió antes de votarse. Votan los validadores — se están votando un recorte de sueldo — así que el resultado no está cantado. Y si pasa, la activación técnica no es inmediata.',
-      '<b>Cómo viene el conteo.</b> El snapshot del 26 de agosto mostraba ~83.7M SOL a favor, ~12M en contra y ~8.3M en abstención: <b>~87% de apoyo entre los votos decisivos</b> — muy por encima del 61.4% con el que murió SIMD-228. Pero el umbral es supermayoría de dos tercios y hay ruido público sobre cómo se cuenta el quorum: el resultado oficial es el que manda, no el tablero.',
-      '<b>LECTURA ·</b> Esto no es una noticia de precio para mañana: es la estructura de supply de los próximos cinco años decidiéndose en una semana. <b>Decisión:</b> › SGP-2 + SGP-3 aprobadas = flip estructural: menos emisión y más burn justifican subir la convicción del core, comprando debilidad, no el anuncio. › solo SGP-2 = la mitad del efecto, sigue siendo neto positivo. › si fallan como en 2025, no cambió nada — el statu quo no es bajista, era opcionalidad gratis. › el combo que cambia el sizing: aprobación + flujo ETF sostenido en la misma ventana.',
+      '<b>Que paso.</b> La primera gobernanza on-chain de Solana cerro con resultado partido. <b>SGP-1</b> (la Constitucion) aprobada con 86% — el sistema svmgov queda activo y esto se vota asi de aca en adelante. <b>SGP-2</b> (double disinflation) aprobada con <b>67.0% contra 66.67% requerido: paso por 0.334 puntos</b>. <b>SGP-3</b> (fees + burn 14×) rechazada con ~54%: quorum sobrado, supermayoria no.',
+      '<b>El final de pelicula.</b> Seis horas antes del cierre SGP-2 iba perdiendo. Kraken, que habia votado en contra toda la manana, dio vuelta ~8.9M SOL en la ultima hora; Galaxy tambien giro; ~90 validadores entraron en el ultimo tramo; y el override de los holders de JitoSOL — stakers votando por encima de su validador — termino de inclinarla. Participacion: 60.7% del stake elegible. La primera gobernanza de Solana no fue un tramite: fue una final por penales.',
+      '<b>Que cambia y que no.</b> Cambia: la emision se recorta al doble de velocidad (-15% → -30% anual), ~18.9M SOL programados que nunca se emiten, piso de 1.5% en 2029 en vez de 2032. NO cambia: el burn sigue en ~648 SOL/dia — el desague grande (SGP-3) no paso. Y ojo con el timing: SGP-2 es un mandato, no un switch. Falta el SIMD-0550 y el feature gate en mainnet — la emision de hoy es la misma que la de ayer hasta la activacion.',
+      '<b>LECTURA ·</b> Se dio exactamente el escenario que teniamos escrito aca: solo SGP-2 = la mitad del efecto, y sigue siendo neto positivo. <b>Decision:</b> › el dato que manda ahora es la <b>fecha de activacion de SIMD-0550</b>, no el precio del anuncio. › SGP-3 con 54% no esta muerta: es rechazo del diseno, no de la idea — va a volver en otra forma. › el combo que sube el sizing sigue igual: activacion + flujo ETF sostenido + SOL/BTC sin minimos nuevos.',
+    ],
+  },
+  forecast: {
+    updated: '21 Sep 2026', score1m: 74, score3m: 78,
+    body: [
+      '<b>1M · 74/100.</b> El viento de este mes es de ejecucion, no de narrativa: slot-time ya cortado a 250ms (18 Sep) y Alpenglow apuntado al 28 Sep. SOL ~$116 tras un rally beta a BTC (inflows de ETF + short squeeze); la zona que manda: $110–113 de soporte, $119 de resistencia. Alpenglow limpio = la ventaja de velocidad se agranda y el tripwire tecnico pasa a ✓; con incidentes = el riesgo de L1 vuelve a la mesa y el rally se devuelve.',
+      '<b>3M · 78/100.</b> La activacion de SGP-2 convierte el mandato en menos SOL impreso — la primera vez que el overhang estructural de este activo se achica de verdad. Pero BTC.D ~59–60% sigue siendo el techo del regime: sin SOL/BTC dejando de hacer minimos, todo rally en USD es prestado.',
+      '<b>Invalidacion ·</b> outflows sostenidos de ETFs, Alpenglow con rollback, o % staked cayendo bajo 60% tras el recorte de yield.',
     ],
   },
   sources: 'Network telemetry: DefiLlama (fees de la propia red, fees agregados de las apps del ecosistema, volumen DEX, TVL de la chain). Supply, staking e inflación: Solana RPC en vivo.',
-  rule: 'fees de red y de apps cayendo mientras el precio sube = rally sin uso, reducir; SGP-2/SGP-3 aprobadas + flujo ETF sostenido + SOL/BTC dejando de hacer mínimos = subir posición.',
+  rule: 'fees de red y de apps cayendo mientras el precio sube = rally sin uso, reducir; SGP-2 activada + flujo ETF sostenido + SOL/BTC dejando de hacer mínimos = subir posición.',
   thesis: [
     '<b>Qué es.</b> Solana es la L1 de alta velocidad donde vive todo lo demás que cubrimos en esta página: el MEV de Jito, el volumen de Jupiter, la liquidez de Meteora, los launches de Pump.fun, la fibra de DoubleZero. Comprar SOL es comprar el índice de esa economía: cada transacción paga fees en SOL, cada validador stakea SOL, cada app lo usa como colateral.',
-    '<b>La tesis.</b> SOL es la única posición del ecosistema que captura valor por tres vías a la vez: fees quemados (uso), yield de staking (seguridad) y demanda institucional vía ETFs spot (~$1.16B acumulado desde el lanzamiento). El resto de los tokens de esta página son apuestas sobre una app; SOL es la apuesta sobre que la economía entera crece. El costo: su propio grifo de emisión (~4.3% anual, cayendo) es venta estructural diaria — y eso es exactamente lo que la gobernanza está votando cambiar.',
-    '<b>Lo que valida.</b> Fees de red y de apps recuperando contra el pico de enero 2025, volumen DEX y TVL creciendo en SOL (no solo en USD), stake estable arriba del 60% con yield cayendo, flujo ETF semanal positivo sostenido, y el burn subiendo si SGP-3 pasa.',
+    '<b>La tesis.</b> SOL es la única posición del ecosistema que captura valor por tres vías a la vez: fees quemados (uso), yield de staking (seguridad) y demanda institucional vía ETFs spot (~$1.16B acumulado desde el lanzamiento). El resto de los tokens de esta página son apuestas sobre una app; SOL es la apuesta sobre que la economía entera crece. El costo: su propio grifo de emisión (~4.3% anual, cayendo) es venta estructural diaria — y eso es exactamente lo que SGP-2 acaba de votar recortar — activacion pendiente via SIMD-0550.',
+    '<b>Lo que valida.</b> Fees de red y de apps recuperando contra el pico de enero 2025, volumen DEX y TVL creciendo en SOL (no solo en USD), stake estable arriba del 60% con yield cayendo, flujo ETF semanal positivo sostenido, y el burn subiendo si SGP-3 vuelve en otra forma (el 54% que saco es rechazo del diseno, no de la idea).',
     '<b>Lo que rompe.</b> Actividad on-chain estancada con el precio subiendo (rally sin uso), % staked cayendo fuerte (el yield ya no retiene capital), outflows sostenidos de ETFs, o Ethereum/L2s recuperando el flujo de apps y estables que hoy migra hacia Solana.',
   ],
   network: {
@@ -55,16 +61,16 @@ export const TOKEN = {
     tw.metric(M, 'dex', { good: 75, watch: 45 }),
     tw.metric(M, 'tvl', { good: 85, watch: 60 }),
     tw.trend(trend, fc),
-    tw.custom('watch', '◦', 'Gobernanza SGP-1/2/3 (cerró 27 Ago)', 'Doble desinflación (~18.9M SOL que no se emiten) + burn ~14× más grande. Aprobadas = el mayor cambio estructural de supply desde el lanzamiento; pasa a ✓. Fallan como SIMD-228 en 2025 = statu quo; queda en ◦. El dato: resultado + fecha de activación.'),
+    tw.custom('pass', '✓', 'Gobernanza SGP-1/2/3 — resultado', 'SGP-1 ✓ (86%), SGP-2 ✓ (67.0%, por 0.334 puntos, con Kraken girando 8.9M SOL en la ultima hora), SGP-3 ✗ (53.9%). La emision cae al doble de velocidad — cuando active. El dato ahora: fecha de activacion de SIMD-0550. El burn queda en ~648 SOL/dia hasta nuevo aviso.'),
     tw.custom('watch', '◦', 'Flujo ETF spot (EE.UU.)', '~$1.16B acumulado, ~$900M en activos, 7 semanas seguidas de inflows netos — pero concentrados en pocos fondos y chicos contra la emisión diaria. Pasa a ✓ con semanas sostenidas >$50M; pasa a ! con outflows netos sostenidos.'),
     tw.custom(chain?.staking?.pct >= 60 ? 'pass' : 'watch', chain?.staking?.pct >= 60 ? '✓' : '◦', 'Stake rate (en vivo)', chain?.staking?.pct ? `${chain.staking.pct}% del supply está en staking. Sobre 60% = la seguridad y el ancla de float están intactas. Si SGP-2 pasa y el yield cae, este es el número que dice si el capital se queda o se va: bajo 60% = !` : 'Sin lectura de stake.'),
-    tw.custom('watch', '◦', 'Alpenglow / slot-time 200ms', 'Agave v4.2 activándose en mainnet: primera reducción de slot-time rumbo a 200ms y al overhaul de consenso Alpenglow. Ejecución limpia = ✓ (la ventaja de velocidad se agranda); incidentes o rollback = ! (el riesgo técnico de L1 vuelve a la mesa).'),
+    tw.custom('watch', '◦', 'Alpenglow / slot-time 200ms', 'Slot-time ya cortado a 250ms en mainnet (18 Sep); Alpenglow — el overhaul de consenso rumbo a finality de ~150ms — apuntado al 28 Sep. Ejecucion limpia = ✓; incidentes o rollback = ! (el riesgo tecnico de L1 vuelve a la mesa).'),
   ],
   decision: decisionBuilder('SOL', {
     flips: ({ net, M: Mf, U }) => {
       const f = net?.fees, a = net?.appfees;
       return [
-        `<b>SGP-2 + SGP-3 aprobadas</b> — menos emisión y más burn cambian la matemática de supply de los próximos 5 años. Es el flip que convierte "trade de ciclo" en "core de largo plazo".`,
+        `<b>Activacion de SIMD-0550</b> (el mandato de SGP-2 hecho codigo) — la emision cayendo al doble de velocidad es el flip que convierte "trade de ciclo" en "core de largo plazo". Fecha de feature gate = el dato.`,
         `Fees de red ${f?.peak ? `recuperando sobre <b>${U(f.peak * 0.5)}</b> mensual (50% del pico; hoy ${U(f.latest)})` : 'recuperando contra el pico de enero 2025'} — el precio sin uso es un rally prestado.`,
         `App fees del ecosistema ${a?.latest ? `(hoy ${U(a.latest)}/mes) ` : ''}haciendo máximos: la economía de apps es lo que los ETFs le venden a las instituciones.`,
         `Flujo ETF semanal sostenido sobre $50M = demanda estructural real; outflows sostenidos = quitar el viento institucional de la tesis.`,

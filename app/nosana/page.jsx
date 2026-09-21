@@ -612,6 +612,7 @@ export default function NosanaTelemetry() {
       <div style={{ margin: '10px 2px 0', color: 'var(--text-muted)', fontSize: 12 }}>
         &gt; executing telemetry.sh … <span style={{ color: status.includes('seeded') ? AMB : GRN }}>{status}</span>
       </div>
+      <div style={{ margin: '4px 2px 0', color: 'var(--text-muted)', fontSize: 11, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>Última actualización: <b style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{SEED.reviewed}</b> · datos de mercado en vivo</div>
 
       {/* THESIS STRIP */}
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 14 }}>

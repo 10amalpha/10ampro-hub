@@ -203,6 +203,7 @@ export default function ThesisPage({ TOKEN }) {
           <div style={{ fontSize: 11, letterSpacing: '.2em', color: 'var(--text-muted)' }}>THESIS TELEMETRY · {TOKEN.sector.toUpperCase()}</div>
           <div style={{ fontSize: mb ? 24 : 30, fontWeight: 800, letterSpacing: '-.02em', marginTop: 4 }}>{TOKEN.name} <span style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: mb ? 16 : 20 }}>${TOKEN.symbol}</span></div>
           <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4, fontFamily: SANS }}>{TOKEN.tagline}</div>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 3, fontFamily: SANS }}>Última actualización: <b style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{TOKEN.reviewed}</b> · datos de mercado en vivo</div>
         </div>
         {!mb && <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>SYS.TIME <b style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{clock}</b> · UPD <b style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{updated}</b> · <span style={{ color: status.startsWith('ok') ? GRN : AMB }}>{status}</span></div>}
       </div>

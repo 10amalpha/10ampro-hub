@@ -985,7 +985,7 @@ export default function NosanaTelemetry() {
               <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: col, marginBottom: 4 }}>{t}</div>
               {L.map(([lv, why]) => (
                 <div key={lv} style={{ display: 'flex', gap: 10, fontSize: 11.5, padding: '3px 0', color: 'var(--text-muted)' }}>
-                  <span style={{ fontWeight: 700, color: 'var(--text-primary)', minWidth: 58 }}>${lv.toFixed(lv < 0.3 ? 4 : 2)}</span>
+                  <span style={{ fontWeight: 700, color: 'var(--text-primary)', minWidth: 58 }}>${lv.toFixed(lv < 0.5 ? 4 : 2)}</span>
                   <span style={{ fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>{why}</span>
                   {d?.price ? <span style={{ marginLeft: 'auto', fontSize: 10.5 }}>{lv / d.price - 1 >= 0 ? '+' : ''}{Math.round((lv / d.price - 1) * 100)}%</span> : null}
                 </div>

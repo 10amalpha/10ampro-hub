@@ -22,15 +22,19 @@ const pill = (color, bg) => ({ color, background: bg, fontSize: 11, fontWeight: 
 const tripStyle = { pass: [GRN, 'rgba(34,197,94,.14)'], fail: [RED, 'rgba(239,68,68,.14)'], watch: [AMB, 'rgba(245,158,11,.14)'] };
 
 // ---------- SVG area chart ----------
-function AreaChart({ points, color, fmtY, height = 240, monthly = false }) {
+function AreaChart({ points, color, fmtY, height = 240, monthly = false, xLabel, partialTag = 'MTD' }) {
   const wrapRef = useRef(null); const [w, setW] = useState(680); const [hover, setHover] = useState(null);
+  const lbl = xLabel || (monthly ? monthLabel : dayLabel);
   useEffect(() => { if (!wrapRef.current) return; const ro = new ResizeObserver((es) => setW(Math.max(280, es[0].contentRect.width))); ro.observe(wrapRef.current); return () => ro.disconnect(); }, []);
   const pad = { l: 56, r: 12, t: 14, b: 26 }, iw = w - pad.l - pad.r, ih = height - pad.t - pad.b;
   const data = points || [], ready = data.length > 1, ys = data.map((p) => p.y);
   const yMin = ready ? Math.min(...ys) : 0, yMax = ready ? Math.max(...ys) : 1, span = yMax - yMin || 1, lo = yMin - span * 0.08, hi = yMax + span * 0.08;
   const X = (i) => pad.l + (data.length <= 1 ? 0 : (i / (data.length - 1)) * iw), Y = (v) => pad.t + ih - ((v - lo) / (hi - lo || 1)) * ih;
-  const line = ready ? data.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p.y).toFixed(1)}`).join(' ') : '';
-  const area = ready ? `${line} L${X(data.length - 1).toFixed(1)},${(pad.t + ih).toFixed(1)} L${X(0).toFixed(1)},${(pad.t + ih).toFixed(1)} Z` : '';
+  const nPart = ready && data[data.length - 1]?.partial && data.length > 2 ? 1 : 0; // running period → dashed tail
+  const solid = ready ? data.slice(0, data.length - nPart) : [];
+  const line = ready ? solid.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p.y).toFixed(1)}`).join(' ') : '';
+  const tail = nPart ? `M${X(data.length - 2).toFixed(1)},${Y(data[data.length - 2].y).toFixed(1)} L${X(data.length - 1).toFixed(1)},${Y(data[data.length - 1].y).toFixed(1)}` : '';
+  const area = ready ? `${data.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p.y).toFixed(1)}`).join(' ')} L${X(data.length - 1).toFixed(1)},${(pad.t + ih).toFixed(1)} L${X(0).toFixed(1)},${(pad.t + ih).toFixed(1)} Z` : '';
   const gridY = Array.from({ length: 5 }, (_, i) => lo + ((hi - lo) * i) / 4);
   const gid = useMemo(() => 'g' + Math.random().toString(36).slice(2, 8), []);
   const onMove = (e) => { if (!ready) return; const r = e.currentTarget.getBoundingClientRect(); const px = ((e.clientX - r.left) / r.width) * w; setHover(Math.max(0, Math.min(data.length - 1, Math.round(((px - pad.l) / (iw || 1)) * (data.length - 1))))); };
@@ -40,11 +44,13 @@ function AreaChart({ points, color, fmtY, height = 240, monthly = false }) {
         <defs><linearGradient id={gid} x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor={color} stopOpacity="0.28" /><stop offset="100%" stopColor={color} stopOpacity="0.02" /></linearGradient></defs>
         {gridY.map((v, i) => <g key={i}><line x1={pad.l} x2={w - pad.r} y1={Y(v)} y2={Y(v)} stroke="rgba(255,255,255,.05)" /><text x={pad.l - 8} y={Y(v) + 3} textAnchor="end" fontSize="10" fill="var(--text-muted)" fontFamily={MONO}>{fmtY ? fmtY(v) : Math.round(v)}</text></g>)}
         {ready && <path d={area} fill={`url(#${gid})`} />}{ready && <path d={line} fill="none" stroke={color} strokeWidth="2" />}
-        {ready && [0, Math.floor((data.length - 1) / 2), data.length - 1].map((i, k) => <text key={k} x={X(i)} y={height - 8} textAnchor={k === 0 ? 'start' : k === 2 ? 'end' : 'middle'} fontSize="10" fill="var(--text-muted)" fontFamily={MONO}>{monthly ? monthLabel(data[i].t) : dayLabel(data[i].t)}</text>)}
+        {nPart ? <path d={tail} fill="none" stroke={color} strokeWidth="2" strokeDasharray="4 4" /> : null}
+        {nPart ? <circle cx={X(data.length - 1)} cy={Y(data[data.length - 1].y)} r="3.5" fill="var(--surface)" stroke={color} strokeWidth="2" /> : null}
+        {ready && [0, Math.floor((data.length - 1) / 2), data.length - 1].map((i, k) => <text key={k} x={X(i)} y={height - 8} textAnchor={k === 0 ? 'start' : k === 2 ? 'end' : 'middle'} fontSize="10" fill="var(--text-muted)" fontFamily={MONO}>{lbl(data[i].t)}{data[i].partial ? ` · ${partialTag}` : ''}</text>)}
         {hover != null && ready && <g><line x1={X(hover)} x2={X(hover)} y1={pad.t} y2={pad.t + ih} stroke={color} strokeDasharray="3 3" opacity="0.6" /><circle cx={X(hover)} cy={Y(data[hover].y)} r="3.5" fill={color} /></g>}
         {!ready && <text x={w / 2} y={height / 2} textAnchor="middle" fontSize="11" fill="var(--text-muted)" fontFamily={MONO}>loading series…</text>}
       </svg>
-      {hover != null && ready && <div style={{ position: 'absolute', top: 6, left: Math.min(Math.max(8, (X(hover) / w) * (wrapRef.current?.clientWidth || w) - 60), (wrapRef.current?.clientWidth || w) - 130), background: 'var(--bg)', border: `1px solid ${color}`, borderRadius: 4, padding: '5px 8px', fontSize: 11, pointerEvents: 'none', whiteSpace: 'nowrap', fontFamily: MONO }}><div style={{ color: 'var(--text-muted)' }}>{monthly ? monthLabel(data[hover].t) : dayLabel(data[hover].t)}</div><div style={{ color, fontWeight: 700 }}>{fmtY ? fmtY(data[hover].y) : fmtInt(data[hover].y)}</div></div>}
+      {hover != null && ready && <div style={{ position: 'absolute', top: 6, left: Math.min(Math.max(8, (X(hover) / w) * (wrapRef.current?.clientWidth || w) - 60), (wrapRef.current?.clientWidth || w) - 130), background: 'var(--bg)', border: `1px solid ${color}`, borderRadius: 4, padding: '5px 8px', fontSize: 11, pointerEvents: 'none', whiteSpace: 'nowrap', fontFamily: MONO }}><div style={{ color: 'var(--text-muted)' }}>{lbl(data[hover].t)}{data[hover].partial ? ` · ${partialTag}` : ''}</div><div style={{ color, fontWeight: 700 }}>{fmtY ? fmtY(data[hover].y) : fmtInt(data[hover].y)}</div></div>}
     </div>
   );
 }
@@ -172,6 +178,16 @@ export default function ThesisPage({ TOKEN }) {
   const ed = TOKEN.ta || null;
   const fc = useMemo(() => (ed && trend ? { dir: ed.bias === 'BEAR' ? 'BEAR' : 'BULL', path: ed.path.map((q) => ({ ...q })), invalidation: ed.invalidation.level, generated: ed.updated, editorial: true } : fcAuto), [ed, trend, fcAuto]);
   const M = net?.metrics || {}; const cur = metric ? M[metric] : null;
+  const [netRange, setNetRange] = useState('1Y');
+  const netPts = useMemo(() => {
+    if (!cur) return [];
+    const flow = cur.mode === 'flow';
+    if (netRange === '90D') return flow && cur.weekly ? cur.weekly.slice(-13).map((p) => ({ t: p.t, y: p.y, partial: !!p.partial })) : (cur.daily || []).slice(-90).map((q) => ({ t: q[0], y: q[1] }));
+    const mon = (cur.monthly || []).map((p) => ({ t: p.t, y: p.y }));
+    const all = flow && cur.mtd ? [...mon, { t: cur.mtd.t, y: cur.mtd.y, partial: true }] : mon;
+    return netRange === '1Y' ? all.slice(-13) : all;
+  }, [cur, netRange]);
+  const lastMonthT = cur?.monthly?.length ? cur.monthly[cur.monthly.length - 1].t : null;
   const primary = Object.values(M).find((m) => m.primary) || Object.values(M)[0] || null;
   const recPct = primary?.pctOfPeak != null ? Math.round(primary.pctOfPeak * 100) : null;
   const drawdown = d?.price && d?.ath ? Math.round((d.price / d.ath - 1) * 100) : null;
@@ -264,7 +280,7 @@ export default function ThesisPage({ TOKEN }) {
         {kpi('Volume 24h', fmtUsd(d?.vol24), d?.mcap ? `${((d.vol24 / d.mcap) * 100).toFixed(1)}% of mcap` : '—', BLU)}
         {kpi('vs ATH', drawdown != null ? `${drawdown}%` : '—', d?.ath ? `ATH ${fmtPx(d.ath)} · ${d.athDate ? new Date(d.athDate).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }) : ''}` : '—', drawdown != null && drawdown < -70 ? RED : 'var(--text-bright)')}
         {kpi('Circulating', d?.circ ? `${(d.circ / (d.max || d.total || d.circ) * 100).toFixed(0)}%` : '—', d?.circ ? `${fmtNum(d.circ)} / ${fmtNum(d.max || d.total)}` : '—', 'var(--text-bright)')}
-        {kpi(primary ? primary.label : 'Network', primary ? fmtBy(primary.latest, primary.unit) : '—', primary ? <><span style={{ color: netColor }}>{recPct}% of peak</span><span>peak {fmtBy(primary.peak, primary.unit)} · {primary.peakT ? monthLabel(primary.peakT) : ''}</span></> : 'loading', netColor)}
+        {kpi(primary ? primary.label : 'Network', primary ? fmtBy(primary.latest, primary.unit) : '—', primary ? <><span style={{ color: netColor }}>{recPct}% of peak</span><span>peak {fmtBy(primary.peak, primary.unit)} · {primary.peakT ? monthLabel(primary.peakT) : ''}</span>{primary.mtd?.pace != null && <span>{monthLabel(primary.mtd.t)} ritmo {fmtBy(primary.mtd.pace, primary.unit)}</span>}</> : 'loading', netColor)}
       </div>
 
       {/* NETWORK CHART */}
@@ -272,10 +288,17 @@ export default function ThesisPage({ TOKEN }) {
       <div style={panel}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginBottom: 8 }}>
           <div style={segWrap}>{Object.values(M).map((m) => <button key={m.key} onClick={() => setMetric(m.key)} style={seg(metric === m.key)}>{m.label}</button>)}</div>
-          {cur && <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>latest <b style={{ color: 'var(--text-primary)' }}>{fmtBy(cur.latest, cur.unit)}</b> · prev <b style={{ color: 'var(--text-primary)' }}>{fmtBy(cur.prev, cur.unit)}</b> · <Delta cur={cur.latest} prev={cur.prev} /> {cur.manual && <span style={{ color: AMB }}>· manual seed</span>}</div>}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginLeft: 'auto' }}>
+            {cur && cur.mode === 'flow' && cur.mtd ? (
+              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{monthLabel(cur.mtd.t)} MTD <b style={{ color: 'var(--text-primary)' }}>{fmtBy(cur.mtd.y, cur.unit)}</b> ({cur.mtd.days}d) · ritmo <b style={{ color: 'var(--text-primary)' }}>{fmtBy(cur.mtd.pace, cur.unit)}</b> <Delta cur={cur.mtd.pace} prev={cur.latest} /> · {lastMonthT ? monthLabel(lastMonthT) : 'prev'} <b style={{ color: 'var(--text-primary)' }}>{fmtBy(cur.latest, cur.unit)}</b> · anterior <b style={{ color: 'var(--text-primary)' }}>{fmtBy(cur.prev, cur.unit)}</b></div>
+            ) : cur ? (
+              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>latest <b style={{ color: 'var(--text-primary)' }}>{fmtBy(cur.latest, cur.unit)}</b> · prev <b style={{ color: 'var(--text-primary)' }}>{fmtBy(cur.prev, cur.unit)}</b> · <Delta cur={cur.latest} prev={cur.prev} /> {cur.manual && <span style={{ color: AMB }}>· manual seed</span>}</div>
+            ) : null}
+            {cur && !cur.manual && <div style={segWrap}>{['90D', '1Y', 'MAX'].map((r) => <button key={r} onClick={() => setNetRange(r)} style={seg(netRange === r)}>{r}</button>)}</div>}
+          </div>
         </div>
-        <AreaChart points={cur?.monthly || []} color={GRN} fmtY={(v) => fmtBy(v, cur?.unit)} monthly />
-        <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: SANS }}>{TOKEN.network.note} {cur?.note ? ` · ${cur.note}` : ''}{net?.errors?.length ? <span style={{ color: RED }}> · partial: {net.errors.join(' · ')}</span> : null}</div>
+        <AreaChart points={netPts} color={GRN} fmtY={(v) => fmtBy(v, cur?.unit)} monthly={netRange !== '90D'} xLabel={netRange === '90D' ? dayLabel : monthLabel} partialTag={netRange === '90D' ? 'semana en curso' : 'MTD'} />
+        <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: SANS }}>{TOKEN.network.note}{cur?.mode === 'flow' && !cur?.manual ? (netRange === '90D' ? ' · Vista 90D: sumas semanales (lunes UTC); la semana en curso va punteada.' : ' · El mes en curso va punteado: acumulado a la fecha, con el ritmo proyectado a fin de mes en el encabezado.') : ''} {cur?.note ? ` · ${cur.note}` : ''}{net?.errors?.length ? <span style={{ color: RED }}> · partial: {net.errors.join(' · ')}</span> : null}</div>
       </div>
 
       {/* MARKET CHART */}

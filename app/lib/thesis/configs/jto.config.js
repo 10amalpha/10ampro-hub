@@ -5,7 +5,7 @@ export const TOKEN = {
   sector: 'Solana MEV & liquid staking',
   tagline: 'MEV tips, JitoSOL TVL y revenue real — ¿el token captura lo que la red genera?',
   description: 'Jito ($JTO) en vivo: tips MEV, TVL de JitoSOL, fees y revenue del protocolo, supply overhang on-chain, TA con forecast y tripwires de la tesis. 10AMPRO.',
-  stance: 'accumulate-on-weakness', reviewed: '21 Sep 2026',
+  stance: 'accumulate-on-weakness', reviewed: '22 Sep 2026',
   catalyst: {
     title: 'SGP-0002 aprobada — y la salvaron los holders de JitoSOL',
     date: 'resultado 28 Ago 2026 · 67.0% vs 66.67% · + BAM preconfirmations en vivo desde el 9 Sep',
@@ -24,6 +24,27 @@ export const TOKEN = {
       '<b>3M · 58/100.</b> Baja del pico de 1M por dos cosas medibles: la erosion de client share (~54% y cayendo segun el propio Q2 report) y los tips todavia deprimidos (~1.178 SOL/dia en la semana del launch de BAM). Si el Q3 report muestra share estabilizado y los pagos de BAM entrando al treasury, esto se revisa para arriba.',
       '<b>Invalidacion ·</b> client share bajo 50%, buyback JIP-38 que no aparece on-chain en octubre, o TVL de JitoSOL siguiendo perdiendo share contra Sanctum.',
     ],
+  },
+  ta: {
+    updated: '22 Sep 2026', bias: 'BULL',
+    read: 'Rebote de +25% desde el 0.405 del 5 Sep, y llega justo a la zona donde se decide todo: EMA100 (0.517), EMA200 (0.544, cayendo −3.7% en 20 días) y la línea de máximos decrecientes del triángulo (0.556). Cuatro de siete checks: sobre la 20 y la 50, MACD positivo, RSI 61 — pero debajo de la 200 y con la 200 bajando. Eso no es tendencia, es un rebote dentro de un triángulo de 8 meses. A favor: el mínimo del 5 Sep es más alto que el de febrero, el volumen no se secó (98% del promedio de 90d, $39M/día) y hay dos datos verificables en octubre (primer pago BAM al treasury, primer buyback JIP-38). En contra: JTO hizo +16% en la semana contra +18% de SOL — beta menor a 1 en un rally de mercado, o sea que el rally es prestado. Hasta que no cierre sobre 0.556 con volumen, esto es esperar en la parte alta del rebote. Sesgo constructivo, condicional a ese cierre.',
+    pattern: '<b>Triángulo simétrico de 8 meses, precio en el tercio superior del rebote.</b> Máximos decrecientes 0.817 (29 Jun) → 0.652 (22 Ago), 3 toques, hoy en 0.556. Mínimos crecientes 0.244 (11 Feb) → 0.260 (4 Abr) → 0.405 (5 Sep), hoy en ~0.31. Apex a principios de diciembre — hay tiempo, pero la resolución válida es antes. Altura 0.53 → medida 1.09 arriba / 0.22 abajo (el mínimo de febrero).',
+    watch: '<b>0.517–0.556 es la banda.</b> EMA100, EMA200 y trendline apiladas en cuatro centavos: cerrar arriba con 2× volumen es el único dato técnico que convierte el rebote en tendencia. <b>Volumen:</b> plano (98% del 90d) — un break sin expansión se vende. <b>Octubre:</b> el primer pago de preconfs al treasury y el primer buyback on-chain son los catalizadores; el chart debería anticiparlos, no reaccionar. <b>Beta:</b> si SOL rompe 119 y JTO no rompe 0.556, el ratio JTO/SOL sigue cayendo y la tesis de "opción sobre Solana" no está funcionando.',
+    decision: [
+      'Con posición: <b>mantener; sumar solo en 0.46–0.47</b> (EMA20, retest del rebote) o en el cierre sobre 0.556 con volumen. No comprar 0.50–0.55 adentro de la banda.',
+      'Sin posición: <b>esperar</b>. Accumulate-on-weakness es 0.45–0.47 con el mínimo de 0.405 intacto, o la ruptura confirmada. El medio no paga.',
+      'Trigger único que anula el sesgo: <b>cierre diario &lt; 0.44</b>. Ahí el rebote desde 0.405 falló y la trendline inferior (~0.31) vuelve a ser el objetivo.',
+    ],
+    invalidation: { level: 0.44, text: 'Cierre diario bajo 0.44 (pierde la base del rebote de la semana del 15 Sep) anula el path → 0.405 (mínimo del 5 Sep) y de ahí la trendline inferior del triángulo en ~0.31.' },
+    path: [
+      { d: 30, h: '+1M', target: 0.556, how: 'Test de la banda EMA100/EMA200/trendline. Cerrar arriba con volumen es el trigger; sin él, el +1M se queda acá.' },
+      { d: 90, h: '+3M', target: 0.652, how: 'Máximo del 22 Ago. Necesita octubre verificado: pago BAM al treasury y buyback JIP-38 on-chain. Sin datos, el techo es 0.556.' },
+      { d: 365, h: '+1Y', target: 0.79, how: 'Máximo del 7 Jul. Solo con client share estabilizado en el Q3 report y tips recuperando; la medida del triángulo (1.09) queda para un regime que hoy no existe.' },
+    ],
+    levels: {
+      resistance: [[0.517, 'EMA100'], [0.544, 'EMA200 — cayendo'], [0.556, 'Trendline de máximos decrecientes · el trigger'], [0.652, 'Máximo 22 Ago'], [0.79, 'Máximo 7 Jul']],
+      support: [[0.495, 'EMA50'], [0.468, 'EMA20 · zona de sumar'], [0.44, 'INVALIDACIÓN · base del rebote'], [0.405, 'Mínimo 5 Sep'], [0.314, 'Trendline inferior del triángulo'], [0.244, 'Mínimo de febrero · medida abajo']],
+    },
   },
   sources: 'Network telemetry: DefiLlama (Jito TVL, fees = MEV tips, revenue = DAO take).',
   rule: 'fees cayendo >40% desde pico + TVL de JitoSOL perdiendo share = reducir; DAO activando distribución de revenue a stakers = subir posición.',

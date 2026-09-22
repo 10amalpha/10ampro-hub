@@ -5,7 +5,28 @@ export const TOKEN = {
   sector: 'Solana liquidity layer (DLMM / DAMM)',
   tagline: 'TVL, volumen y fees de la capa de liquidez — con buyback y 52% del supply todavía por emitir.',
   description: 'Meteora ($MET) en vivo: TVL, volumen DLMM/DAMM, fees y revenue, unlocks y buyback, supply overhang on-chain, TA con forecast y tripwires. 10AMPRO.',
-  stance: 'wait-for-unlock-absorption', reviewed: '21 Sep 2026',
+  stance: 'wait-for-unlock-absorption', reviewed: '22 Sep 2026',
+  ta: {
+    updated: '22 Sep 2026', bias: 'BULL',
+    read: '+46% en la semana, +49% desde el cierre del 16 Sep, RSI 78 — y el unlock de la Ecosystem Reserve es mañana. Ese es el chart. La estructura de fondo es buena: siete de siete, mínimos crecientes desde el 0.0975 de junio (0.129 → 0.157 → 0.185), la 200 subiendo y el volumen en 152% del promedio. Pero el precio corrió hacia el evento, no después de él, y el cierre de hoy (0.293) es el más alto en 90 días: no hay pivotes de referencia entre acá y el 0.687 del ATH. El mercado ya compró la absorción del unlock. El trabajo ahora es ver si la absorbe.',
+    pattern: '<b>Tendencia alcista extendida contra un evento de supply.</b> Línea de soporte 0.0975 (11 Jun) → 0.129 (18 Jul), hoy en ~0.187. Pivotes que mandan: 0.185 (5 Sep), 0.1965 (16 Sep), 0.256–0.26 (la meseta del 19–21 Sep, donde el precio respiró antes del último tramo), 0.293 (hoy). Arriba, nada hasta 0.40–0.50 (zona de la caída de Nov-25) y 0.687 (ATH del 23 Oct 25).',
+    watch: '<b>72 horas después del unlock.</b> La regla de la casa: si el precio no absorbe el float nuevo en 72h, el mercado no tiene demanda para él. Absorber = cerrar sobre 0.256 el viernes. <b>RSI 78</b> con el evento encima: cualquier venta de los que reciben tokens encuentra un comprador cansado. <b>Volumen:</b> el día del unlock debería ser el más alto del mes (hoy el máximo de 30d es $119M); si el volumen sube y el precio no, es distribución del float nuevo. <b>Buyback:</b> el trimestral desde la wallet auditable es lo que convierte esto en tesis; hasta entonces es beta al volumen DEX de Solana.',
+    decision: [
+      'Con posición: <b>mantener mientras cierre sobre 0.256</b>. Nada de sumar antes del unlock; parcial en 0.32–0.33 si el evento pasa y el precio sigue sin retest.',
+      'Sin posición: <b>esperar el unlock</b>. Wait-for-unlock-absorption es literal: entrada en 0.23–0.26 (EMA20 + meseta) si el 23 Sep se absorbe con cierre sobre 0.256; nada a 0.29 con RSI 78.',
+      'Trigger único que anula el sesgo: <b>cierre diario &lt; 0.256</b> en los 3 días posteriores al unlock. Ahí el float nuevo ganó y el objetivo es 0.20 (mínimo 16 Sep) y 0.185.',
+    ],
+    invalidation: { level: 0.256, text: 'Cierre diario bajo 0.256 (la meseta del 19–21 Sep) en la ventana de 72h post-unlock = float no absorbido → 0.233 (EMA20), 0.20 (mínimo 16 Sep) y 0.185.' },
+    path: [
+      { d: 30, h: '+1M', target: 0.32, how: 'Unlock absorbido (cierre sobre 0.256 al viernes) → retest de la meseta → continuación a 0.32. Sin absorción, el +1M es 0.20.' },
+      { d: 90, h: '+3M', target: 0.40, how: 'Primera zona de oferta desde la caída de Nov-25. Requiere el buyback trimestral ejecutado y el share de volumen aguantando contra PumpSwap.' },
+      { d: 365, h: '+1Y', target: 0.50, how: 'Mitad de la caída Oct-Nov 25. Solo con el revenue del sector dejando de contraerse; sin eso, 0.32–0.40 es el techo del año.' },
+    ],
+    levels: {
+      resistance: [[0.32, 'Extensión del impulso post-unlock'], [0.40, 'Zona de oferta Nov-25'], [0.50, 'Mitad de la caída Oct-Nov 25'], [0.687, 'ATH 23 Oct 25']],
+      support: [[0.256, 'Meseta 19–21 Sep · INVALIDACIÓN'], [0.233, 'EMA20'], [0.208, 'EMA50'], [0.20, 'Mínimo 16 Sep'], [0.185, 'Mínimo 5 Sep · trendline desde junio']],
+    },
+  },
   sources: 'Network telemetry: DefiLlama (Meteora TVL, DEX volume, fees, revenue). Unlocks: Tokenomist via CoinGecko.',
   rule: 'revenue mensual <50% del pico + unlock mensual no absorbido en 72h = reducir; buyback trimestral ≥ unlocks del trimestre = mantener aunque el chart esté feo.',
   catalyst: {

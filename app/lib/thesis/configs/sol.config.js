@@ -8,7 +8,7 @@ export const TOKEN = {
   sector: 'Layer 1 · el benchmark del ecosistema',
   tagline: 'Fees de red, economía de apps, inflación vs burn, SOL/BTC y flujo ETF — el activo contra el que se mide todo lo demás en esta página.',
   description: 'Solana ($SOL) en vivo: fees de la red y de las apps, volumen DEX, TVL, inflación y staking on-chain, ratios SOL/BTC y SOL/ETH, posicionamiento en futuros, TA con forecast y tripwires de la tesis. 10AMPRO.',
-  stance: 'core-accumulate', reviewed: '21 Sep 2026',
+  stance: 'core-accumulate', reviewed: '22 Sep 2026',
   catalyst: {
     title: 'Gobernanza SGP-1/2/3 — RESULTADO',
     date: 'cerro 28 Ago 2026 (epoch 1024) · SGP-1 ✓ 86% · SGP-2 ✓ 67.0% · SGP-3 ✗ 53.9%',
@@ -26,6 +26,27 @@ export const TOKEN = {
       '<b>3M · 78/100.</b> La activacion de SGP-2 convierte el mandato en menos SOL impreso — la primera vez que el overhang estructural de este activo se achica de verdad. Pero BTC.D ~59–60% sigue siendo el techo del regime: sin SOL/BTC dejando de hacer minimos, todo rally en USD es prestado.',
       '<b>Invalidacion ·</b> outflows sostenidos de ETFs, Alpenglow con rollback, o % staked cayendo bajo 60% tras el recorte de yield.',
     ],
+  },
+  ta: {
+    updated: '22 Sep 2026', bias: 'BULL',
+    read: 'Siete de siete checks en verde por primera vez en el año: precio sobre las tres EMAs, la 50 sobre la 200, la 200 subiendo (+2.6% en 20 días), MACD y RSI de acuerdo. El chart dejó de discutir la tendencia el 16 Sep, cuando el pullback frenó en 96.9 (EMA50) y dos días después imprimió 112.7. Los mínimos crecientes son limpios: 62.2 (7 Jun) → 74.5 (17 Ago) → 96.9 (16 Sep). Volumen de 20 días en 137% del de 90, y $7.0B el día del rally: hay plata detrás. Lo que no está: el 118.9 de ayer es el máximo de 30 días y de ahí a 127 (máximo de los últimos 8 meses) hay oferta. RSI 64 — no sobrecomprado, tampoco barato. Y la dominancia de BTC bajó a ~57.3% desde 59–60: el techo del regime se está moviendo a favor.',
+    pattern: '<b>Tendencia alcista limpia — mínimos crecientes, sin techo definido.</b> Línea de soporte 62.2 (7 Jun) → 74.5 (17 Ago), 4 toques, hoy en ~81. Sin línea de resistencia válida: cada máximo fue mayor que el anterior (82.3 → 109.2 → 118.9). Altura del tramo ~65 → medida 127 desde el último pivote, que coincide con el máximo de los últimos 8 meses. Más arriba, 153 (medida extendida) y el 235 de Sep-25.',
+    watch: '<b>Alpenglow el 28 Sep.</b> Es el evento de la semana y el chart llega extendido a él: 105.5 (EMA20) es el primer piso, 96.9 (EMA50 + mínimo del 16 Sep) es el último. Un pullback a 105–110 con volumen cayendo es compra por estructura; un cierre bajo 96.9 dice que el rally se devuelve con el evento. <b>Volumen:</b> 20d en 137% del 90d — expandido; que no se seque en la ruptura de 118.9. <b>SOL/BTC:</b> dominancia de BTC en 57.3% — si sigue bajando, todo esto vale más; si rebota sobre 59, el rally en USD es prestado.',
+    decision: [
+      'Con posición: <b>mantener mientras cierre sobre 96.9</b>. Core-accumulate significa comprar 105–110 en pullback, no 119 en la ruptura.',
+      'Sin posición: <b>primer tramo en 105–110</b> (EMA20) si aguanta con volumen bajando; segundo tramo en cierre &gt; 119 con 2× volumen.',
+      'Trigger único que anula el sesgo: <b>cierre diario &lt; 96.9</b>. Ahí el 16 Sep fue un mínimo falso y el chart vuelve a 81 (trendline) y 74.5.',
+    ],
+    invalidation: { level: 96.9, text: 'Cierre diario bajo 96.9 (EMA50 y mínimo del 16 Sep) rompe la secuencia de mínimos crecientes → siguiente parada 81 (trendline) y 74.5 (mínimo de agosto).' },
+    path: [
+      { d: 30, h: '+1M', target: 127, how: 'Ruptura de 118.9 con volumen → 127, el máximo de 8 meses y la medida del tramo. Alpenglow limpio es el catalizador; con incidentes, esto se posterga un mes.' },
+      { d: 90, h: '+3M', target: 153, how: 'Medida extendida del tramo (118.9 + 34) y la zona de oferta de Q4-25. Necesita SOL/BTC dejando de hacer mínimos — no solo USD.' },
+      { d: 365, h: '+1Y', target: 235, how: 'Retest del máximo de Sep-25. Solo con BTC.D bajo 55% y la emisión recortada (SGP-2 activa) pesando de verdad; sin eso el techo es 153.' },
+    ],
+    levels: {
+      resistance: [[118.9, 'Máximo de 30 días (21 Sep)'], [127, 'Máximo de 8 meses · medida del tramo'], [153, 'Medida extendida · oferta Q4-25'], [235, 'Máximo de Sep-25']],
+      support: [[105.5, 'EMA20 — primer piso'], [96.9, 'EMA50 + mínimo 16 Sep · INVALIDACIÓN'], [94.1, 'EMA200 — subiendo'], [81, 'Trendline de mínimos crecientes'], [74.5, 'Mínimo 17 Ago']],
+    },
   },
   sources: 'Network telemetry: DefiLlama (fees de la propia red, fees agregados de las apps del ecosistema, volumen DEX, TVL de la chain). Supply, staking e inflación: Solana RPC en vivo.',
   rule: 'fees de red y de apps cayendo mientras el precio sube = rally sin uso, reducir; SGP-2 activada + flujo ETF sostenido + SOL/BTC dejando de hacer mínimos = subir posición.',

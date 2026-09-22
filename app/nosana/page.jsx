@@ -22,34 +22,34 @@ const RED = '#ef4444';
 const SEED = {
   completed: 4115790, jobHours: 4125332, hosts: 826, running: 826, queued: 34,
   price: 0.2823, mcap: 28233000, ath: 7.83, peakHours: 220000,
-  hostsBaseline: 965, reviewed: '21 Sep 2026',
+  hostsBaseline: 965, reviewed: '22 Sep 2026',
 };
 
 
 // ---- Technical analysis (manual read, refreshed on each review) ----
-// Chart basis: NOS/USDT 1D (Gate) · 22 Ago 2026 · C 0.2819 · EMA20 0.2667 · EMA50 0.2687 · EMA100 0.2733 · EMA200 0.2946 · MACD histo +0.0041
+// Chart basis: NOS/USD 1D (CoinGecko) · 22 Sep 2026 · C 0.3938 · EMA20 0.304 · EMA50 0.290 · EMA100 0.285 · EMA200 0.298 · RSI 77 · MACD histo +0.010 · vol 20d/90d 140%, día 4.9× el promedio de 90d
 const TA = {
-  reviewed: '27 Ago 2026',
-  bias: 'BEARISH',
-  read: 'Rejected at the EMA200 (0.2946) today — wick to 0.312, close −4.6%. EMA200 falling for 10 months; lower highs 0.49 → 0.40 → 0.31 on shrinking volume = distribution. Higher lows since Feb (0.143 → 0.20 → 0.21) are the only bull argument and they are weak: the Aug rally reached the EMA200 on 166K volume. Off-chart: hosts −14% in 3 weeks, compute hours −50% vs peak. Triangle compressing while the network empties — that rarely resolves up.',
+  reviewed: '22 Sep 2026',
+  bias: 'BULLISH',
+  read: 'El triángulo resolvió para arriba y lo hizo con la firma que pedíamos: cierre 0.3133 el 20 Sep (primer cierre sobre 0.3125), 0.3589 el 21 con volumen 5× el promedio de 90 días, 0.3938 hoy. El path bajista del 27 Ago quedó anulado por su propia regla. Cinco de siete checks en verde, la EMA200 (0.298) ya es piso y no techo. Lo que falta: la EMA50 sigue debajo de la 200 y la 200 todavía no gira — eso es un breakout, no una tendencia. Y el precio está exactamente en el máximo del 2 Jun (0.3947) con RSI 77: no es donde se persigue. Fuera del chart: SOL +18% en la semana, el sector AI +42% — NOS movió con beta 2.4× a SOL, no por datos propios. Compute hours siguen bajo 150k/mes y no hay revenue pagado publicado.',
   // Chart structure (anchor points are [timestamp, price]) — drawn on the live series
   structure: {
-    resistance: { a: [1780358400000, 0.3947], b: [1787356800000, 0.2959], label: 'Lower highs · Jun-1 → Jul-7 → Aug-21' },
-    support: { a: [1770768000000, 0.1784], b: [1785369600000, 0.2431], label: 'Higher lows · Feb-11 → Apr-4 → Jul-28' },
-    touches: [[1780358400000, 0.3947, 'H1'], [1783382400000, 0.3139, 'H2'], [1787356800000, 0.2959, 'H3'], [1770768000000, 0.1784, 'L1'], [1775347200000, 0.1996, 'L2'], [1785369600000, 0.2431, 'L3']],
-    pattern: 'Symmetrical triangle (contracting)',
-    height: 0.19,
-    measured: { up: 0.50, down: 0.143 },
+    resistance: { a: [1780358400000, 0.3947], b: [1787356800000, 0.2959], label: 'Lower highs · Jun-2 → Jul-7 → Aug-21 · ROTA 20–21 Sep' },
+    support: { a: [1770768000000, 0.1784], b: [1785369600000, 0.2431], label: 'Higher lows · Feb-11 → Apr-4 → Jul-28 → Sep-16' },
+    touches: [[1780358400000, 0.3947, 'H1'], [1783382400000, 0.3139, 'H2'], [1787356800000, 0.2959, 'H3'], [1770768000000, 0.1784, 'L1'], [1775347200000, 0.1996, 'L2'], [1785369600000, 0.2431, 'L3'], [1789603200000, 0.2675, 'L4']],
+    pattern: 'Symmetrical triangle — breakout up (21 Sep)',
+    height: 0.178,
+    measured: { up: 0.47, down: 0.143 },
   },
-  invalidation: { level: 0.3125, text: 'Daily close > 0.3125 (above today\'s wick and the EMA200) on >2× avg volume kills this path → next target 0.35–0.40.' },
+  invalidation: { level: 0.3125, text: 'Cierre diario bajo 0.3125 (el nivel del breakout) devuelve el precio adentro del triángulo y anula este path → siguiente parada 0.2675 (rail de soporte / mínimo del 16 Sep).' },
   path: [
-    { d: 30, h: '+1M', target: 0.25, how: 'EMA200 rejection → back to the 0.267 cluster → loses it as MACD crosses negative → 0.24–0.25.' },
-    { d: 90, h: '+3M', target: 0.19, how: 'Breaks the triangle lower rail (0.22) → Apr base 0.20 gives → 0.18–0.19. Window: post-Solana Summit with no revenue news.' },
-    { d: 365, h: '+1Y', target: 0.14, how: 'Retest of the 0.143 cycle low. No paid demand = likely undercut to 0.11–0.12.' },
+    { d: 30, h: '+1M', target: 0.44, how: 'Retest de 0.32–0.33 con RSI enfriándose → rebote desde el nivel del breakout → 0.40 (techo de distribución de junio) → 0.44. Si el retest no aguanta, mirá la invalidación.' },
+    { d: 90, h: '+3M', target: 0.49, how: 'Medida del triángulo (0.47) más el spike de junio (0.49) = el clúster objetivo. Ahí está la oferta de mayo-junio: sin revenue pagado publicado, ahí se vende.' },
+    { d: 365, h: '+1Y', target: 0.60, how: 'Solo con revenue pagado publicado y compute hours sobre 150k/mes. Sin eso, el chart vuelve solo a 0.30 y esto fue un trade de sector, no una inversión.' },
   ],
   levels: {
-    resistance: [[0.2946, 'EMA200 — the line that turns the trend'], [0.3125, 'INVALIDATION — Aug-22 wick'], [0.35, 'Jun range floor / May-Jun supply'], [0.40, 'Jun distribution top'], [0.49, 'Jun spike high']],
-    support: [[0.267, 'EMA 20/50 cluster'], [0.22, 'Aug low · triangle lower rail'], [0.20, 'Apr base'], [0.143, 'Feb-26 cycle low'], [0.11, 'undercut zone']],
+    resistance: [[0.3947, 'Máximo del 2 Jun — donde está el precio HOY'], [0.40, 'Techo de distribución de junio'], [0.47, 'Medida del triángulo (breakout 0.30 + altura 0.178)'], [0.49, 'Spike de junio · oferta de mayo-junio'], [0.60, 'Zona de +1Y · requiere revenue publicado']],
+    support: [[0.3589, 'Cierre del 21 Sep — el día del breakout'], [0.3125, 'INVALIDACIÓN · nivel del breakout'], [0.304, 'EMA20'], [0.2977, 'EMA200 — ahora piso'], [0.2675, 'Mínimo 16 Sep · rail del triángulo'], [0.2431, 'Mínimo 30 Jul']],
   },
 };
 
@@ -58,7 +58,7 @@ function TAFan({ price, ta, mb }) {
   const W = 680, H = mb ? 300 : 340, L = 50, R = 64, T = 18, B = 34;
   const px = price || 0.28;
   const xs = (days) => L + Math.sqrt(days / 365) * (W - L - R);
-  const yMin = 0.08, yMax = 0.55;
+  const yMin = 0.12, yMax = 0.80;
   const ys = (v) => T + (1 - (Math.log(v) - Math.log(yMin)) / (Math.log(yMax) - Math.log(yMin))) * (H - T - B);
   const P = [{ d: 0, target: px }].concat(ta.path);
   // smooth path through targets
@@ -73,7 +73,7 @@ function TAFan({ price, ta, mb }) {
   const up = P.map((p, i) => [xs(p.d), ys(p.target * (1 + tol[i]))]);
   const dn = P.map((p, i) => [xs(p.d), ys(p.target * (1 - tol[i]))]).reverse();
   const cone = 'M' + up.concat(dn).map((q) => q.join(',')).join(' L') + ' Z';
-  const gridV = [0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5];
+  const gridV = [0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.75];
   const lv = [...ta.levels.resistance, ...ta.levels.support].filter(([v]) => v >= yMin && v <= yMax && Math.abs(v - px) / px > 0.08 && v !== ta.invalidation.level);
   const inv = ta.invalidation.level;
   const pct = (v) => `${v / px - 1 >= 0 ? '+' : ''}${Math.round((v / px - 1) * 100)}%`;
@@ -81,7 +81,7 @@ function TAFan({ price, ta, mb }) {
     <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: 'block', height: 'auto' }}>
       <defs>
         <linearGradient id="taCone" x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0%" stopColor={RED} stopOpacity="0.05" /><stop offset="100%" stopColor={RED} stopOpacity="0.22" />
+          <stop offset="0%" stopColor={GRN} stopOpacity="0.05" /><stop offset="100%" stopColor={GRN} stopOpacity="0.22" />
         </linearGradient>
       </defs>
       {gridV.map((v) => (
@@ -97,9 +97,9 @@ function TAFan({ price, ta, mb }) {
         </g>
       ))}
       {/* invalidation zone */}
-      <rect x={L} y={T} width={W - L - R} height={Math.max(0, ys(inv) - T)} fill={GRN} opacity="0.05" />
-      <line x1={L} x2={W - R} y1={ys(inv)} y2={ys(inv)} stroke={GRN} strokeWidth="1.5" strokeDasharray="6 3" />
-      <text x={L + 6} y={ys(inv) - 5} fontSize="9.5" fontWeight="700" fill={GRN} fontFamily="'JetBrains Mono',monospace">INVALIDATION › ${inv} · path flips to 0.35–0.40</text>
+      <rect x={L} y={ys(inv)} width={W - L - R} height={Math.max(0, H - B - ys(inv))} fill={RED} opacity="0.05" />
+      <line x1={L} x2={W - R} y1={ys(inv)} y2={ys(inv)} stroke={RED} strokeWidth="1.5" strokeDasharray="6 3" />
+      <text x={L + 6} y={ys(inv) + 12} fontSize="9.5" fontWeight="700" fill={RED} fontFamily="'JetBrains Mono',monospace">INVALIDATION ‹ ${inv} · path flips back to 0.2675</text>
       {lv.map(([v]) => (
         <g key={v}>
           <line x1={L} x2={W - R} y1={ys(v)} y2={ys(v)} stroke="rgba(255,255,255,.18)" strokeWidth="1" strokeDasharray="1 3" />
@@ -107,7 +107,7 @@ function TAFan({ price, ta, mb }) {
         </g>
       ))}
       <path d={cone} fill="url(#taCone)" />
-      <path d={dPath} fill="none" stroke={RED} strokeWidth="2.4" />
+      <path d={dPath} fill="none" stroke={GRN} strokeWidth="2.4" />
       <line x1={L} x2={W - R} y1={ys(px)} y2={ys(px)} stroke="var(--text-primary)" strokeOpacity=".4" strokeWidth="1" />
       <circle cx={xs(0)} cy={ys(px)} r="4.5" fill="#fff" />
       <rect x={W - R + 2} y={ys(px) - 8} width={R - 4} height="16" rx="2" fill="#fff" />
@@ -117,10 +117,10 @@ function TAFan({ price, ta, mb }) {
         const last = i === ta.path.length - 1;
         return (
           <g key={p.h}>
-            <circle cx={x} cy={y} r="5" fill="#0c0c0e" stroke={RED} strokeWidth="2" />
-            <rect x={x - (last ? 64 : 32)} y={y + 10} width="64" height="28" rx="3" fill="rgba(239,68,68,.14)" stroke={RED} strokeOpacity=".5" />
-            <text x={x - (last ? 32 : 0)} y={y + 22} textAnchor="middle" fontSize="11" fontWeight="800" fill={RED} fontFamily="'JetBrains Mono',monospace">${p.target.toFixed(2)}</text>
-            <text x={x - (last ? 32 : 0)} y={y + 33} textAnchor="middle" fontSize="9" fill={RED} fontFamily="'JetBrains Mono',monospace">{pct(p.target)}</text>
+            <circle cx={x} cy={y} r="5" fill="#0c0c0e" stroke={GRN} strokeWidth="2" />
+            <rect x={x - (last ? 64 : 32)} y={y + 10} width="64" height="28" rx="3" fill="rgba(34,197,94,.14)" stroke={GRN} strokeOpacity=".5" />
+            <text x={x - (last ? 32 : 0)} y={y + 22} textAnchor="middle" fontSize="11" fontWeight="800" fill={GRN} fontFamily="'JetBrains Mono',monospace">${p.target.toFixed(2)}</text>
+            <text x={x - (last ? 32 : 0)} y={y + 33} textAnchor="middle" fontSize="9" fill={GRN} fontFamily="'JetBrains Mono',monospace">{pct(p.target)}</text>
           </g>
         );
       })}
@@ -241,14 +241,14 @@ function TAStructure({ series, ta, mb }) {
       <line x1={xs(lastT)} x2={W - R} y1={ys(ta.structure.measured.down)} y2={ys(ta.structure.measured.down)} stroke={RED} strokeWidth="1" strokeDasharray="3 3" opacity=".7" />
       {lab(W - R - 4, ys(ta.structure.measured.down) - 4, `MEASURED ↓ ${ta.structure.measured.down}`, RED, 'end')}
       {/* invalidation */}
-      <line x1={xs(lastT - 30 * DAY)} x2={W - R} y1={ys(ta.invalidation.level)} y2={ys(ta.invalidation.level)} stroke={GRN} strokeWidth="1.2" strokeDasharray="6 3" />
-      {lab(W - R - 4, ys(ta.invalidation.level) - 4, `INVALIDATION ${ta.invalidation.level}`, GRN, 'end')}
+      <line x1={xs(lastT - 30 * DAY)} x2={W - R} y1={ys(ta.invalidation.level)} y2={ys(ta.invalidation.level)} stroke={RED} strokeWidth="1.2" strokeDasharray="6 3" />
+      {lab(W - R - 4, ys(ta.invalidation.level) + 11, `INVALIDATION ${ta.invalidation.level}`, RED, 'end')}
       {/* projection */}
-      <path d={projD} fill="none" stroke={RED} strokeWidth="2" strokeDasharray="1 0" opacity=".9" />
+      <path d={projD} fill="none" stroke={GRN} strokeWidth="2" strokeDasharray="1 0" opacity=".9" />
       {proj.slice(1).map((p, i) => (
         <g key={i}>
-          <circle cx={xs(p[0])} cy={ys(p[1])} r="4" fill="#0c0c0e" stroke={RED} strokeWidth="2" />
-          {lab(xs(p[0]) + 8, ys(p[1]) + (i === 0 ? -8 : 14), `${ta.path[i].h} $${p[1].toFixed(2)}`, RED)}
+          <circle cx={xs(p[0])} cy={ys(p[1])} r="4" fill="#0c0c0e" stroke={GRN} strokeWidth="2" />
+          {lab(xs(p[0]) + 8, ys(p[1]) + (i === 0 ? -8 : 14), `${ta.path[i].h} $${p[1].toFixed(2)}`, GRN)}
         </g>
       ))}
       {/* last price badge */}
@@ -643,15 +643,15 @@ export default function NosanaTelemetry() {
       {/* DECISION CARD — qué hacer con esto */}
       {(() => {
         const px = d?.price; const st = chain?.staking; const ho = chain?.holders;
-        const inv = px != null && px > TA.invalidation.level;
+        const inv = px != null && px < TA.invalidation.level;
         const supLine = (() => { const a = TA.structure.support.a, b = TA.structure.support.b; const m = (b[1] - a[1]) / (b[0] - a[0]); return a[1] + m * (Date.now() - a[0]); })();
-        const zone = px == null ? null : inv ? 'breakout' : px > 0.2946 ? 'ema200' : px > supLine ? 'triangle' : px > 0.22 ? 'broken' : 'capitulation';
+        const zone = px == null ? null : px >= 0.47 ? 'target' : px > 0.3947 ? 'extended' : px >= TA.invalidation.level ? 'breakout' : px > 0.2675 ? 'failed' : 'broken';
         const Z = {
-          breakout: ['INVALIDADO — forecast bajista anulado', GRN, 'Cierre diario sobre 0.3125. El path bajista queda sin efecto; siguiente resistencia 0.35 y luego 0.40.'],
-          ema200: ['EN LA EMA200 — zona de decisión', AMB, 'Entre 0.295 y 0.3125. Aquí se define el triángulo. No es zona de entrar ni de salir: es zona de esperar el cierre.'],
-          triangle: ['DENTRO DEL TRIÁNGULO — sesgo bajista', AMB, `Entre la trendline de soporte (~${supLine.toFixed(3)}) y la EMA200 (0.295). Rallies a 0.29–0.31 son para reducir, no para comprar.`],
-          broken: ['SOPORTE ROTO — path bajista activo', RED, `Perdió la trendline (~${supLine.toFixed(3)}). Siguiente: 0.22 → 0.20 → 0.19. No promediar a la baja hasta ver volumen de capitulación.`],
-          capitulation: ['CAPITULACIÓN — zona de retest del piso', RED, 'Bajo 0.22. Objetivo 0.143 (mínimo de ciclo). Aquí empieza a tener sentido la watchlist de compra, no antes.'],
+          target: ['EN LA MEDIDA DEL TRIÁNGULO — zona de tomar parcial', GRN, 'Sobre 0.47. La medida del breakout y el spike de junio (0.49) están acá. Sin revenue pagado publicado, este es el lugar de vender una parte, no de sumar.'],
+          extended: ['BREAKOUT EXTENDIDO — sobre el máximo de junio', GRN, 'Entre 0.3947 y 0.47 con RSI sobrecomprado. El path alcista está intacto pero no es zona de entrar: esperá el retest de 0.32–0.33 o el cierre limpio sobre 0.40.'],
+          breakout: ['BREAKOUT CONFIRMADO — retest en curso', GRN, 'Entre 0.3125 y 0.3947. Es la zona donde se define si el breakout aguanta: retest que cierra sobre 0.3125 = sumar 25%; cierre debajo = fakeout.'],
+          failed: ['DE VUELTA ADENTRO DEL TRIÁNGULO — breakout fallido', AMB, `Bajo 0.3125 y sobre 0.2675. El path alcista queda anulado; EMA200 (0.298) es el último piso antes del rail (~${supLine.toFixed(3)}). Las alzas a 0.31 vuelven a ser para reducir.`],
+          broken: ['RAIL ROTO — path bajista de nuevo activo', RED, 'Bajo 0.2675. Un breakout que falla devuelve todo el movimiento: siguiente 0.243 → 0.20 → 0.143. No promediar a la baja sin volumen de capitulación.'],
         };
         const z = zone ? Z[zone] : ['CARGANDO', 'var(--text-muted)', ''];
         const B = ({ c, children }) => <div style={{ display: 'flex', gap: 8, fontSize: 11.5, lineHeight: 1.5, marginTop: 4 }}><span style={{ color: c, fontWeight: 800 }}>›</span><span>{children}</span></div>;
@@ -662,23 +662,23 @@ export default function NosanaTelemetry() {
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap', fontFamily: "'JetBrains Mono',monospace" }}>
               <span style={{ fontSize: 10.5, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Qué hacer con esto · hoy</span>
               <span style={{ fontSize: 14, fontWeight: 800, color: z[1], letterSpacing: '.04em' }}>{z[0]}</span>
-              {px != null && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>NOS {fmtPx(px)} · stance <b style={{ color: 'var(--text-primary)' }}>HOLD-TO-REDUCE</b></span>}
+              {px != null && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>NOS {fmtPx(px)} · stance <b style={{ color: 'var(--text-primary)' }}>HOLD · TRADE-THE-BREAKOUT</b></span>}
             </div>
             <div style={{ fontSize: 11.5, color: 'var(--text-secondary)', marginTop: 6 }}>{z[2]}</div>
             <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : 'repeat(3,1fr)', gap: 12, marginTop: 12, color: 'var(--text-secondary)' }}>
               <div>
                 <H c={RED}>Si ya tenés NOS</H>
-                <B c={RED}>Reducí en rallies a <b>0.29–0.31</b>. No vendas el pánico, vendé la euforia.</B>
-                <B c={RED}>Stop mental: cierre diario bajo <b>{supLine.toFixed(3)}</b> (trendline) = bajar otro tramo.</B>
-                <B c={RED}>Lo que te devuelve a HOLD: cierre &gt; <b>0.3125</b> con volumen ≥2× promedio.</B>
-                <B c={RED}>Si estás staked 181–365d: ya pagaste el costo. No rompas el lock por el chart.</B>
+                <B c={RED}>Mantené mientras cierre sobre <b>0.3125</b>. El breakout está confirmado; no lo vendas por el susto del retest.</B>
+                <B c={RED}>Tomá parcial en <b>0.47–0.49</b> (medida del triángulo + spike de junio). Sin revenue publicado, ahí se vende euforia, no se compra.</B>
+                <B c={RED}>Stop mental: cierre diario bajo <b>0.3125</b> = fakeout. Volvés al plan viejo: reducir en 0.29–0.31, piso en {supLine.toFixed(3)}.</B>
+                <B c={RED}>Si estás staked 181–365d: ya pagaste el costo. No rompas el lock por el chart, ni para arriba ni para abajo.</B>
               </div>
               <div>
                 <H c={GRN}>Si querés entrar</H>
-                <B c={GRN}>Todavía no. El triángulo resuelve en semanas (apex ~18 sept). Comprar adentro es pagar por incertidumbre.</B>
-                <B c={GRN}>Zona de watchlist: <b>0.19–0.22</b> con volumen de capitulación, o retest exitoso del <b>0.143</b>.</B>
-                <B c={GRN}>Entrada por fuerza: cierre &gt; 0.3125 y retest de la EMA200 que aguante. Entrás más caro, pero con confirmación.</B>
-                <B c={GRN}>Sizing: 25% de la posición objetivo por trigger. Nunca full size en un alt de $28M.</B>
+                <B c={GRN}>No a 0.39 con RSI 77 y el precio en el máximo de junio. Después de +44% en una semana, comprás el sector, no el activo.</B>
+                <B c={GRN}>La entrada es el <b>retest de 0.32–0.33</b> que cierre sobre 0.3125 con volumen cayendo. Primer tramo: 25% de la posición objetivo.</B>
+                <B c={GRN}>Segundo tramo: cierre diario &gt; <b>0.40</b> con 2× volumen (techo de distribución de junio roto). Entrás más caro, pero sin la oferta de junio encima.</B>
+                <B c={GRN}>Nunca full size en un alt de $39M con $11K de profundidad al 2%: tu orden es el libro.</B>
               </div>
               <div>
                 <H c={AMB}>Lo que cambia la tesis</H>
@@ -880,14 +880,14 @@ export default function NosanaTelemetry() {
       <RelativeLayer cgId="nosana" symbol="NOS" mb={mb} />
 
       {/* TECHNICAL ANALYSIS */}
-      <Eyebrow dot={RED}>Technical analysis — NOS/USDT 1D · forecast 1M / 3M / 1Y · read {TA.reviewed}</Eyebrow>
+      <Eyebrow dot={GRN}>Technical analysis — NOS/USD 1D · forecast 1M / 3M / 1Y · read {TA.reviewed}</Eyebrow>
       <div style={{ border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface)', padding: 16 }}>
         <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>{TA.read}</div>
         {/* LIVE TREND */}
         {(() => {
           const t = trend;
           const col = !t ? 'var(--text-muted)' : t.score >= 5 ? GRN : t.score === 4 ? AMB : RED;
-          const inv = d?.price != null && d.price > TA.invalidation.level;
+          const inv = d?.price != null && d.price < TA.invalidation.level;
           const tile = (k, v, sub, c) => (
             <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '8px 10px', minWidth: 0 }}>
               <div style={{ fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>{k}</div>
@@ -903,8 +903,8 @@ export default function NosanaTelemetry() {
                 <div style={{ fontSize: 16, fontWeight: 800, letterSpacing: '.06em', color: col }}>{t ? t.regime : 'computing…'}</div>
                 {t && <div style={{ display: 'flex', gap: 3 }}>{t.checks.map((x, i) => <span key={i} title={x[0]} style={{ width: 14, height: 6, borderRadius: 2, background: x[1] ? col : 'rgba(255,255,255,.08)' }} />)}</div>}
                 {t && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t.score}/7 bullish checks</span>}
-                <div style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 700, letterSpacing: '.08em', color: inv ? GRN : RED }}>
-                  FORECAST {inv ? 'INVALIDATED ›' : 'INTACT ‹'} ${TA.invalidation.level}
+                <div style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 700, letterSpacing: '.08em', color: inv ? RED : GRN }}>
+                  FORECAST BULL · {inv ? 'INVALIDATED ‹' : 'INTACT ›'} ${TA.invalidation.level}
                 </div>
               </div>
               {t && (
@@ -914,7 +914,7 @@ export default function NosanaTelemetry() {
                   {tile('MACD histo', (t.hist >= 0 ? '+' : '') + t.hist.toFixed(4), t.histUp ? 'rising' : 'falling', t.hist > 0 ? GRN : RED)}
                   {tile('RSI 14', t.rsi.toFixed(0), t.rsi > 70 ? 'overbought' : t.rsi < 30 ? 'oversold' : 'neutral zone', t.rsi > 50 ? GRN : RED)}
                   {tile('7d / 30d', `${pc(t.chg7)} / ${pc(t.chg30)}`, 'momentum', t.chg30 > 0 ? GRN : RED)}
-                  {tile('vs path', d?.price ? pc(d.price / TA.path[0].target - 1) : '—', 'above +1M target', 'var(--text-primary)')}
+                  {tile('vs path', d?.price ? pc(d.price / TA.path[0].target - 1) : '—', 'vs +1M target', 'var(--text-primary)')}
                 </div>
               )}
               <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>
@@ -937,27 +937,27 @@ export default function NosanaTelemetry() {
         <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 10, fontSize: 11.5, lineHeight: 1.55, color: 'var(--text-secondary)', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>
           <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
             <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, marginBottom: 6, fontFamily: "'JetBrains Mono',monospace" }}>Pattern read</div>
-            <b>Symmetrical triangle, 6 months old, 3 touches each side.</b> Lower highs H1→H3 (0.395 → 0.314 → 0.296) against higher lows L1→L3 (0.178 → 0.200 → 0.243). Price is now in the final third of the pattern — the zone where breakouts are statistically valid; past the apex the pattern decays. Height at the widest point ≈ 0.19, so the measured move is 0.50 on a breakout and the 0.143 cycle low on a breakdown (the literal 0.19 projection overshoots where liquidity exists).
-            <div style={{ marginTop: 6 }}><b>Context is the tell.</b> The triangle formed <i>after</i> an 85% decline from the Sep-25 blow-off (1.01). Continuation patterns resolve in the direction of the prior trend ~2:1. The EMA200 is above price and falling; the 50 sits below the 200. That is a bear-market consolidation, not a base.</div>
+            <b>Triángulo simétrico de 6 meses, resuelto para arriba el 21 Sep.</b> Máximos decrecientes H1→H3 (0.395 → 0.314 → 0.296) contra mínimos crecientes L1→L4 (0.178 → 0.200 → 0.243 → 0.268). El breakout llegó en el último tercio del patrón, con volumen 5× — la única forma en que un breakout de triángulo vale algo. Altura 0.178 desde el nivel de ruptura (~0.30) → medida 0.47.
+            <div style={{ marginTop: 6 }}><b>El contexto ahora corta para los dos lados.</b> El triángulo se formó después de una caída del 85% desde el blow-off de Sep-25 (1.01): un breakout contra la tendencia previa tiene menos probabilidad de seguir que uno a favor, y por eso el retest importa más que el break. A favor: la EMA200 es piso (0.298), la EMA20 (0.304) ya cruzó por encima de la 50. En contra: la 50 sigue bajo la 200, RSI 77 y el precio pegado al máximo del 2 Jun.</div>
           </div>
           <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
             <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, marginBottom: 6, fontFamily: "'JetBrains Mono',monospace" }}>What to watch this week</div>
-            <b>Volume.</b> {trend?.volRatio != null ? `20d avg volume is ${Math.round(trend.volRatio * 100)}% of the 90d avg — ${trend.volRatio < 0.85 ? 'drying up into the apex, classic pre-break compression' : trend.volRatio > 1.2 ? 'expanding, a break is close' : 'flat'}.` : 'Loading…'} A valid break needs ≥2× average volume on the break day; anything less is a fake-out and gets sold.
-            <div style={{ marginTop: 6 }}><b>Sequence that confirms the bear path:</b> close below EMA20 (0.267) → lose the rising support line (currently ~{(() => { const a = TA.structure.support.a, b = TA.structure.support.b; const m = (b[1] - a[1]) / (b[0] - a[0]); return (a[1] + m * (Date.now() - a[0])).toFixed(3); })()}) → retest from below fails → 0.22 Aug low goes. Each step is a reduce point.</div>
-            <div style={{ marginTop: 6 }}><b>Sequence that flips it:</b> daily close &gt; 0.3125 on volume → EMA200 becomes support on the retest → 0.35. Only then does 0.40–0.50 open. Until that prints, rallies into 0.29–0.31 are for selling, not buying.</div>
+            <b>Volumen.</b> {trend?.volRatio != null ? `El promedio de 20 días está en ${Math.round(trend.volRatio * 100)}% del de 90 días — ${trend.volRatio < 0.85 ? 'se está secando: el breakout se queda sin combustible' : trend.volRatio > 1.2 ? 'expandido: el movimiento tiene combustible' : 'plano'}.` : 'Cargando…'} El retest sano viene con volumen cayendo; un retest con volumen creciente es distribución.
+            <div style={{ marginTop: 6 }}><b>Secuencia que confirma el path alcista:</b> pullback a 0.32–0.33 con RSI bajando de 70 → cierre que aguanta sobre <b>0.3125</b> → nuevo cierre sobre 0.3947 (máximo del 2 Jun) → 0.40 → 0.44. Cada escalón es un punto para sumar el 25% de la posición objetivo, no antes.</div>
+            <div style={{ marginTop: 6 }}><b>Secuencia que lo rompe:</b> cierre diario bajo <b>0.3125</b> → el precio vuelve adentro del triángulo → EMA200 (0.298) como último piso → 0.2675. Un breakout que falla suele devolver todo el movimiento: ahí el sesgo vuelve a bajista y las alzas a 0.31 son para vender.</div>
             <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(245,158,11,.25)' }}>
               <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, fontFamily: "'JetBrains Mono',monospace", marginBottom: 3 }}>Decisión</div>
-              <div>› Con posición: <b>vender 0.29–0.31</b>, no esperar 0.35.</div>
-              <div>› Sin posición: <b>esperar la resolución</b>. Comprar dentro del triángulo es la peor relación riesgo/retorno del año.</div>
-              <div>› Trigger único que cambia todo: <b>cierre diario &gt; 0.3125 con 2× volumen</b>. Si no pasa, el sesgo sigue bajista.</div>
+              <div>› Con posición: <b>mantener mientras cierre sobre 0.3125</b>. Tomá parcial en 0.47–0.49 (medida + spike de junio) si llega sin revenue publicado.</div>
+              <div>› Sin posición: <b>no a 0.39 con RSI 77</b>. La entrada es el retest de 0.32–0.33 que aguante, 25% del tamaño objetivo. Perseguir el máximo de junio es pagar por el sector.</div>
+              <div>› Trigger único que anula el sesgo: <b>cierre diario &lt; 0.3125</b>. Si pasa, esto fue un fakeout y se vuelve al plan bajista.</div>
             </div>
           </div>
         </div>
         <div style={{ marginTop: 14, border: '1px solid var(--border)', borderRadius: 4, padding: '8px 4px 4px' }}>
           <div style={{ display: 'flex', gap: 14, fontSize: 10.5, padding: '0 10px 4px', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
-            <span style={{ color: RED, fontWeight: 800, letterSpacing: '.1em' }}>BIAS: {TA.bias}</span>
-            <span><span style={{ color: RED }}>▬</span> forecast path</span>
-            <span><span style={{ color: GRN }}>╌</span> invalidation</span>
+            <span style={{ color: GRN, fontWeight: 800, letterSpacing: '.1em' }}>BIAS: {TA.bias}</span>
+            <span><span style={{ color: GRN }}>▬</span> forecast path</span>
+            <span><span style={{ color: RED }}>╌</span> invalidation</span>
             <span style={{ marginLeft: 'auto' }}>log scale · x = √time · shade = tolerance</span>
           </div>
           <TAFan price={d?.price} ta={TA} mb={mb} />
@@ -969,15 +969,15 @@ export default function NosanaTelemetry() {
               <div key={p.h} style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                   <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '.08em', color: 'var(--text-secondary)' }}>{p.h}</span>
-                  <span style={{ fontSize: 18, fontWeight: 800, color: RED }}>${p.target.toFixed(2)} <span style={{ fontSize: 10.5, fontWeight: 500, color: 'var(--text-muted)' }}>{px ? `${p.target / px - 1 >= 0 ? '+' : ''}${Math.round((p.target / px - 1) * 100)}%` : ''}</span></span>
+                  <span style={{ fontSize: 18, fontWeight: 800, color: GRN }}>${p.target.toFixed(2)} <span style={{ fontSize: 10.5, fontWeight: 500, color: 'var(--text-muted)' }}>{px ? `${p.target / px - 1 >= 0 ? '+' : ''}${Math.round((p.target / px - 1) * 100)}%` : ''}</span></span>
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, lineHeight: 1.5, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>{p.how}</div>
               </div>
             );
           })}
         </div>
-        <div style={{ marginTop: 10, padding: '9px 12px', border: `1px solid ${GRN}`, borderRadius: 4, background: 'rgba(34,197,94,.06)', fontSize: 11.5, color: 'var(--text-secondary)', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>
-          <b style={{ color: GRN, fontFamily: "'JetBrains Mono',monospace", letterSpacing: '.08em' }}>INVALIDATION ·</b> {TA.invalidation.text}
+        <div style={{ marginTop: 10, padding: '9px 12px', border: `1px solid ${RED}`, borderRadius: 4, background: 'rgba(239,68,68,.06)', fontSize: 11.5, color: 'var(--text-secondary)', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>
+          <b style={{ color: RED, fontFamily: "'JetBrains Mono',monospace", letterSpacing: '.08em' }}>INVALIDATION ·</b> {TA.invalidation.text}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 10, marginTop: 12 }}>
           {[['Resistance', TA.levels.resistance, RED], ['Support', TA.levels.support, GRN]].map(([t, L, col]) => (
@@ -1026,7 +1026,7 @@ export default function NosanaTelemetry() {
       </div>
 
       {/* TRIPWIRES */}
-      <Eyebrow>Thesis tripwires — materialization checklist (from due-diligence) · last review {SEED.reviewed} · stance: hold-to-reduce</Eyebrow>
+      <Eyebrow>Thesis tripwires — materialization checklist (from due-diligence) · last review {SEED.reviewed} · stance: hold · trade-the-breakout</Eyebrow>
       <div>
         {trips.map(([cls, ic, t, desc], i) => (
           <div key={i} style={{ display: 'flex', gap: 11, padding: '11px 12px', border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface)', alignItems: 'flex-start', marginBottom: 8 }}>

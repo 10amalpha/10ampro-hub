@@ -8,7 +8,28 @@ export const TOKEN = {
   sector: 'DePIN · fiber network for validators',
   tagline: 'Stake de Solana sobre fibra dedicada, seat fees en 2Z y burn — la red que Solana ya usa, con un token que todavía no lo refleja.',
   description: 'DoubleZero ($2Z) en vivo: % del stake de Solana conectado, validadores, TCV, burn de seat fees, unlocks, supply overhang on-chain, TA con forecast y tripwires. 10AMPRO.',
-  stance: 'accumulate-slowly-below-unlocks', reviewed: '21 Sep 2026',
+  stance: 'accumulate-slowly-below-unlocks', reviewed: '22 Sep 2026',
+  ta: {
+    updated: '22 Sep 2026', bias: 'BEAR',
+    read: 'Rebote de +14% desde el mínimo histórico del 16 Sep (0.0448 intradía, 0.0458 al cierre) y con eso cruzó la línea de máximos decrecientes que venía desde mayo (hoy en ~0.046) y la EMA20 (0.050). Es lo primero que este chart hace bien desde el TGE. Pero tres de siete: debajo de la 50 (0.053), de la 100 (0.060) y de la 200 (0.086, cayendo −8.6% en 20 días — la más bajista de la página). El volumen no acompañó: 84% del promedio de 90d, secándose. Y el 2 Oct entran 1.655B de tokens, +47.7% del circulante. Un rebote sin volumen a diez días de un unlock de ese tamaño se llama posicionamiento de los que van a vender, no cambio de tendencia.',
+    pattern: '<b>Tendencia bajista — máximos decrecientes, piso recién testeado.</b> Línea de resistencia 0.1126 (22 May) → 0.0597 (28 Ago), hoy en ~0.046: el precio la cruzó el 18 Sep, pero una línea que cae más rápido que el precio se rompe sola. Máximos decrecientes 0.075 (22 Jun) → 0.073 (10 Jul) → 0.055 (10 Ago) → 0.060 (28 Ago). Mínimos: 0.0468 (19 Ago) → 0.0458 (16 Sep): doble piso apenas, con el unlock adelante. Sin línea de soporte válida.',
+    watch: '<b>El 2 Oct.</b> Todo lo demás es ruido hasta ese día. El chart bueno: unlock que abre con volumen 3× y cierra la semana sobre 0.0458 = absorbido, y ahí se compra. El chart malo: nuevo mínimo bajo 0.0448 en la semana del unlock = el float nuevo manda y el objetivo es 0.041 (medida) y 0.035. <b>Antes del unlock:</b> la EMA50 (0.053) y el máximo del 28 Ago (0.0597) son los techos; cerrar sobre 0.060 con volumen antes del evento sería la sorpresa alcista — no la esperes. <b>Foundation:</b> tokens "unmoved" moviéndose a CEX antes del 2 Oct = salir sin mirar el chart.',
+    decision: [
+      'Con posición: <b>no sumar antes del 2 Oct</b>. Si el rebote llega a 0.056–0.060 antes del unlock, es la última salida cómoda para lo que no querés tener en el evento.',
+      'Sin posición: <b>esperar el otro lado del unlock</b>. Accumulate-slowly-below-unlocks: primer tramo solo con 7 días post-unlock sin nuevo mínimo, en 0.045–0.048.',
+      'Trigger único que anula el sesgo: <b>cierre diario &gt; 0.060</b> con 2× volumen (EMA100 + máximo 28 Ago). Ahí el mercado absorbió antes de tiempo y el objetivo sube a 0.073.',
+    ],
+    invalidation: { level: 0.06, text: 'Cierre diario sobre 0.060 (EMA100 y máximo del 28 Ago) con volumen 2× anula el path bajista → 0.073 (máximo 10 Jul) y la EMA200 (0.086).' },
+    path: [
+      { d: 30, h: '+1M', target: 0.046, how: 'Retest del piso de 0.0458 con el unlock del 2 Oct adentro de la ventana. Sin volumen de absorción, el piso no aguanta la primera semana.' },
+      { d: 90, h: '+3M', target: 0.041, how: 'Medida del tramo bajista bajo el piso. Es el escenario de unlock no absorbido; si se absorbe, el +3M vuelve a 0.053–0.060.' },
+      { d: 365, h: '+1Y', target: 0.06, how: 'Post-unlock, el único DePIN con adopción no incentivada recupera la EMA100 si el stake weight aguanta sobre 50%. Sin eso, 0.035.' },
+    ],
+    levels: {
+      resistance: [[0.0531, 'EMA50'], [0.0597, 'Máximo 28 Ago · EMA100 · INVALIDACIÓN'], [0.0732, 'Máximo 10 Jul'], [0.0863, 'EMA200 — cayendo'], [0.1126, 'Máximo 22 May']],
+      support: [[0.0501, 'EMA20'], [0.0468, 'Mínimo 19 Ago'], [0.0458, 'Mínimo histórico al cierre · 16 Sep'], [0.0448, 'Mínimo histórico intradía'], [0.041, 'Medida del tramo bajista'], [0.035, 'Undercut post-unlock']],
+    },
+  },
   sources: 'Network telemetry: DoubleZero quarterly updates (Q4-25 → Q2-26), data.malbeclabs.com. Burn: on-chain supply vs 10B minted.',
   rule: 'stake weight conectado cayendo trimestre a trimestre = tesis rota, salir; burn acelerando + stake >60% + Edge con suscriptores pagando = subir posición aunque el chart esté feo.',
   catalyst: {

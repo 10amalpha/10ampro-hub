@@ -94,30 +94,41 @@ export function autoStructure(series, lookbackDays = 240) {
 }
 
 // ---- directional forecast from regime + structure ----
+// Targets snap to real levels (EMAs, trendlines, pivots, window highs/lows, measured moves) but are capped per horizon so a
+// price sitting above every level doesn't jump straight to the ATH (the bug that printed +150% 1M targets on SOL/JUP).
 export function buildForecast(trend, st, series, cfg = {}) {
   if (!trend || !series) return null;
   const px = trend.last;
-  const ath = cfg.ath || Math.max(...series.c);
-  const atl = Math.min(...series.c);
+  const c = series.c;
+  const ath = cfg.ath || Math.max(...c);
+  const atl = Math.min(...c);
+  const win = (d) => { const s = c.slice(-d); return [Math.max(...s), Math.min(...s)]; };
+  const [h30, l30] = win(30), [h90, l90] = win(90), [h180, l180] = win(180);
   const bearPts = trend.score <= 3 ? 1 : 0, bullPts = trend.score >= 5 ? 1 : 0;
   const sbias = st?.bias === 'bear' ? 1 : st?.bias === 'bull' ? -1 : 0;
   const dir = (bearPts - bullPts + sbias + (trend.slope200 < 0 ? 1 : -1)) >= 1 ? 'BEAR' : (bullPts - bearPts - sbias + (trend.slope200 > 0 ? 1 : -1)) >= 1 ? 'BULL' : (trend.score <= 3 ? 'BEAR' : 'BULL');
   const r = (v) => +Number(v).toPrecision(3);
-  const lvlsBelow = [trend.e20, trend.e50, trend.e100, trend.e200, st?.supNow, ...(st?.lows || []).map((p) => p[1]), atl, st?.measured?.down].filter((v) => v && v < px * 0.98).sort((a, b) => b - a);
-  const lvlsAbove = [trend.e20, trend.e50, trend.e100, trend.e200, st?.resNow, ...(st?.highs || []).map((p) => p[1]), st?.measured?.up, ath].filter((v) => v && v > px * 1.02).sort((a, b) => a - b);
-  const pick = (arr, i, fallback) => arr[Math.min(i, arr.length - 1)] ?? fallback;
+  const uniq = (arr) => arr.filter((v, i, a) => v && isFinite(v) && a.findIndex((w) => Math.abs(w / v - 1) < 0.015) === i);
+  const lvlsBelow = uniq([trend.e20, trend.e50, trend.e100, trend.e200, st?.supNow, ...(st?.lows || []).map((p) => p[1]), l30, l90, l180, atl, st?.measured?.down].filter((v) => v && v < px * 0.98)).sort((a, b) => b - a);
+  const lvlsAbove = uniq([trend.e20, trend.e50, trend.e100, trend.e200, st?.resNow, ...(st?.highs || []).map((p) => p[1]), h30, h90, h180, st?.measured?.up, ath].filter((v) => v && v > px * 1.02)).sort((a, b) => a - b);
+  // first level inside a band [lo, hi]; else the fallback
+  const inBand = (arr, lo, hi, fb) => arr.find((v) => v >= lo && v <= hi) ?? fb;
   let path, invalidation, how;
   if (dir === 'BEAR') {
-    const t1 = pick(lvlsBelow, 1, px * 0.88), t3 = pick(lvlsBelow, 3, px * 0.72), t12 = Math.min(pick(lvlsBelow, lvlsBelow.length - 1, px * 0.5), atl * 0.95);
-    path = [{ d: 30, h: '+1M', target: r(t1) }, { d: 90, h: '+3M', target: r(Math.min(t3, t1 * 0.97)) }, { d: 365, h: '+1Y', target: r(Math.min(t12, t3 * 0.9)) }];
+    const t1 = inBand(lvlsBelow, px * 0.75, px * 0.97, px * 0.88);
+    const t3 = inBand(lvlsBelow, px * 0.55, t1 * 0.96, t1 * 0.85);
+    const t12 = inBand(lvlsBelow, px * 0.35, t3 * 0.9, Math.max(atl * 0.95, t3 * 0.75));
+    path = [{ d: 30, h: '+1M', target: r(t1) }, { d: 90, h: '+3M', target: r(t3) }, { d: 365, h: '+1Y', target: r(t12) }];
     const inv = Math.max(trend.e200, st?.resNow || 0, ...(st?.highs || []).slice(-1).map((p) => p[1]));
-    invalidation = r(inv > px ? inv : px * 1.12);
+    invalidation = r(inv > px ? Math.min(inv, px * 1.25) : px * 1.12);
     how = [`Rejection at ${r(Math.max(trend.e200, st?.resNow || 0))} → loses the EMA cluster → ${r(t1)}.`, `Structure lower rail gives → ${r(t3)}. Catalyst window: next unlock / protocol newsflow.`, `Cycle low retest. Without revenue growth, undercut to ${r(t12)}.`];
   } else {
-    const t1 = pick(lvlsAbove, 1, px * 1.12), t3 = pick(lvlsAbove, 3, px * 1.35), t12 = Math.max(pick(lvlsAbove, lvlsAbove.length - 1, px * 2), ath * 0.8);
-    path = [{ d: 30, h: '+1M', target: r(t1) }, { d: 90, h: '+3M', target: r(Math.max(t3, t1 * 1.03)) }, { d: 365, h: '+1Y', target: r(Math.max(t12, t3 * 1.1)) }];
+    const t1 = inBand(lvlsAbove, px * 1.03, px * 1.3, px * 1.12);
+    const t3 = inBand(lvlsAbove, t1 * 1.04, px * 1.8, t1 * 1.2);
+    const t12 = inBand(lvlsAbove, t3 * 1.1, px * 3, Math.min(ath, t3 * 1.4));
+    path = [{ d: 30, h: '+1M', target: r(t1) }, { d: 90, h: '+3M', target: r(t3) }, { d: 365, h: '+1Y', target: r(t12) }];
     const inv = Math.min(trend.e200, st?.supNow || Infinity, ...(st?.lows || []).slice(-1).map((p) => p[1]));
-    invalidation = r(inv < px ? inv : px * 0.88);
+    invalidation = r(inv < px ? Math.max(inv, px * 0.7) : px * 0.88);
     how = [`Holds the EMA cluster → reclaims ${r(t1)}.`, `Breaks structure upper rail → ${r(t3)}. Needs volume ≥2× avg on the break.`, `Prior-cycle supply zone. Requires fundamentals to confirm the price.`];
   }
   path.forEach((p, i) => (p.how = how[i]));

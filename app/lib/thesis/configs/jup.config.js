@@ -5,7 +5,28 @@ export const TOKEN = {
   sector: 'Solana DEX aggregation & perps',
   tagline: 'Volumen, fees y buyback — el agregador que procesa la mayoría de los swaps de Solana.',
   description: 'Jupiter ($JUP) en vivo: volumen del agregador, fees, revenue y buyback, supply overhang on-chain (vote escrow, tesorería, exchanges), TA con forecast y tripwires. 10AMPRO.',
-  stance: 'hold-and-add-on-fee-growth', reviewed: '21 Sep 2026',
+  stance: 'hold-and-add-on-fee-growth', reviewed: '22 Sep 2026',
+  ta: {
+    updated: '22 Sep 2026', bias: 'BULL',
+    read: 'El chart más limpio de la página después de SOL: siete de siete, EMA200 subiendo (+3.5% en 20 días), la 50 sobre la 200 desde julio, y el volumen de 20 días en 200% del de 90 — el doble. La ruptura fue el 17–18 Sep: de 0.2377 a 0.2655 en un día y 0.299 dos días después. Mínimos crecientes desde marzo (0.142 → 0.147 → 0.166 → 0.205 → 0.216) y ningún máximo decreciente en el camino. Hoy: 0.292 después de tocar 0.299 el 19 Sep — dos días de pausa bajo 0.30 con RSI 65. Es una pausa dentro de un impulso, no una distribución; pero +29% en la semana con el buyback de Litterbox como único dato nuevo es momento de sector, y el sector se devuelve cuando BTC rebota. Beta a SOL de 1.6× esta semana.',
+    pattern: '<b>Tendencia alcista — mínimos crecientes, sin techo definido.</b> Línea de soporte 0.142 (30 Mar) → 0.147 (11 Jun), hoy en ~0.155 — lejos, porque el impulso de septiembre despegó del piso. Los pivotes que mandan ahora: 0.216 (16 Sep), 0.2377 (día de la ruptura), 0.2655 (primer cierre post-break), 0.299 (máximo 19 Sep). Arriba no hay estructura hasta 0.4735, el máximo de Sep-Oct 25.',
+    watch: '<b>0.30.</b> Dos cierres bajo el máximo del 19 Sep con volumen cayendo = pausa; volumen creciendo sin pasar 0.30 = distribución. <b>El retest que vale:</b> 0.2655 (nivel del breakout) y después la EMA20 (0.252). Un pullback ahí con volumen secándose es la compra del mes. <b>Volumen:</b> 200% del 90d — si baja de 120% mientras el precio no rompe 0.30, el impulso terminó. <b>Litterbox:</b> el buyback compra con revenue, no con precio: si el volumen del agregador cae, el piso fundamental baja con él.',
+    decision: [
+      'Con posición: <b>mantener mientras cierre sobre 0.24</b>. Hold-and-add-on-fee-growth: el add es en 0.25–0.27 con revenue sosteniendo, no en 0.30 con RSI 65.',
+      'Sin posición: <b>retest de 0.2655 o de la EMA20 (0.252)</b> con volumen cayendo. Segundo tramo en cierre &gt; 0.30 con 2× volumen.',
+      'Trigger único que anula el sesgo: <b>cierre diario &lt; 0.24</b>. Ahí la ruptura del 17 Sep se devuelve y el objetivo vuelve a ser 0.216 y la EMA50 (0.229).',
+    ],
+    invalidation: { level: 0.24, text: 'Cierre diario bajo 0.24 (el nivel desde donde rompió el 17 Sep) anula el path → 0.216 (mínimo 16 Sep) y EMA50 (0.229); debajo de eso, 0.205.' },
+    path: [
+      { d: 30, h: '+1M', target: 0.33, how: 'Cierre sobre 0.30 con 2× volumen → 0.33 (medida: 0.2655 + altura del impulso 0.06). Con retest de 0.2655 primero es más sano que sin él.' },
+      { d: 90, h: '+3M', target: 0.40, how: 'Extensión del impulso hacia la zona de Nov-25. Requiere volumen del agregador estable y el buyback corriendo: 0.40 es fundamentales, no chart.' },
+      { d: 365, h: '+1Y', target: 0.47, how: 'Retest del máximo de Sep-Oct 25 (0.4735). Solo con share estable y perps/lending creciendo — el chart llega si el múltiplo comprime.' },
+    ],
+    levels: {
+      resistance: [[0.299, 'Máximo 19 Sep'], [0.33, 'Medida del impulso de septiembre'], [0.40, 'Zona de Nov-25'], [0.4735, 'Máximo Sep-Oct 25']],
+      support: [[0.2655, 'Nivel del breakout (18 Sep) — el retest'], [0.252, 'EMA20'], [0.24, 'INVALIDACIÓN · base de la ruptura'], [0.229, 'EMA50'], [0.216, 'Mínimo 16 Sep'], [0.155, 'Trendline de mínimos desde marzo']],
+    },
+  },
   sources: 'Network telemetry: DefiLlama (Jupiter aggregator volume, fees, revenue).',
   rule: 'volumen mensual <50% del pico + buyback reducido = reducir; share del agregador estable y fees en máximos = mantener aunque el chart esté feo.',
   forecast: {

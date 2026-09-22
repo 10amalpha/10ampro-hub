@@ -5,7 +5,28 @@ export const TOKEN = {
   sector: 'Solana memecoin launchpad & AMM',
   tagline: 'Revenue de launches + PumpSwap, buyback agresivo — el token más ligado al ciclo de memes.',
   description: 'Pump.fun ($PUMP) en vivo: fees y revenue del launchpad y PumpSwap, buyback, supply overhang on-chain (tesorería, ICO, exchanges), TA con forecast y tripwires. 10AMPRO.',
-  stance: 'trade-the-cycle', reviewed: '21 Sep 2026',
+  stance: 'trade-the-cycle', reviewed: '22 Sep 2026',
+  ta: {
+    updated: '22 Sep 2026', bias: 'BULL',
+    read: 'Siete de siete en el tablero, pero el detalle que importa es el RSI en 52 con el precio +25% en la semana: el impulso de junio a agosto (0.0012 → 0.0052, 4×) se convirtió en un rango de 0.0035–0.0052 y este rebote es la tercera visita a la mitad de arriba. La EMA200 sube 11% en 20 días — la tendencia de fondo más fuerte de la página — y los mínimos crecientes son limpios (0.0012 → 0.0014 → 0.0027 → 0.0035). Lo que falta: un cierre sobre 0.0052 (máximo del 24 Ago). Hasta que no aparezca, esto es comprar abajo del rango y vender arriba, que es exactamente lo que dice el stance. El buyback pone piso, no techo.',
+    pattern: '<b>Rango de un mes dentro de una tendencia alcista.</b> Línea de soporte 0.0012 (26 Jun) → 0.0035 (14 Sep), 3 toques, hoy en ~0.0037. Sin techo en la estructura salvo el máximo del 24 Ago (0.0052) y el 0.0071 de Oct-25. Altura del rango 0.0017 → medida 0.0069 si rompe arriba, 0.0018 si rompe abajo (la EMA200 en 0.0028 llega antes).',
+    watch: '<b>0.0052.</b> El día que cierre arriba con 2× volumen, el rango deja de existir y el objetivo es 0.0069–0.0071. Sin ese cierre, 0.0045–0.0052 es zona de vender, no de sumar. <b>Volumen:</b> 145% del 90d, $235M el día del rebote — hay flujo. <b>Revenue:</b> el de 90 días está en ~$1.2M/día; si el ritmo de buyback cae un 40% desde el pico, el piso técnico de 0.0035 deja de tener sostén fundamental y el rango rompe abajo. <b>Memes:</b> mirá si el volumen de launches migra de plataforma antes de mirar el chart.',
+    decision: [
+      'Con posición: <b>mantener mientras cierre sobre 0.0035</b>. Trade-the-cycle: parcial en 0.0050–0.0052 sin ruptura confirmada, recompra en 0.0037–0.0040.',
+      'Sin posición: <b>0.0037–0.0040</b> (trendline + EMA20) es la entrada del rango; o cierre &gt; 0.0052 con 2× volumen para el breakout. Nunca en 0.0045–0.0050, la mitad muerta.',
+      'Trigger único que anula el sesgo: <b>cierre diario &lt; 0.0035</b>. Ahí el rango rompe abajo y la EMA200 (0.0028) y 0.0027 (mínimo 17 Ago) son los objetivos.',
+    ],
+    invalidation: { level: 0.0035, text: 'Cierre diario bajo 0.0035 (mínimo del 14 Sep y trendline de mínimos) rompe el rango para abajo → 0.0028 (EMA200) y 0.0027 (mínimo 17 Ago).' },
+    path: [
+      { d: 30, h: '+1M', target: 0.0052, how: 'Retest del máximo del 24 Ago. La tercera visita al techo del rango suele romper si el volumen expande; si no, se vende ahí.' },
+      { d: 90, h: '+3M', target: 0.0071, how: 'Medida del rango (0.0069) y máximo de Oct-25 (0.0071). Requiere revenue sosteniendo $1M+/día para que el buyback siga poniendo piso.' },
+      { d: 365, h: '+1Y', target: 0.0088, how: 'Retest del ATH de Sep-25. Solo con manía de memes de vuelta: sin ella, el revenue se apaga y el +1Y es 0.0052.' },
+    ],
+    levels: {
+      resistance: [[0.00506, 'Máximo de 30 días'], [0.005225, 'Máximo 24 Ago · techo del rango'], [0.0071, 'Máximo Oct-25 · medida del rango'], [0.0088, 'ATH Sep-25']],
+      support: [[0.004055, 'EMA20'], [0.00372, 'Trendline de mínimos · entrada del rango'], [0.003662, 'EMA50'], [0.0035, 'INVALIDACIÓN · mínimo 14 Sep'], [0.002757, 'EMA200'], [0.002666, 'Mínimo 17 Ago']],
+    },
+  },
   sources: 'Network telemetry: DefiLlama (pump.fun fees/revenue, PumpSwap volume).',
   rule: 'revenue mensual <40% del pico + buyback cayendo = salir del todo (no hay tesis de largo plazo sin volumen de memes); revenue en máximos con buyback ≥ 2% del supply/mes = mantener.',
   forecast: {

@@ -167,7 +167,10 @@ export default function ThesisPage({ TOKEN }) {
   useEffect(() => { (async () => { try { const j = await (await fetch(`${API}/market?history=${days}`, { cache: 'no-store' })).json(); const step = Math.max(1, Math.floor((j.prices || []).length / 180)); const price = [], mcap = []; for (let i = 0; i < (j.prices || []).length; i += step) { price.push({ t: j.prices[i][0], y: +j.prices[i][1] }); if (j.market_caps?.[i]) mcap.push({ t: j.market_caps[i][0], y: Math.round(j.market_caps[i][1]) }); } setPxHist({ price, mcap }); } catch { setPxHist({ price: [], mcap: [] }); } })(); }, [days]);
 
   const st = useMemo(() => autoStructure(series), [series]);
-  const fc = useMemo(() => buildForecast(trend, st, series, { ath: d?.ath }), [trend, st, series, d]);
+  const fcAuto = useMemo(() => buildForecast(trend, st, series, { ath: d?.ath }), [trend, st, series, d]);
+  // Editor TA (optional TOKEN.ta): the manual read owns bias, path and invalidation; the auto engine still supplies the live regime + structure.
+  const ed = TOKEN.ta || null;
+  const fc = useMemo(() => (ed && trend ? { dir: ed.bias === 'BEAR' ? 'BEAR' : 'BULL', path: ed.path.map((q) => ({ ...q })), invalidation: ed.invalidation.level, generated: ed.updated, editorial: true } : fcAuto), [ed, trend, fcAuto]);
   const M = net?.metrics || {}; const cur = metric ? M[metric] : null;
   const primary = Object.values(M).find((m) => m.primary) || Object.values(M)[0] || null;
   const recPct = primary?.pctOfPeak != null ? Math.round(primary.pctOfPeak * 100) : null;
@@ -342,8 +345,9 @@ export default function ThesisPage({ TOKEN }) {
       <RelativeLayer cgId={TOKEN.cgId} symbol={TOKEN.symbol} mb={mb} />
 
       {/* TECHNICAL ANALYSIS */}
-      <Eyebrow dot={fcCol}>Technical analysis — {TOKEN.symbol}/USD 1D · auto-structure + directional forecast 1M / 3M / 1Y · generated {fc?.generated || '…'}</Eyebrow>
+      <Eyebrow dot={fcCol}>Technical analysis — {TOKEN.symbol}/USD 1D · {ed ? <>lectura del editor <b style={{ color: 'var(--text-primary)' }}>{ed.updated}</b> · regime y estructura en vivo</> : <>auto-structure + directional forecast 1M / 3M / 1Y · generated {fc?.generated || '…'}</>}</Eyebrow>
       <div style={panel}>
+        {ed && <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6, fontFamily: SANS, marginBottom: 14 }} dangerouslySetInnerHTML={{ __html: ed.read }} />}
         {/* trend strip */}
         {(() => { const t = trend; const col = !t ? 'var(--text-muted)' : t.score >= 5 ? GRN : t.score === 4 ? AMB : RED; return (
           <div style={{ border: `1px solid ${col}`, borderRadius: 4, padding: 12, background: 'rgba(255,255,255,.015)' }}>
@@ -373,7 +377,22 @@ export default function ThesisPage({ TOKEN }) {
           </div>
           <TAStructure series={series} st={st} fc={fc} mb={mb} />
         </div>
-        {st && fc && trend && <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 10, fontSize: 11.5, lineHeight: 1.55, color: 'var(--text-secondary)', fontFamily: SANS }}>
+        {ed && trend && <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 10, fontSize: 11.5, lineHeight: 1.55, color: 'var(--text-secondary)', fontFamily: SANS }}>
+          <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
+            <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, marginBottom: 6, fontFamily: MONO }}>Pattern read · editor</div>
+            <div dangerouslySetInnerHTML={{ __html: ed.pattern }} />
+            {st && <div style={{ marginTop: 6, color: 'var(--text-muted)', fontSize: 10.5 }}>Auto-structure en vivo: {st.pattern.toLowerCase()}{st.resNow ? ` · techo ${fmtPx(st.resNow)}` : ''}{st.supNow ? ` · piso ${fmtPx(st.supNow)}` : ''} · EMA20 {fmtPx(trend.e20)} · EMA50 {fmtPx(trend.e50)} · EMA200 {fmtPx(trend.e200)}.</div>}
+          </div>
+          <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
+            <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, marginBottom: 6, fontFamily: MONO }}>What to watch</div>
+            <div dangerouslySetInnerHTML={{ __html: ed.watch }} />
+            <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(245,158,11,.25)' }}>
+              <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, fontFamily: MONO, marginBottom: 3 }}>Decisión</div>
+              {ed.decision.map((x, i) => <div key={i} dangerouslySetInnerHTML={{ __html: '› ' + x }} />)}
+            </div>
+          </div>
+        </div>}
+        {!ed && st && fc && trend && <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 10, fontSize: 11.5, lineHeight: 1.55, color: 'var(--text-secondary)', fontFamily: SANS }}>
           <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
             <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, marginBottom: 6, fontFamily: MONO }}>Pattern read</div>
             <b>{st.pattern}.</b> {st.res ? `Resistance line from ${fmtPx(st.res.a[1])} (${dayLabel(st.res.a[0])}), ${st.res.touches} touches, now at ${fmtPx(st.resNow)}.` : 'No valid resistance line in the window.'} {st.sup ? `Support line from ${fmtPx(st.sup.a[1])} (${dayLabel(st.sup.a[0])}), ${st.sup.touches} touches, now at ${fmtPx(st.supNow)}.` : 'No valid support line.'} {st.apexT ? `Apex ~${new Date(st.apexT).toLocaleDateString('es', { day: '2-digit', month: 'short' })} — breaks before the apex are valid; after it the pattern decays.` : ''} Height ≈ {fmtPx(st.height)} → measured move {fmtPx(st.measured.up)} up / {fmtPx(st.measured.down)} down.
@@ -408,7 +427,18 @@ export default function ThesisPage({ TOKEN }) {
               <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, lineHeight: 1.5, fontFamily: SANS }}>{p.how}</div>
             </div>)}
           </div>
-          <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 12, fontFamily: SANS }}>Forecast is generated from the live regime + auto-detected structure on every load (EMA stack, MACD, RSI, pivot trendlines, measured moves). Targets snap to real levels. Explicit invalidation. Not investment advice.</div>
+          {ed && <>
+            <div style={{ marginTop: 10, padding: '9px 12px', border: `1px solid ${fc.dir === 'BEAR' ? GRN : RED}`, borderRadius: 4, background: fc.dir === 'BEAR' ? 'rgba(34,197,94,.06)' : 'rgba(239,68,68,.06)', fontSize: 11.5, color: 'var(--text-secondary)', fontFamily: SANS }}>
+              <b style={{ color: fc.dir === 'BEAR' ? GRN : RED, fontFamily: MONO, letterSpacing: '.08em' }}>INVALIDATION ·</b> {ed.invalidation.text}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 10, marginTop: 12 }}>
+              {[['Resistance', ed.levels.resistance, RED], ['Support', ed.levels.support, GRN]].map(([t, L, col]) => <div key={t}>
+                <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: col, marginBottom: 4 }}>{t}</div>
+                {L.map(([lv, why]) => <div key={lv} style={{ display: 'flex', gap: 10, fontSize: 11.5, padding: '3px 0', color: 'var(--text-muted)' }}><span style={{ fontWeight: 700, color: 'var(--text-primary)', minWidth: 64 }}>{fmtPx(lv)}</span><span style={{ fontFamily: SANS }}>{why}</span>{d?.price ? <span style={{ marginLeft: 'auto', fontSize: 10.5 }}>{pc(lv / d.price - 1, 0)}</span> : null}</div>)}
+              </div>)}
+            </div>
+          </>}
+          <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 12, fontFamily: SANS }}>{ed ? `Lectura manual del editor (${ed.updated}) con invalidación explícita; el regime y la estructura se recalculan en vivo en cada carga (EMA stack, MACD, RSI, pivots). % = distancia al precio en vivo. Se refresca en cada revisión de tesis.` : 'Forecast is generated from the live regime + auto-detected structure on every load (EMA stack, MACD, RSI, pivot trendlines, measured moves). Targets snap to real levels. Explicit invalidation.'} Not investment advice.</div>
         </>}
       </div>
 

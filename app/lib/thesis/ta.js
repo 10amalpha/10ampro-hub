@@ -117,7 +117,7 @@ export function buildForecast(trend, st, series, cfg = {}) {
   if (dir === 'BEAR') {
     const t1 = inBand(lvlsBelow, px * 0.75, px * 0.97, px * 0.88);
     const t3 = inBand(lvlsBelow, px * 0.55, t1 * 0.96, t1 * 0.85);
-    const t12 = inBand(lvlsBelow, px * 0.35, t3 * 0.9, Math.max(atl * 0.95, t3 * 0.75));
+    const t12 = inBand(lvlsBelow, px * 0.35, t3 * 0.9, atl * 0.95 < t3 * 0.9 ? Math.max(atl * 0.95, t3 * 0.75) : t3 * 0.85);
     path = [{ d: 30, h: '+1M', target: r(t1) }, { d: 90, h: '+3M', target: r(t3) }, { d: 365, h: '+1Y', target: r(t12) }];
     const inv = Math.max(trend.e200, st?.resNow || 0, ...(st?.highs || []).slice(-1).map((p) => p[1]));
     invalidation = r(inv > px ? Math.min(inv, px * 1.25) : px * 1.12);
@@ -125,7 +125,7 @@ export function buildForecast(trend, st, series, cfg = {}) {
   } else {
     const t1 = inBand(lvlsAbove, px * 1.03, px * 1.3, px * 1.12);
     const t3 = inBand(lvlsAbove, t1 * 1.04, px * 1.8, t1 * 1.2);
-    const t12 = inBand(lvlsAbove, t3 * 1.1, px * 3, Math.min(ath, t3 * 1.4));
+    const t12 = inBand(lvlsAbove, t3 * 1.1, px * 3, ath > t3 * 1.1 ? Math.min(ath, t3 * 1.4) : t3 * 1.25);
     path = [{ d: 30, h: '+1M', target: r(t1) }, { d: 90, h: '+3M', target: r(t3) }, { d: 365, h: '+1Y', target: r(t12) }];
     const inv = Math.min(trend.e200, st?.supNow || Infinity, ...(st?.lows || []).slice(-1).map((p) => p[1]));
     invalidation = r(inv < px ? Math.max(inv, px * 0.7) : px * 0.88);

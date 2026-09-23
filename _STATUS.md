@@ -1,10 +1,20 @@
 # 10AMPRO Hub — _STATUS.md
-**Last updated:** August 17, 2026
+**Last updated:** September 23, 2026
 **Live URL:** https://10ampro-hub.vercel.app · **Prod domain:** https://mercados.10am.pro
 **Repo:** 10amalpha/10ampro-hub
 **Vercel Project ID:** prj_lKkui80lHh4x3Fietp6nC4CRfupB
 
 ---
+
+## Recent changes (Sep 23, 2026)
+
+- **/biology-is-code — ANÁLISIS TÉCNICO section (live TA + forecast 1M/3M/1Y for all 9 tickers).** Same engine as the Solana hubs (`lib/thesis/ta.js`: 7-check regime, pivot auto-structure, measured moves, directional path, explicit invalidation). Board (regime bar, bias, 1M/3M/1Y % vs live price, invalidation, ✕ when invalidated) + per-ticker detail: trend strip, structure chart, fan chart, path cards, editor read.
+  - New `app/api/equity/[sym]/route.js` — Yahoo v8 chart 2y daily (adjclose, dollar volume), live print patched into last close, prev close from range=1d meta. Allowlist = the 9 tickers. `?summary=1` = compact TA JSON for editorial review passes (same role as `/api/hub/[hub]/ta`).
+  - `app/biology-is-code/BioTA.jsx` (component) + `app/biology-is-code/ta.editor.js` (editor reads, same shape as TOKEN.ta; ticker without entry falls back to auto forecast). Editor pass 23 Sep 2026: BULL TEM/IBRX/CAI/RXRX/INKT · BEAR HIMS/PBLS/NGEN/NAUT.
+  - `TAStructure` + `TAFan` moved from ThesisPage.jsx to shared `lib/thesis/TACharts.jsx` (crypto hubs import from there; grid extended to $500 for equities). TAStructure takes `minBars` (bio uses 60 so PBLS, 72 sessions post-IPO, still renders).
+  - Engine fix in `buildForecast`: 1Y fallback no longer lands on/below the 3M target (TEM printed 3M=1Y=103, CAI 1Y<3M). Affects crypto auto paths only in that broken case.
+  - `buildForecast(cfg.how)` accepts a function for custom path wording (bio passes Spanish equity text).
+- **Refresh routine:** fetch `/api/equity/{SYM}?summary=1` for each ticker (Vercel MCP `web_fetch_vercel_url` on mercados.10am.pro works), rewrite `ta.editor.js`, bump `U`.
 
 ## Recent changes (Aug 12, 2026)
 

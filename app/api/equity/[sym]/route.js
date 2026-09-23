@@ -38,13 +38,14 @@ export async function GET(req, { params }) {
     const price = m.regularMarketPrice ?? c[c.length - 1];
     // keep today's live print as the last close so live TA matches the quote
     if (price && c.length && Math.abs(t[t.length - 1] - (m.regularMarketTime || 0) * 1000) < 86400000) c[c.length - 1] = price;
-    const prev = m.chartPreviousClose ?? m.previousClose ?? c[c.length - 2];
+    let prev = c[c.length - 2];
+    try { const r1 = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?range=1d&interval=1d`, { headers: { 'User-Agent': UA }, next: { revalidate: 900 } }); const m1 = (await r1.json())?.chart?.result?.[0]?.meta; if (m1?.chartPreviousClose) prev = m1.chartPreviousClose; } catch {}
     const series = { t, c, v };
     const trend = computeTrend(c, v), st = autoStructure(series), hi = Math.max(...c);
     const fc = buildForecast(trend, st, series, { ath: hi });
     const base = {
       ok: true, sym, asOf: day(t[t.length - 1]), bars: c.length, price: r4(price), prevClose: r4(prev),
-      chg: prev ? r4((c[c.length - 1] / (c[c.length - 2] || prev) - 1) * 100) : null,
+      chg: prev ? r4((price / prev - 1) * 100) : null,
       hi2y: r4(hi), lo2y: r4(Math.min(...c)), hi52: r4(m.fiftyTwoWeekHigh), lo52: r4(m.fiftyTwoWeekLow), marketTime: m.regularMarketTime ? new Date(m.regularMarketTime * 1000).toISOString() : null,
     };
     if (!summary) return json({ ...base, t, c, v });

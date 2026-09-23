@@ -131,6 +131,7 @@ export function buildForecast(trend, st, series, cfg = {}) {
     invalidation = r(inv < px ? Math.max(inv, px * 0.7) : px * 0.88);
     how = [`Holds the EMA cluster → reclaims ${r(t1)}.`, `Breaks structure upper rail → ${r(t3)}. Needs volume ≥2× avg on the break.`, `Prior-cycle supply zone. Requires fundamentals to confirm the price.`];
   }
+  if (typeof cfg.how === 'function') how = cfg.how(dir, { t1: path[0].target, t3: path[1].target, t12: path[2].target, inv: invalidation, px: r(px), e200: r(trend.e200), res: st?.resNow ? r(st.resNow) : null, sup: st?.supNow ? r(st.supNow) : null });
   path.forEach((p, i) => (p.how = how[i]));
   return { dir, path, invalidation, generated: new Date().toISOString().slice(0, 10) };
 }

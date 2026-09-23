@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import BioTA from './BioTA';
 
 // ============================================================
 // BIOLOGY IS CODE — The Biological Operating System
@@ -590,6 +591,9 @@ export default function BiologyIsCode() {
           Discrete quarterly FCF (operating cash flow − capex) from 10-K/10-Q filings via Macrotrends, YTD converted to standalone quarters. The latest INKT and NGEN bars (Q2'26) are flagged estimates derived from reported net loss / opex until the 10-Q cash-flow statements are in the data feed. CAI and PBLS IPO'd too recently for any public quarterly series; their real annual/quarterly burn is shown above instead of an invented one.
         </div>
       </div>
+
+      {/* TECHNICAL ANALYSIS + FORECAST — live, same engine as the Solana hubs */}
+      <BioTA tickers={TICKERS} mb={mb} sectionLabel={sectionLabel} />
 
       {/* COMPUTE BOTTLENECK */}
       <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border-subtle)', borderRadius: 8, padding: '14px 16px', marginBottom: 24 }}>

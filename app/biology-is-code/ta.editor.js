@@ -51,7 +51,7 @@ export const EDITOR_TA = {
 
   CAI: {
     updated: U, bias: 'BULL',
-    read: 'Siete de siete, pero extendido: +30% en 7 sesiones, RSI 79. La secuencia es de libro — mínimos 14.55 (15 May) → 15.38 → 20.97 → 24.03 (9 Sep), máximos 23.4 → 28.0 → 31.65 — y el volumen acompaña (20d en 176% del 90d). El problema es dónde está: 32.95–33.66 es el máximo de 12 meses, a 4–6% del precio. EMA20 26.9, EMA50 23.7, EMA200 22.1 subiendo. La tendencia está bien; la entrada no.',
+    read: 'Siete de siete, pero extendido: +30% desde el 11 Sep (24.34), RSI 79. La secuencia es de libro — mínimos 14.55 (15 May) → 15.38 → 20.97 → 24.03 (9 Sep), máximos 23.4 → 28.0 → 31.65 — y el volumen acompaña (20d en ~175% del 90d). El problema es dónde está: 32.95–33.66 es el máximo de 12 meses, a 4–6% del precio. EMA20 26.9, EMA50 23.7, EMA200 22.1 subiendo. La tendencia está bien; la entrada no.',
     pattern: '<b>Tendencia alcista acelerando — mínimos crecientes, sin techo en la ventana.</b> Rompió 28.0 (máximo del 25 Ago) el 17 Sep. El techo real es horizontal: 33–33.7, máximo de 52 semanas. Desde 28 la medida del tramo (altura ~17) da ~45.',
     watch: '<b>33.0–33.7.</b> Primera vez en un año que llega ahí; lo más probable es que frene y retestee 28. Ese retest es la entrada. <b>RSI:</b> sobre 75 no se compra; se espera que baje a 55–60 con el precio sobre 28.',
     decision: [

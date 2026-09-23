@@ -95,7 +95,7 @@ export const EDITOR_TA = {
 
   PBLS: {
     updated: U, bias: 'BEAR',
-    read: 'Solo 72 sesiones desde el IPO de junio — la EMA200 todavía no significa nada; el marco útil es el rango 25.01–41.73. En dos sesiones cayó de 41.73 (18 Sep, máximo de cierre) a 33.31: −20%, perdiendo EMA20 (37.8) y EMA50 (36.2), RSI 36. Hoy cerró justo sobre el 50% del rango (33.37). El volumen de 20 días está 55% sobre el de 90: la venta tiene tamaño. Fuera del chart: $1.1B de caja contra $5B de capitalización y cero ingresos — el precio lo mueve el flujo, no los números.',
+    read: 'Solo 72 sesiones desde el IPO de junio — la EMA200 todavía no significa nada; el marco útil es el rango 25.01–41.73. El 18 Sep marcó 41.73 con volumen 14× el promedio de 90 días — clímax — y en tres sesiones cayó a 33.31 (−20%; −12.7% solo hoy), perdiendo EMA20 (37.8) y EMA50 (36.2), RSI 36. Hoy cerró justo sobre el 50% del rango (33.37). El volumen de 20 días está 55% sobre el de 90: la venta tiene tamaño. Fuera del chart: $1.1B de caja contra $5B de capitalización y cero ingresos — el precio lo mueve el flujo, no los números.',
     pattern: '<b>Rango post-IPO 25–42, rechazo violento en el techo.</b> Sin historia suficiente para trendlines por pivots. Niveles de Fibonacci del rango: 50% 33.37 (donde está), 61.8% 31.40, 78.6% 28.59. Si el lockup es el estándar de 180 días, vence a mediados de diciembre — dentro del horizonte de 3M.',
     watch: '<b>33.4.</b> Si el 50% no aguanta en dos o tres sesiones, 31.4 es la siguiente parada. <b>Lockup:</b> el vencimiento de fin de año es el evento de oferta más grande a la vista. <b>Recuperación:</b> solo un cierre sobre 37.8 (EMA20) dice que la caída fue una sacudida.',
     decision: [

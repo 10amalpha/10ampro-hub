@@ -40,6 +40,9 @@ export async function GET(req, { params }) {
     if (price && c.length && Math.abs(t[t.length - 1] - (m.regularMarketTime || 0) * 1000) < 86400000) c[c.length - 1] = price;
     let prev = c[c.length - 2];
     try { const r1 = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?range=1d&interval=1d`, { headers: { 'User-Agent': UA }, next: { revalidate: 900 } }); const m1 = (await r1.json())?.chart?.result?.[0]?.meta; if (m1?.chartPreviousClose) prev = m1.chartPreviousClose; } catch {}
+    // Yahoo's long-range series sometimes drops yesterday's bar: re-insert it from the real previous close
+    const n0 = t.length;
+    if (n0 > 2 && prev && t[n0 - 1] - t[n0 - 2] > 1.5 * 86400000 && new Date(t[n0 - 1]).getUTCDay() !== 1) { t.splice(n0 - 1, 0, t[n0 - 1] - 86400000); c.splice(n0 - 1, 0, +prev); v.splice(n0 - 1, 0, v[n0 - 2]); }
     const series = { t, c, v };
     const trend = computeTrend(c, v), st = autoStructure(series), hi = Math.max(...c);
     const fc = buildForecast(trend, st, series, { ath: hi });

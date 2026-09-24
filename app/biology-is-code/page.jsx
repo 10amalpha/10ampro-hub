@@ -156,6 +156,24 @@ const QREV_CARDS = [
   ['NGEN', '$0', 'No revenue in 2025 or 2026. Phase 3-ready; the only 2026 cash inflows are financings ($60M May raise + $50M ATM).'],
 ];
 
+// Quarterly P&L, Q1'25 → Q2'26 (most recent ER: Q2 FY2026, reported Jul 28 – Aug 13, 2026).
+// Source: SEC XBRL companyfacts (10-Q / 10-K; Q4 = FY − Q1..Q3) cross-checked with Yahoo fundamentals via
+// /api/equity/[sym]/quarters on Sep 24, 2026. null = not public. USD millions except NGEN (C$ millions, IFRS filer).
+const QFIN = {
+  TEM:  { rev: [255.74, 314.64, 334.21, 367.21, 348.12, 382.49], gross: [155.20, 195.04, 209.94, 237.71, 222.04, 246.50], op: [-68.69, -61.77, -61.00, -61.41, -84.71, -75.91], net: [-68.04, -42.84, -79.98, -54.14, -125.92, 5.64] },
+  HIMS: { rev: [586.01, 544.83, 598.98, 617.82, 608.10, 753.21], gross: [430.69, 416.20, 442.06, 444.44, 396.79, 480.80], op: [57.90, 26.72, 11.81, 9.19, -78.32, -97.19], net: [49.49, 42.51, 15.77, 20.60, -92.11, -86.29] },
+  CAI:  { rev: [120.92, 181.40, 216.83, 292.89, 216.17, 263.71], gross: [null, 113.69, 147.51, 220.91, 141.35, 179.60], op: [-57.95, -17.99, 32.64, 88.41, 5.28, 26.93], net: [-102.58, -71.79, 24.33, 81.96, -0.51, -0.64] },
+  IBRX: { rev: [16.52, 26.43, 32.06, 38.29, 44.21, 51.24], gross: [16.46, 26.29, 31.88, 37.90, 43.97, 50.94], op: [-64.43, -71.28, -55.63, -64.68, -69.79, -61.70], net: [-129.65, -92.55, -67.25, -62.05, -632.78, -230.38],
+    foot: 'Resultado neto de Q1\u201926 (\u2013$633M) y Q2\u201926 (\u2013$230M) dominado por partidas no operativas; el resultado operativo es la serie limpia.' },
+  RXRX: { rev: [14.75, 19.22, 5.18, 35.54, 6.47, 7.67], gross: [-7.08, -0.94, -9.51, 21.26, -6.02, -3.82], op: [-191.37, -176.23, -172.20, -108.33, -128.50, -134.97], net: [-202.49, -171.90, -162.25, -108.12, -117.50, -131.00] },
+  NAUT: { rev: [0, 0, 0, 0, 0, 0.19], gross: [null, null, null, null, null, 0.17], op: [-18.84, -17.10, -15.47, -15.42, -16.12, -15.75], net: [-16.61, -15.03, -13.57, -13.78, -14.70, -14.47], pre: true },
+  INKT: { rev: [0, 0, 0, 0, 0, 0], gross: [null, null, null, null, null, null], op: [-2.70, -4.05, -3.18, -2.71, -2.88, -3.22], net: [-2.77, -4.24, -2.89, -2.60, -2.74, -3.13], pre: true },
+  PBLS: { rev: [0, 0, null, null, 0, 0.15], gross: [null, null, null, null, null, null], op: [-40.24, -36.52, null, null, -47.45, -50.89], net: [-38.33, -34.81, null, null, -45.32, -52.46], pre: true,
+    foot: 'Q3\u201925 y Q4\u201925 no son p\u00fablicos: la compa\u00f1\u00eda era privada hasta el IPO del 10 Jun 2026 (Q1\u201925 y Q2\u201925 vienen del S-1 / 10-Q).' },
+  NGEN: { rev: [null, 0, 0, 0, 0, 0], gross: [null, null, null, null, null, null], op: [null, -6.47, -6.17, -6.40, -7.53, -12.20], net: [null, -9.10, -4.16, -26.91, -1.68, -29.22], pre: true, cur: 'C$',
+    foot: 'Cifras en C$ (NervGen reporta en d\u00f3lares canadienses, IFRS). Q1\u201925 no disponible en la fuente. El resultado neto incluye la revalorizaci\u00f3n no monetaria de warrants.' },
+};
+
 function fmtQ(v) {
   if (v >= 1000) return '$' + (v / 1000).toFixed(2) + 'B';
   if (v >= 100) return '$' + Math.round(v) + 'M';
@@ -222,6 +240,77 @@ const CHAIN = {
     ['Parabilis ($PBLS)', 'Solving flat-protein errors (Helicon peptides).'],
   ] },
 };
+
+// Quarterly P&L module: grouped bars (revenue / gross / operating) + compact table. Replaces the annual view.
+const fmtS = (v, cur = '$') => (v == null ? 's/d' : (v < 0 ? '\u2013' : '') + cur + (Math.abs(v) >= 1000 ? (Math.abs(v) / 1000).toFixed(2) + 'B' : Math.abs(v) >= 100 ? Math.round(Math.abs(v)) + 'M' : Math.abs(v) >= 10 ? Math.abs(v).toFixed(1) + 'M' : Math.abs(v).toFixed(2) + 'M'));
+const mgn = (a, b) => (a == null || !b ? null : (a / b) * 100);
+
+function QPLChart({ q, mb }) {
+  const series = q.pre ? [{ k: 'op', c: C_OP }] : [{ k: 'rev', c: C_REV }, { k: 'gross', c: C_GP }, { k: 'op', c: C_OP }];
+  const vals = series.flatMap((x) => q[x.k]).filter((v) => v != null).concat(0);
+  let max = Math.max(...vals), min = Math.min(...vals); const span = (max - min) || 1; max += span * 0.14; min -= span * 0.1;
+  const W = mb ? 360 : 640, H = mb ? 200 : 210, L = 4, R = 4, T = 8, B = 22;
+  const y = (v) => T + ((max - v) / (max - min)) * (H - T - B); const y0 = y(0);
+  const gw = (W - L - R) / 6, bw = Math.min(q.pre ? 30 : 20, (gw - (mb ? 10 : 18)) / series.length), cur = q.cur || '$';
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Resultados por trimestre">
+      <line x1={L} x2={W - R} y1={y0} y2={y0} stroke="var(--border)" strokeWidth="1.5" />
+      {QL.map((ql, i) => {
+        const last = i === 5; const gx = L + i * gw + (gw - bw * series.length - 3 * (series.length - 1)) / 2;
+        return (
+          <g key={ql} opacity={last ? 1 : 0.62}>
+            {last && <rect x={L + i * gw + 2} y={T - 4} width={gw - 4} height={H - T - B + 8} rx="4" fill="var(--gold)" opacity="0.07" />}
+            {series.map((x, j) => { const v = q[x.k][i]; const bx = gx + j * (bw + 3);
+              if (v == null) return <text key={x.k} x={bx + bw / 2} y={y0 - 4} textAnchor="middle" fontSize="9" fill="var(--text-muted)" fontFamily="'JetBrains Mono',monospace">{j === 0 ? 's/d' : ''}</text>;
+              const top = v >= 0 ? y(v) : y0; const h = Math.max(Math.abs(y(v) - y0), 1.5);
+              return <rect key={x.k} x={bx} y={top} width={bw} height={h} rx="2" fill={x.c} />; })}
+            {(() => { const k = q.pre ? 'op' : 'rev'; const v = q[k][i]; if (v == null) return null; const yy = v >= 0 ? y(v) - 5 : y(v) + 12;
+              return <text x={gx + bw / 2 + (q.pre ? 0 : 0)} y={yy} textAnchor="middle" fontSize="10" fontWeight={last ? 800 : 500} fill={last ? 'var(--text-bright)' : 'var(--text-secondary)'} fontFamily="'JetBrains Mono',monospace">{fmtS(v, cur).replace('M', '')}</text>; })()}
+            <text x={L + i * gw + gw / 2} y={H - 6} textAnchor="middle" fontSize="10.5" fontWeight={last ? 800 : 400} fill={last ? 'var(--gold)' : 'var(--text-muted)'} fontFamily="'JetBrains Mono',monospace">{ql}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function QPLTable({ q, mb }) {
+  const cur = q.cur || '$';
+  const yoy = (arr, i) => (i >= 4 && arr[i] != null && arr[i - 4] ? ((arr[i] / arr[i - 4] - 1) * 100) : null);
+  const pct = (v) => (v == null ? '\u2014' : (v >= 0 ? '+' : '') + Math.round(v) + '%');
+  const rows = q.pre
+    ? [['Resultado operativo', q.op.map((v) => fmtS(v, cur)), true], ['Quema vs trimestre anterior', q.op.map((v, i) => (i && v != null && q.op[i - 1] != null ? pct(((Math.abs(v) / Math.abs(q.op[i - 1])) - 1) * 100) : '\u2014')), false, 'burn'], ['Resultado neto', q.net.map((v) => fmtS(v, cur))]]
+    : [['Ingresos', q.rev.map((v) => fmtS(v, cur)), true], ['Ingresos YoY', q.rev.map((_, i) => pct(yoy(q.rev, i)))], ['Margen bruto', q.gross.map((v, i) => (mgn(v, q.rev[i]) == null ? 's/d' : Math.round(mgn(v, q.rev[i])) + '%'))],
+       ['Resultado operativo', q.op.map((v) => fmtS(v, cur)), true], ['Margen operativo', q.op.map((v, i) => (mgn(v, q.rev[i]) == null ? '\u2014' : Math.round(mgn(v, q.rev[i])) + '%'))], ['Resultado neto', q.net.map((v) => fmtS(v, cur))]];
+  const col = (t) => (t.startsWith('\u2013') ? '#e0697f' : t.startsWith('+') ? '#22c55e' : undefined);
+  return (
+    <div style={{ overflowX: 'auto', marginTop: 6 }}>
+      <table style={{ width: '100%', minWidth: mb ? 0 : 520, borderCollapse: 'collapse', fontFamily: "'JetBrains Mono',monospace", fontSize: mb ? 10.5 : 11.5 }}>
+        <thead><tr>{['', ...QL].map((h, i) => (mb && i > 0 && i < 3) ? null : <th key={h + i} style={{ textAlign: i ? 'right' : 'left', padding: '5px 6px', fontWeight: i === 6 ? 800 : 500, color: i === 6 ? 'var(--gold)' : 'var(--text-muted)', fontSize: 10.5, borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap' }}>{h}</th>)}</tr></thead>
+        <tbody>{rows.map(([lab, vals, strong, kind]) => (
+          <tr key={lab}>
+            <td style={{ padding: mb ? '5px 3px' : '5px 6px', color: 'var(--text-secondary)', whiteSpace: mb ? 'normal' : 'nowrap', lineHeight: 1.25, borderTop: '1px solid var(--border-subtle)' }}>{lab}</td>
+            {vals.map((t, i) => (mb && i < 2) ? null : <td key={i} style={{ textAlign: 'right', padding: mb ? '5px 3px' : '5px 6px', whiteSpace: 'nowrap', borderTop: '1px solid var(--border-subtle)', fontWeight: i === 5 ? 800 : strong ? 600 : 400, color: (kind === 'burn' ? (t.startsWith('+') ? '#e0697f' : t.startsWith('-') ? '#22c55e' : undefined) : col(t)) || (i === 5 ? 'var(--text-bright)' : 'var(--text-primary)'), background: i === 5 ? 'rgba(212,168,67,.06)' : 'transparent' }}>{t}</td>)}
+          </tr>))}</tbody>
+      </table>
+    </div>
+  );
+}
+
+// headline comparisons for the latest quarter vs the same quarter last year
+function qHeadline(q) {
+  const cur = q.cur || '$', i = 5, p = 1;
+  if (q.pre) {
+    const d = q.op[i] != null && q.op[p] != null ? (Math.abs(q.op[i]) / Math.abs(q.op[p]) - 1) * 100 : null;
+    return [['Quema operativa Q2\u201926', fmtS(q.op[i], cur), d == null ? '' : `${d >= 0 ? '+' : ''}${Math.round(d)}% vs Q2\u201925`, d != null && d > 0 ? 'bad' : 'good'],
+      ['Resultado neto Q2\u201926', fmtS(q.net[i], cur), q.net[p] != null ? `Q2\u201925: ${fmtS(q.net[p], cur)}` : '', null]];
+  }
+  const g = (q.rev[i] / q.rev[p] - 1) * 100, gm = mgn(q.gross[i], q.rev[i]), gm0 = mgn(q.gross[p], q.rev[p]), om = mgn(q.op[i], q.rev[i]), om0 = mgn(q.op[p], q.rev[p]);
+  const pts = (a, b) => (a == null || b == null ? '' : `${a - b >= 0 ? '+' : ''}${(a - b).toFixed(1)} pts vs Q2\u201925`);
+  return [['Ingresos Q2\u201926', fmtS(q.rev[i], cur), `${g >= 0 ? '+' : ''}${Math.round(g)}% YoY`, g >= 0 ? 'good' : 'bad'],
+    ['Margen bruto', gm == null ? 's/d' : gm.toFixed(1) + '%', pts(gm, gm0), gm != null && gm0 != null ? (gm >= gm0 ? 'good' : 'bad') : null],
+    ['Margen operativo', om == null ? '\u2014' : om.toFixed(1) + '%', pts(om, om0), om != null && om0 != null ? (om >= om0 ? 'good' : 'bad') : null]];
+}
 
 function fmtM(v) {
   const s = v < 0 ? '-' : '';
@@ -313,9 +402,9 @@ const FCF_CARD = Object.fromEntries(FCF_CARDS.map((c) => [c[0], c]));
 
 // one-row fundamentals per ticker, all derived from the data blocks above
 function fundamentals(sym) {
-  const q = QREV[sym];
-  const rev = q ? { v: fmtQ(q.q[5]), yoy: (q.q[5] / q.q[1] - 1) * 100, guidePct: q.guide ? ((q.q[4] + q.q[5]) / q.guide) * 100 : null, guideTxt: q.guideTxt, next: q.next }
-    : QREV_CARD[sym] ? { v: QREV_CARD[sym][1], yoy: null, guidePct: null, guideTxt: 'sin guía', next: null } : null;
+  const q = QREV[sym], Q = QFIN[sym];
+  const r5 = Q.rev[5], r1 = Q.rev[1];
+  const rev = { v: fmtS(r5, Q.cur || '$'), yoy: r5 && r1 ? (r5 / r1 - 1) * 100 : null, guidePct: q?.guide ? ((Q.rev[4] + r5) / q.guide) * 100 : null, guideTxt: q ? q.guideTxt : 'sin guía', next: q?.next || null };
   const f = FCF[sym];
   const fcf = f ? { v: f.q[f.q.length - 1][1] / FCF_SH[sym], abs: f.q[f.q.length - 1][1], label: f.q[f.q.length - 1][0] } : FCF_CARD[sym] ? { card: FCF_CARD[sym][1] } : null;
   return { rev, fcf };
@@ -465,43 +554,31 @@ export default function BiologyIsCode() {
 
         <p style={{ fontSize: 14, color: 'var(--text-primary)', fontFamily: SANS, lineHeight: 1.6, margin: '12px 0 16px' }}>{tk.note}</p>
 
-        {/* business: revenue + cash */}
-        <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: mb ? 16 : 22, marginBottom: 18 }}>
-          <Module title="Ingresos por trimestre" aside="$M · Q1’25 → Q2’26">
-            {QREV[active] ? <><QRevChart sym={active} /><div style={{ fontSize: 11.5, color: 'var(--text-muted)', lineHeight: 1.5, fontFamily: SANS, marginTop: 4 }}>{QREV[active].note}</div></>
-              : QREV_CARD[active] ? <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.5, fontFamily: SANS }}><b style={{ fontFamily: MONO, color: 'var(--text-bright)' }}>{QREV_CARD[active][1]}</b> en 2026. {QREV_CARD[active][2]}</div>
-              : <div style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>Sin datos trimestrales.</div>}
-          </Module>
-          <Module title="FCF por acción" aside={FCF[active] ? `trimestral · ${FCF[active].shares}` : 'burn'}>
-            {FCF[active] ? <><FcfChart sym={active} mb={mb} /><div style={{ fontSize: 11.5, color: 'var(--text-muted)', lineHeight: 1.5, fontFamily: SANS, marginTop: 4 }}>{FCF[active].note}</div></>
-              : FCF_CARD[active] ? <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.5, fontFamily: SANS }}><b style={{ fontFamily: MONO, color: RED }}>{FCF_CARD[active][1]}</b> · {FCF_CARD[active][2]}</div>
-              : <div style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>Sin serie.</div>}
-          </Module>
-        </div>
-
-        {/* annual income statement */}
-        <Module title="Estado de resultados anual" aside="USD millones" style={{ marginBottom: 18 }}>
-          {d.type === 'chart' ? (() => {
-            const aLen = d.projIdx ?? d.years.length; const yrs = d.years.slice(0, aLen);
-            return <>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
-                <Chip color={C_REV} label="Revenue" s={stats(d.revenue.slice(0, aLen), yrs)} />
-                <Chip color={C_GP} label="Gross profit" s={stats(d.gross.slice(0, aLen), yrs)} />
-                <Chip color={C_OP} label="Operating income" s={stats(d.op.slice(0, aLen), yrs)} />
-              </div>
-              <IncomeChart d={d} mb={mb} h={mb ? 300 : 230} />
-              {d.projIdx != null && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4, fontFamily: SANS }}><b style={{ color: 'var(--gold)' }}>2026E</b> = punto medio de la guía FY2026; los CAGR usan solo años reales.</div>}
-            </>;
-          })() : (
-            <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 8 }}>
-              {d.stats.map((x) => (
-                <div key={x[0]} style={{ background: 'var(--surface-2)', borderRadius: 6, padding: '9px 12px' }}>
-                  <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO, marginBottom: 3 }}>{x[0]}</div>
-                  <div style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: SANS, fontWeight: 600, lineHeight: 1.4 }}>{x[1]}</div>
-                </div>
-              ))}
+        {/* quarterly P&L — the main fundamental read */}
+        {(() => { const Q = QFIN[active]; const hl = qHeadline(Q); return (
+          <Module title="Resultados por trimestre" aside={`${Q.cur === 'C$' ? 'C$' : 'USD'} millones · Q1\u201925 → Q2\u201926 · último ER: Q2 FY2026`} style={{ marginBottom: 18 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr 1fr' : `repeat(${hl.length},1fr)`, gap: 8, marginBottom: 10 }}>
+              {hl.map(([k, v, sub, tone]) => (
+                <div key={k} style={{ background: 'var(--surface-2)', borderRadius: 6, padding: '8px 11px' }}>
+                  <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO }}>{k}</div>
+                  <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--text-bright)', fontFamily: MONO, marginTop: 2 }}>{v}</div>
+                  {sub ? <div style={{ fontSize: 11, fontFamily: MONO, color: tone === 'good' ? GRN : tone === 'bad' ? '#e0697f' : 'var(--text-muted)' }}>{sub}</div> : null}
+                </div>))}
             </div>
-          )}
+            <div style={{ display: 'flex', gap: 14, fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO, marginBottom: 2, flexWrap: 'wrap' }}>
+              {!Q.pre && <><span><span style={{ display: 'inline-block', width: 9, height: 9, borderRadius: 2, background: C_REV, marginRight: 5 }} />Ingresos</span><span><span style={{ display: 'inline-block', width: 9, height: 9, borderRadius: 2, background: C_GP, marginRight: 5 }} />Utilidad bruta</span></>}
+              <span><span style={{ display: 'inline-block', width: 9, height: 9, borderRadius: 2, background: C_OP, marginRight: 5 }} />Resultado operativo</span>
+            </div>
+            <QPLChart q={Q} mb={mb} />
+            <QPLTable q={Q} mb={mb} />
+            {(QREV[active]?.note || QREV_CARD[active]?.[2] || Q.foot) && <div style={{ fontSize: 11.5, color: 'var(--text-muted)', lineHeight: 1.5, fontFamily: SANS, marginTop: 8 }}>{[QREV[active]?.note || QREV_CARD[active]?.[2], Q.foot].filter(Boolean).join(' ')}</div>}
+          </Module>); })()}
+
+        {/* cash */}
+        <Module title="FCF por acción" aside={FCF[active] ? `trimestral · ${FCF[active].shares}` : 'quema de caja'} style={{ marginBottom: 18 }}>
+          {FCF[active] ? <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1.1fr 1fr', gap: 14, alignItems: 'center' }}><FcfChart sym={active} mb={mb} /><div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.55, fontFamily: SANS }}>{FCF[active].note}</div></div>
+            : FCF_CARD[active] ? <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.5, fontFamily: SANS }}><b style={{ fontFamily: MONO, color: RED }}>{FCF_CARD[active][1]}</b> · {FCF_CARD[active][2]}</div>
+            : <div style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>Sin serie.</div>}
         </Module>
 
         {/* technical */}
@@ -513,6 +590,7 @@ export default function BiologyIsCode() {
         <Module title="Nota completa del último trimestre">
           <details>
             <summary style={{ cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)', fontFamily: MONO }}>Leer la nota (resultados, guía, catalizadores)</summary>
+            {d.stats && <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 8, marginTop: 8 }}>{d.stats.map((x) => <div key={x[0]} style={{ background: 'var(--surface-2)', borderRadius: 6, padding: '8px 11px' }}><div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO }}>{x[0]}</div><div style={{ fontSize: 12.5, color: 'var(--text-primary)', fontFamily: SANS, fontWeight: 600, lineHeight: 1.4 }}>{x[1]}</div></div>)}</div>}
             <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.65, fontFamily: SANS, marginTop: 8 }}>{d.note}</div>
           </details>
         </Module>
@@ -621,7 +699,7 @@ export default function BiologyIsCode() {
       <div>
         <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.7, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
           <li>Market caps and prices are a point-in-time snapshot ({AS_OF}) and move daily.</li>
-          <li>Income-statement charts are annual GAAP actuals (FY2022–FY2025) from company filings and Yahoo Finance. NAUT and INKT are pre-revenue, so only operating income is plotted.</li>
+          <li>Resultados por trimestre (Q1'25–Q2'26, último ER = Q2 FY2026): ingresos totales, utilidad bruta, resultado operativo y neto por trimestre, desde los datos XBRL de los 10-Q/10-K en la SEC (Q4 = año fiscal menos Q1–Q3), cruzados con Yahoo Finance. IBRX muestra ingresos totales (ANKTIVA + otros). NervGen reporta en C$ bajo IFRS. PBLS no tiene Q3/Q4'25 públicos (era privada). Los pre-revenue (NAUT, INKT, PBLS, NGEN) muestran resultado operativo y neto.</li>
           <li>2026 executed revenue is charted in the INGRESOS POR TRIMESTRE section (Q1'25–Q2'26, reported GAAP revenue from 8-K/10-Q releases); the annual bars stop at FY2025 because FY2026 is not yet complete. Q2 FY2026 results for all nine tickers (reported Jul 28 – Aug 13, 2026) are also reflected in each ticker's commentary. HIMS figures are from its Aug 10 Q2 deck and call; the rest from company press releases and 10-Q/8-K filings. Post-quarter developments through Sep 4 (FTC/Visa at HIMS, Merck–Moderna readout for TEM, Nature Methods for NAUT) are noted where material.</li>
           <li>CAI (IPO Jun 2025) shows only FY2024–FY2025; its gross profit is estimated from margin and its operating income is approximate (2025 distorted by IPO stock comp).</li>
           <li>IBRX operating income for 2022 and 2025 is approximate (derived from R&D + SG&A).</li>

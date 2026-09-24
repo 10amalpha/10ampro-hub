@@ -6,6 +6,18 @@
 
 ---
 
+## Recent changes (Sep 24, 2026 · b)
+
+- **Quarterly P&L replaces the annual income statement in every dossier** (Hernán: quarters tell him more than years). Section "Resultados por trimestre", Q1'25 → Q2'26, where Q2 FY2026 is the latest ER:
+  - 3 headline cards comparing Q2'26 vs Q2'25: revenue YoY, gross margin Δpts, operating margin Δpts. Pre-revenue names show operating burn and net instead.
+  - Grouped bars (revenue / gross profit / operating income), with Q2'26 highlighted.
+  - Table: revenue, YoY, gross margin, operating income, operating margin, net income. For pre-revenue names: operating income, burn vs prior quarter (more burn = red), net income. Mobile shows the last 4 quarters.
+  - Data: `QFIN` const in page.jsx, from the new **`/api/equity/[sym]/quarters`** route (SEC XBRL companyfacts; Q4 = FY − Q1..Q3; op income from total opex for filers that don't tag it) cross-checked against Yahoo fundamentals-timeseries. Q2'26 spot-checked against press releases (TEM $382.5M / $246.5M gross, HIMS 64% GM, INKT −$3.1M net, NGEN C$12.2M opex).
+  - Real gaps are marked "s/d": PBLS Q3/Q4'25 (private pre-IPO), CAI Q1'25 gross, NGEN Q1'25. NGEN is in C$ (IFRS). IBRX = total revenue (ANKTIVA + other).
+  - Board "Ingresos Q2'26" and key numbers now read QFIN. Annual `FIN` data is kept for the full note and PBLS/NGEN stat cards.
+- **Refresh after each ER:** fetch `/api/equity/{SYM}/quarters` for the 9 tickers, shift QFIN one quarter (drop Q1, append the new one), update `QL`.
+- **Lección 24:** for companies in growth or restructuring, quarterly tracking (YoY vs the same quarter, margins in pts) beats annual bars. And CAGRs from a near-zero base (IBRX +46,983%) are noise; don't publish them.
+
 ## Recent changes (Sep 24, 2026)
 
 - **/biology-is-code redesigned around one dossier per ticker.** Hernán's call: the page was scattered (each data type was a separate section with its own tabs) and hard to navigate. New order:

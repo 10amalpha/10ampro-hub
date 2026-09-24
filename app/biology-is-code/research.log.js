@@ -27,5 +27,6 @@ export const LOG = [
   { d: '2026-09-06', cat: 'noticias', h: 5, est: true, note: 'Snapshot 4 Sep: FTC / Visa en HIMS, Merck–Moderna en TEM, Nature Methods en NAUT' },
   { d: '2026-09-15', cat: 'modelo', h: 4, est: true, note: 'Ingresos trimestrales Q1’25–Q2’26 y % de guía ejecutada' },
   { d: '2026-09-23', cat: 'charting', h: 6, est: true, note: '9 charts: régimen, estructura, niveles, paths 1M / 3M / 1Y con invalidación' },
+  { d: '2026-09-24', cat: 'modelo', h: 1, note: 'P&L trimestral Q1’25–Q2’26 de los 9 tickers (ingresos, margen bruto, resultado operativo y neto), verificado contra SEC XBRL y Yahoo' },
   { d: '2026-09-23', cat: 'noticias', h: 9, est: true, note: 'Seguimiento continuo jun–sep (~40 min / semana × 14 semanas): podcasts, noticias, hilos' },
 ];

@@ -2,6 +2,9 @@
 // Rule: no shares bought until GOAL hours of documented research.
 // est: true = retroactive estimate (reconstructed 23 Sep 2026 from project history); new entries are logged as they happen.
 // To add hours: append { d: 'YYYY-MM-DD', cat, h, note }.
+// STANDING RULE: every work session on Biology is Code logs its hours here in the same push, unasked.
+// h = the session's real working time (research + review), rounded to 0.5; one entry per category touched.
+// Hours Hernán reports himself (podcasts, reading, charting outside chat) are added as he says them.
 export const GOAL = 100;
 
 export const CATS = {

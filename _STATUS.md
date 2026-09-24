@@ -9,6 +9,7 @@
 ## Recent changes (Sep 23, 2026 · b)
 
 - **/biology-is-code — HORAS DE RESEARCH counter at the top of the page.** It sums `app/biology-is-code/research.log.js` against a GOAL of 100 h, the buy gate: shows COMPRA BLOQUEADA · faltan X h, which flips to COMPRA HABILITADA at ≥100 h. Also shows a bar by category, hours in the last 30 days with an ETA, and a collapsible log. The 63 h backfill is flagged `est: true`, reconstructed from project history (Jun 12 source → Sep 23 TA).
+  - **STANDING RULE:** every work session on Biology is Code appends its hours to `research.log.js` in the same push, without being asked. Log the session's real working time, rounded to 0.5 h, with one entry per category touched.
   - **Adding hours:** Hernán says them in chat (e.g. "sumá 2h de podcast") → append `{ d, cat, h, note }` to LOG → build → push. Categories: fuentes, tesis, earnings, modelo, charting, noticias.
 
 ## Recent changes (Sep 23, 2026)

@@ -6,6 +6,18 @@
 
 ---
 
+## Recent changes (Sep 24, 2026)
+
+- **/biology-is-code redesigned around one dossier per ticker.** Hernán's call: the page was scattered (each data type was a separate section with its own tabs) and hard to navigate. New order:
+  1. Compact research bar (63/100 h, detail on demand)
+  2. **Basket board**: one row per ticker with live price, live-scaled mcap, Q2'26 revenue + YoY, FCF/share, TA bias + score, 1M %, invalidation. Clicking a row opens the dossier.
+  3. **Sticky ticker selector** (bias-colored dot)
+  4. **Dossier**: identity + live price → 5 key numbers (mcap, Q2 rev, H1 vs guide, FCF/sh, TA) → next print → thesis line → quarterly revenue | FCF/share → annual income statement (compact) → TA module (regime, editor read, structure chart with projected path, 1M/3M/1Y cards, invalidation, pattern/watch/decision, levels) → full quarter note (collapsed) → prev/next.
+  5. Thesis (hero, scaling law, stack, value chain, compute) and methodology collapsed at the bottom.
+  - BioTA.jsx now exports `useBioData` (fetches the 9 series once) + `TAModule`. The fan chart was dropped from the dossier because the structure chart already draws the projected path and invalidation.
+  - All data blocks (TICKERS, FIN, QREV, FCF, cards) are unchanged; the dossier reads them per ticker. When adding a ticker, fill all blocks and it appears everywhere.
+- **Lección 23:** multi-ticker research pages are organized by ticker, not by data type. One place per name, with the cross-ticker comparison living only in the board.
+
 ## Recent changes (Sep 23, 2026 · b)
 
 - **/biology-is-code — HORAS DE RESEARCH counter at the top of the page.** It sums `app/biology-is-code/research.log.js` against a GOAL of 100 h, the buy gate: shows COMPRA BLOQUEADA · faltan X h, which flips to COMPRA HABILITADA at ≥100 h. Also shows a bar by category, hours in the last 30 days with an ETA, and a collapsible log. The 63 h backfill is flagged `est: true`, reconstructed from project history (Jun 12 source → Sep 23 TA).

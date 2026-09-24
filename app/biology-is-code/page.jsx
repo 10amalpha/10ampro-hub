@@ -1,6 +1,6 @@
 'use client';
-import { useState, useEffect } from 'react';
-import BioTA from './BioTA';
+import { useState, useEffect, useRef } from 'react';
+import { useBioData, TAModule, isInvalidated, fmtPx, pc } from './BioTA';
 import ResearchClock from './ResearchClock';
 
 // ============================================================
@@ -256,8 +256,8 @@ function Chip({ color, label, s }) {
   );
 }
 
-function IncomeChart({ d, mb }) {
-  const W = 640, H = mb ? 280 : 340, padR = 56, padL = 8, padT = 22, padB = 26;
+function IncomeChart({ d, mb, h }) {
+  const W = 640, H = h || (mb ? 280 : 340), padR = 56, padL = 8, padT = 22, padB = 26;
   const all = [...d.revenue, ...d.gross, ...d.op].filter((v) => v != null);
   all.push(0);
   let max = Math.max(...all), min = Math.min(...all);
@@ -304,10 +304,42 @@ function IncomeChart({ d, mb }) {
   );
 }
 
+const MONO = "'JetBrains Mono',monospace", SANS = "'Plus Jakarta Sans',sans-serif", DISP = "'Space Grotesk',sans-serif";
+const GRN = '#22c55e', RED = '#ef4444', AMB = '#f59e0b';
+const num = (s) => { const m = String(s).replace(/[$,]/g, '').match(/([\d.]+)\s*([BM])?/); if (!m) return null; return +m[1] * (m[2] === 'B' ? 1000 : 1); };
+const fmtCap = (m) => (m == null ? '—' : m >= 1000 ? '$' + (m / 1000).toFixed(m >= 10000 ? 1 : 2) + 'B' : '$' + Math.round(m) + 'M');
+const QREV_CARD = Object.fromEntries(QREV_CARDS.map((c) => [c[0], c]));
+const FCF_CARD = Object.fromEntries(FCF_CARDS.map((c) => [c[0], c]));
+
+// one-row fundamentals per ticker, all derived from the data blocks above
+function fundamentals(sym) {
+  const q = QREV[sym];
+  const rev = q ? { v: fmtQ(q.q[5]), yoy: (q.q[5] / q.q[1] - 1) * 100, guidePct: q.guide ? ((q.q[4] + q.q[5]) / q.guide) * 100 : null, guideTxt: q.guideTxt, next: q.next }
+    : QREV_CARD[sym] ? { v: QREV_CARD[sym][1], yoy: null, guidePct: null, guideTxt: 'sin guía', next: null } : null;
+  const f = FCF[sym];
+  const fcf = f ? { v: f.q[f.q.length - 1][1] / FCF_SH[sym], abs: f.q[f.q.length - 1][1], label: f.q[f.q.length - 1][0] } : FCF_CARD[sym] ? { card: FCF_CARD[sym][1] } : null;
+  return { rev, fcf };
+}
+
+function Module({ title, aside, children, style }) {
+  return (
+    <section style={{ borderTop: '1px solid var(--border)', paddingTop: 12, ...style }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+        <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: 'var(--gold)', fontFamily: MONO }}>{title}</h3>
+        {aside ? <span style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO }}>{aside}</span> : null}
+      </div>
+      {children}
+    </section>
+  );
+}
+
 export default function BiologyIsCode() {
-  const [active, setActive] = useState('HIMS');
+  const [active, setActive] = useState(TICKERS[0].sym);
   const [theme, setTheme] = useState('dark');
   const [mb, setMb] = useState(false);
+  const dossierRef = useRef(null);
+  const syms = TICKERS.map((t) => t.sym);
+  const live = useBioData(syms);
 
   useEffect(() => {
     const saved = localStorage.getItem('10am-theme') || 'dark';
@@ -326,12 +358,35 @@ export default function BiologyIsCode() {
     document.documentElement.classList.toggle('light', next === 'light');
   };
 
+  const pick = (sym, scroll) => {
+    setActive(sym);
+    if (scroll && dossierRef.current) window.scrollTo({ top: dossierRef.current.getBoundingClientRect().top + window.scrollY - 8, behavior: 'smooth' });
+  };
+
+  const sectionLabel = { fontSize: 12, fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.5px', marginBottom: 10, fontFamily: MONO };
+  const tk = TICKERS.find((t) => t.sym === active);
   const d = FIN[active];
-  const sectionLabel = { fontSize: 12, fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.5px', marginBottom: 10, fontFamily: "'JetBrains Mono',monospace" };
+  const A = live[active] || {};
+  const px = A.d?.price;
+  const capOf = (t) => { const L = live[t.sym]?.d?.price; const m = num(t.mcap), p0 = num(t.price); return L && m && p0 ? (m * L) / p0 : m; };
+  const F = fundamentals(active);
+  const idx = syms.indexOf(active);
+  const biasCol = (x) => (!x?.fc ? 'var(--text-muted)' : x.fc.dir === 'BEAR' ? RED : GRN);
+  const yoyEl = (v) => (v == null ? null : <span style={{ color: v >= 0 ? GRN : RED }}>{(v >= 0 ? '+' : '') + Math.round(v)}%</span>);
+
+  const cell = (k, v, sub) => (
+    <div style={{ minWidth: 0 }}>
+      <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO }}>{k}</div>
+      <div style={{ fontSize: mb ? 15 : 17, fontWeight: 800, color: 'var(--text-bright)', fontFamily: MONO, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{v}</div>
+      {sub ? <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: MONO, marginTop: 1 }}>{sub}</div> : null}
+    </div>
+  );
+
+  const cols = mb ? '68px 1fr 76px 64px' : '92px 96px 84px 110px 96px 110px 70px 84px';
 
   return (
-    <div style={{ maxWidth: 920, margin: '0 auto', padding: mb ? '6px 8px' : '10px 20px' }}>
-      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--border)', marginBottom: 18 }}>
+    <div style={{ maxWidth: 980, margin: '0 auto', padding: mb ? '6px 10px' : '10px 20px' }}>
+      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--border)', marginBottom: 14 }}>
         <a href="https://10am.pro?utm_source=biology-is-code&utm_medium=header&utm_campaign=hub" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <img src="/logo.jpg" alt="10AMPRO" style={{ width: 34, height: 34, borderRadius: 6 }} />
           <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>← 10am.pro</span>
@@ -342,9 +397,136 @@ export default function BiologyIsCode() {
         </button>
       </header>
 
-      {/* RESEARCH HOURS — buy gate at 100h */}
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
+        <h1 style={{ margin: 0, fontSize: mb ? 24 : 30, fontWeight: 800, color: 'var(--text-bright)', fontFamily: DISP, lineHeight: 1.1 }}>Biology is Code</h1>
+        <span style={{ fontSize: 11.5, color: 'var(--text-muted)', fontFamily: MONO }}>9 tickers en tres capas: Read, Orchestrate, Write</span>
+      </div>
+
       <ResearchClock mb={mb} />
 
+      {/* BASKET BOARD — one row per ticker, click opens the dossier */}
+      <div style={{ border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden', marginBottom: 6 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 8, padding: '8px 12px', background: 'var(--surface-2)', fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO }}>
+          <span>Ticker</span><span>Precio</span>{!mb && <span>Mcap</span>}{!mb && <span>Ingresos Q2’26</span>}{!mb && <span>FCF/acc. Q2’26</span>}<span>Técnico</span><span style={{ textAlign: 'right' }}>1M</span>{!mb && <span style={{ textAlign: 'right' }}>Invalida</span>}
+        </div>
+        {TICKERS.map((t) => {
+          const x = live[t.sym] || {}; const on = t.sym === active; const f = fundamentals(t.sym); const L = x.d?.price; const bad = isInvalidated(x);
+          return (
+            <button key={t.sym} onClick={() => pick(t.sym, true)} style={{ display: 'grid', gridTemplateColumns: cols, gap: 8, alignItems: 'center', width: '100%', textAlign: 'left', padding: '9px 12px', border: 0, borderTop: '1px solid var(--border-subtle)', background: on ? 'var(--surface-2)' : 'var(--surface)', boxShadow: on ? 'inset 3px 0 0 var(--gold)' : 'none', cursor: 'pointer', fontFamily: MONO, fontSize: 12.5, color: 'var(--text-primary)' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 7 }}><span style={{ width: 7, height: 7, borderRadius: 2, background: LAYER_COLOR[t.layer], flexShrink: 0 }} /><b style={{ color: 'var(--text-bright)' }}>{t.sym}</b></span>
+              <span>{L ? fmtPx(L) : t.price}{L && x.d.chg != null && !mb ? <span style={{ fontSize: 10.5, marginLeft: 5, color: x.d.chg >= 0 ? GRN : RED }}>{x.d.chg >= 0 ? '+' : ''}{x.d.chg.toFixed(1)}%</span> : null}</span>
+              {!mb && <span>{fmtCap(capOf(t))}</span>}
+              {!mb && <span>{f.rev ? <>{f.rev.v} {yoyEl(f.rev.yoy)}</> : '—'}</span>}
+              {!mb && <span style={{ color: f.fcf?.v != null ? (f.fcf.v >= 0 ? GRN : RED) : 'var(--text-muted)' }}>{f.fcf?.v != null ? (f.fcf.v >= 0 ? '+' : '−') + '$' + Math.abs(f.fcf.v).toFixed(2) : 'sin serie'}</span>}
+              <span style={{ color: biasCol(x), fontWeight: 700, fontSize: 11.5 }}>{x.fc ? `${x.fc.dir} ${x.trend.score}/7` : x.d && !x.d.ok ? 'sin datos' : '…'}</span>
+              <span style={{ textAlign: 'right', color: biasCol(x) }}>{x.fc && L ? pc(x.fc.path[0].target / L - 1, 0) : '—'}</span>
+              {!mb && <span style={{ textAlign: 'right', fontSize: 11.5, color: bad ? RED : 'var(--text-secondary)' }}>{x.fc ? fmtPx(x.fc.invalidation) : '—'}{bad ? ' ✕' : ''}</span>}
+            </button>
+          );
+        })}
+      </div>
+      <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: SANS, marginBottom: 18 }}>Precio y técnico en vivo. Mcap escalado al precio en vivo desde las acciones del snapshot ({AS_OF}). Fundamentales del último trimestre reportado. Tocá una fila para abrir la ficha.</div>
+
+      {/* TICKER DOSSIER */}
+      <div ref={dossierRef} style={{ position: 'sticky', top: 0, zIndex: 20, background: 'var(--bg)', padding: '8px 0', marginBottom: 10, borderBottom: '1px solid var(--border)' }}>
+        <div role="tablist" aria-label="Ticker" style={{ display: 'flex', gap: 5, overflowX: 'auto', scrollbarWidth: 'none' }}>
+          {TICKERS.map((t) => { const on = t.sym === active; return (
+            <button key={t.sym} role="tab" aria-selected={on} onClick={() => pick(t.sym, false)} style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6, padding: '6px 11px', fontSize: 12.5, fontWeight: on ? 800 : 500, fontFamily: MONO, border: '1px solid ' + (on ? 'var(--gold)' : 'var(--border)'), borderRadius: 6, cursor: 'pointer', background: on ? 'var(--surface-2)' : 'var(--surface)', color: on ? 'var(--text-bright)' : 'var(--text-secondary)' }}>
+              <span style={{ width: 6, height: 6, borderRadius: 3, background: biasCol(live[t.sym]) }} />{t.sym}
+            </button>); })}
+        </div>
+      </div>
+
+      <article style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: mb ? '14px 12px' : '18px 22px', marginBottom: 24 }}>
+        {/* identity + price */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: mb ? 26 : 32, fontWeight: 800, color: 'var(--text-bright)', fontFamily: MONO, lineHeight: 1 }}>{active}</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: LAYER_COLOR[tk.layer], border: '1px solid ' + LAYER_COLOR[tk.layer] + '66', borderRadius: 4, padding: '2px 7px', fontFamily: MONO }}>{tk.layer}</span>
+            </div>
+            <div style={{ fontSize: 15, color: 'var(--text-secondary)', fontFamily: DISP, marginTop: 4 }}>{tk.name}</div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: mb ? 22 : 26, fontWeight: 800, color: 'var(--text-bright)', fontFamily: MONO }}>{px ? fmtPx(px) : tk.price}</div>
+            <div style={{ fontSize: 12, fontFamily: MONO, color: A.d?.chg >= 0 ? GRN : RED }}>{A.d?.chg != null ? `${A.d.chg >= 0 ? '+' : ''}${A.d.chg.toFixed(2)}% hoy` : ' '}</div>
+          </div>
+        </div>
+
+        {/* key numbers */}
+        <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr 1fr' : 'repeat(5,1fr)', gap: mb ? 12 : 16, padding: '14px 0', margin: '12px 0 4px', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+          {cell('Market cap', fmtCap(capOf(tk)), 'en vivo')}
+          {cell('Ingresos Q2’26', F.rev ? F.rev.v : '—', F.rev?.yoy != null ? <>{yoyEl(F.rev.yoy)} YoY</> : 'pre-revenue')}
+          {cell('H1’26 vs guía FY', F.rev?.guidePct != null ? Math.round(F.rev.guidePct) + '%' : '—', F.rev?.guideTxt || 'sin guía')}
+          {cell('FCF / acción', F.fcf?.v != null ? (F.fcf.v >= 0 ? '+' : '−') + '$' + Math.abs(F.fcf.v).toFixed(2) : F.fcf?.card || '—', F.fcf?.v != null ? `${F.fcf.label} · ${F.fcf.abs >= 0 ? '+' : '−'}$${Math.abs(F.fcf.abs).toFixed(1)}M` : 'sin serie trimestral')}
+          {cell('Técnico', A.fc ? `${A.fc.dir} ${A.trend.score}/7` : '…', A.fc ? `1M ${fmtPx(A.fc.path[0].target)} · inv. ${fmtPx(A.fc.invalidation)}` : '')}
+        </div>
+        {F.rev?.next && <div style={{ fontSize: 11.5, color: 'var(--gold)', fontFamily: MONO, marginTop: 8 }}>Próximo reporte: {F.rev.next}</div>}
+
+        <p style={{ fontSize: 14, color: 'var(--text-primary)', fontFamily: SANS, lineHeight: 1.6, margin: '12px 0 16px' }}>{tk.note}</p>
+
+        {/* business: revenue + cash */}
+        <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: mb ? 16 : 22, marginBottom: 18 }}>
+          <Module title="Ingresos por trimestre" aside="$M · Q1’25 → Q2’26">
+            {QREV[active] ? <><QRevChart sym={active} /><div style={{ fontSize: 11.5, color: 'var(--text-muted)', lineHeight: 1.5, fontFamily: SANS, marginTop: 4 }}>{QREV[active].note}</div></>
+              : QREV_CARD[active] ? <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.5, fontFamily: SANS }}><b style={{ fontFamily: MONO, color: 'var(--text-bright)' }}>{QREV_CARD[active][1]}</b> en 2026. {QREV_CARD[active][2]}</div>
+              : <div style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>Sin datos trimestrales.</div>}
+          </Module>
+          <Module title="FCF por acción" aside={FCF[active] ? `trimestral · ${FCF[active].shares}` : 'burn'}>
+            {FCF[active] ? <><FcfChart sym={active} mb={mb} /><div style={{ fontSize: 11.5, color: 'var(--text-muted)', lineHeight: 1.5, fontFamily: SANS, marginTop: 4 }}>{FCF[active].note}</div></>
+              : FCF_CARD[active] ? <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.5, fontFamily: SANS }}><b style={{ fontFamily: MONO, color: RED }}>{FCF_CARD[active][1]}</b> · {FCF_CARD[active][2]}</div>
+              : <div style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>Sin serie.</div>}
+          </Module>
+        </div>
+
+        {/* annual income statement */}
+        <Module title="Estado de resultados anual" aside="USD millones" style={{ marginBottom: 18 }}>
+          {d.type === 'chart' ? (() => {
+            const aLen = d.projIdx ?? d.years.length; const yrs = d.years.slice(0, aLen);
+            return <>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+                <Chip color={C_REV} label="Revenue" s={stats(d.revenue.slice(0, aLen), yrs)} />
+                <Chip color={C_GP} label="Gross profit" s={stats(d.gross.slice(0, aLen), yrs)} />
+                <Chip color={C_OP} label="Operating income" s={stats(d.op.slice(0, aLen), yrs)} />
+              </div>
+              <IncomeChart d={d} mb={mb} h={mb ? 300 : 230} />
+              {d.projIdx != null && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4, fontFamily: SANS }}><b style={{ color: 'var(--gold)' }}>2026E</b> = punto medio de la guía FY2026; los CAGR usan solo años reales.</div>}
+            </>;
+          })() : (
+            <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 8 }}>
+              {d.stats.map((x) => (
+                <div key={x[0]} style={{ background: 'var(--surface-2)', borderRadius: 6, padding: '9px 12px' }}>
+                  <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO, marginBottom: 3 }}>{x[0]}</div>
+                  <div style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: SANS, fontWeight: 600, lineHeight: 1.4 }}>{x[1]}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Module>
+
+        {/* technical */}
+        <Module title="Técnico y forecast" aside="en vivo · mismo motor que los hubs de Solana" style={{ marginBottom: 18 }}>
+          <TAModule sym={active} A={A} mb={mb} />
+        </Module>
+
+        {/* full note */}
+        <Module title="Nota completa del último trimestre">
+          <details>
+            <summary style={{ cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)', fontFamily: MONO }}>Leer la nota (resultados, guía, catalizadores)</summary>
+            <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.65, fontFamily: SANS, marginTop: 8 }}>{d.note}</div>
+          </details>
+        </Module>
+
+        <nav style={{ display: 'flex', justifyContent: 'space-between', marginTop: 18, paddingTop: 12, borderTop: '1px solid var(--border)', fontFamily: MONO, fontSize: 12.5 }}>
+          {[[-1, '‹'], [1, '›']].map(([dlt, arrow]) => { const s2 = syms[(idx + dlt + syms.length) % syms.length]; return (
+            <button key={dlt} onClick={() => pick(s2, true)} style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text-secondary)', padding: '6px 12px', cursor: 'pointer', fontFamily: MONO }}>{dlt < 0 ? `${arrow} ${s2}` : `${s2} ${arrow}`}</button>); })}
+        </nav>
+      </article>
+
+      {/* THESIS — context, collapsed below the dossier */}
+      <details style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: mb ? '12px' : '14px 18px', marginBottom: 12 }}>
+        <summary style={{ cursor: 'pointer', fontSize: 14, fontWeight: 700, color: 'var(--text-bright)', fontFamily: DISP }}>La tesis: del químico reactivo a un sistema operativo biológico</summary>
+        <div style={{ marginTop: 16 }}>
       {/* HERO */}
       <div style={{ marginBottom: 22 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', letterSpacing: '1px', marginBottom: 8, fontFamily: "'JetBrains Mono',monospace" }}>● BIOLOGY IS CODE — THE BIOLOGICAL OPERATING SYSTEM</div>
@@ -419,185 +601,6 @@ export default function BiologyIsCode() {
         </div>
       </div>
 
-      {/* MARKET CAP TABLE */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={sectionLabel}>MARKET CAP · {AS_OF}</div>
-        <div style={{ border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
-          {TICKERS.map((t, i) => (
-            <div key={t.sym} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: mb ? '10px 12px' : '11px 16px', borderTop: i === 0 ? 'none' : '1px solid var(--border-subtle)', background: 'var(--surface)' }}>
-              <div style={{ width: mb ? 52 : 60 }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'JetBrains Mono',monospace" }}>{t.sym}</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t.price}</div>
-              </div>
-              <div style={{ width: mb ? 16 : 96 }}>
-                <span style={{ fontSize: 9.5, fontWeight: 700, fontFamily: "'JetBrains Mono',monospace", letterSpacing: '0.5px',
-                  color: LAYER_COLOR[t.layer] }}>{mb ? t.layer[0] : t.layer}</span>
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 600 }}>{t.name}</div>
-                {!mb && <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t.note}</div>}
-              </div>
-              <div style={{ fontSize: mb ? 15 : 18, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'JetBrains Mono',monospace" }}>{t.mcap}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* INCOME STATEMENTS */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={sectionLabel}>INCOME STATEMENTS · annual · USD millions</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
-          {TABS.map((sym) => {
-            const on = sym === active;
-            return (
-              <button key={sym} onClick={() => setActive(sym)}
-                style={{ padding: '6px 12px', fontSize: 13, fontWeight: on ? 700 : 400, fontFamily: "'JetBrains Mono',monospace",
-                  border: '1px solid ' + (on ? 'var(--gold)' : 'var(--border)'), borderRadius: 6, cursor: 'pointer',
-                  background: on ? 'var(--surface-2)' : 'transparent', color: on ? 'var(--text-bright)' : 'var(--text-secondary)' }}>
-                {sym}
-              </button>
-            );
-          })}
-        </div>
-
-        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: mb ? '14px' : '16px 20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
-            <div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'Space Grotesk',sans-serif" }}>{d.name}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono',monospace" }}>{d.sub}</div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Market cap</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'JetBrains Mono',monospace" }}>{d.mcap}</div>
-            </div>
-          </div>
-
-          {d.type === 'chart' ? (
-            <>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
-                {(() => {
-                  const aLen = d.projIdx ?? d.years.length;
-                  const yrs = d.years.slice(0, aLen);
-                  return (<>
-                    <Chip color={C_REV} label="Revenue" s={stats(d.revenue.slice(0, aLen), yrs)} />
-                    <Chip color={C_GP} label="Gross profit" s={stats(d.gross.slice(0, aLen), yrs)} />
-                    <Chip color={C_OP} label="Operating income" s={stats(d.op.slice(0, aLen), yrs)} />
-                  </>);
-                })()}
-              </div>
-              <IncomeChart d={d} mb={mb} />
-              {d.projIdx != null && (
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, fontFamily: "'Plus Jakarta Sans',sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ display: 'inline-block', width: 11, height: 9, borderRadius: 2, border: '1.4px dashed ' + C_REV, background: C_REV, opacity: 0.4 }} />
-                  <span><b style={{ color: 'var(--gold)' }}>2026E</b> = FY2026 revenue guidance midpoint (~$3.2B); CAGR chips use FY2022–FY2025 actuals only.</span>
-                </div>
-              )}
-            </>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 8, marginBottom: 4 }}>
-              {d.stats.map((s) => (
-                <div key={s[0]} style={{ background: 'var(--surface-2)', borderRadius: 6, padding: '10px 12px' }}>
-                  <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono',monospace", marginBottom: 3 }}>{s[0]}</div>
-                  <div style={{ fontSize: 13.5, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 600, lineHeight: 1.4 }}>{s[1]}</div>
-                </div>
-              ))}
-            </div>
-          )}
-          <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 10, lineHeight: 1.5, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{d.note}</div>
-        </div>
-      </div>
-
-      {/* QUARTERLY REVENUE — 2026 EXECUTED */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={sectionLabel}>INGRESOS POR TRIMESTRE · Q1\u201925 \u2192 Q2\u201926 · lo ejecutado en 2026 vs. sus comps</div>
-        <div style={{ overflowX: 'auto', border: '1px solid var(--border)', borderRadius: 8, marginBottom: 10 }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'JetBrains Mono',monospace", fontSize: mb ? 11 : 12, minWidth: 560 }}>
-            <thead>
-              <tr style={{ background: 'var(--surface-2)' }}>
-                {['Ticker', 'Q1\u201926', 'YoY', 'Q2\u201926', 'YoY', 'H1\u201926', 'H1 YoY', 'FY26 guide', '% guide'].map((h, i) => (
-                  <th key={h} style={{ textAlign: i === 0 ? 'left' : 'right', padding: '8px 10px', color: 'var(--text-muted)', fontWeight: 600, fontSize: 10.5, borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {Object.keys(QREV).map((sym, ri) => {
-                const d = QREV[sym];
-                const q1 = d.q[4], q2 = d.q[5], h1 = q1 + q2, h1p = d.q[0] + d.q[1];
-                const y1 = (q1 / d.q[0] - 1) * 100, y2 = (q2 / d.q[1] - 1) * 100, yh = (h1 / h1p - 1) * 100;
-                const P = ({ v }) => <span style={{ color: v >= 0 ? '#22c55e' : '#993556', fontWeight: 600 }}>{(v >= 0 ? '+' : '') + Math.round(v) + '%'}</span>;
-                const td = { textAlign: 'right', padding: '8px 10px', borderTop: ri === 0 ? 'none' : '1px solid var(--border-subtle)', whiteSpace: 'nowrap', color: 'var(--text-primary)' };
-                return (
-                  <tr key={sym} style={{ background: 'var(--surface)' }}>
-                    <td style={{ ...td, textAlign: 'left', fontWeight: 700, color: 'var(--text-bright)' }}>{sym}</td>
-                    <td style={td}>{fmtQ(q1)}</td><td style={td}><P v={y1} /></td>
-                    <td style={{ ...td, fontWeight: 700, color: 'var(--text-bright)' }}>{fmtQ(q2)}</td><td style={td}><P v={y2} /></td>
-                    <td style={td}>{fmtQ(h1)}</td><td style={td}><P v={yh} /></td>
-                    <td style={{ ...td, color: 'var(--text-secondary)' }}>{d.guideTxt}</td>
-                    <td style={{ ...td, color: d.guide ? 'var(--gold)' : 'var(--text-muted)', fontWeight: d.guide ? 700 : 400 }}>{d.guide ? Math.round(h1 / d.guide * 1000) / 10 + '%' : '\u2014'}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 8, marginBottom: 8 }}>
-          {Object.keys(QREV).map((sym) => (
-            <div key={sym} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6, gap: 8, flexWrap: 'wrap' }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'Space Grotesk',sans-serif" }}>{QREV[sym].name}</div>
-                <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono',monospace" }}>{sym} · revenue $M · 6Q</div>
-              </div>
-              <QRevChart sym={sym} />
-              <div style={{ fontSize: 11, color: 'var(--gold)', marginTop: 4, fontFamily: "'JetBrains Mono',monospace" }}>Next print: {QREV[sym].next}</div>
-              <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 6, lineHeight: 1.5, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{QREV[sym].note}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
-          {QREV_CARDS.map((c, i) => (
-            <div key={c[0]} style={{ display: 'flex', alignItems: 'baseline', gap: 10, padding: '9px 16px', borderTop: i === 0 ? 'none' : '1px solid var(--border-subtle)', background: 'var(--surface)' }}>
-              <div style={{ width: 52, fontSize: 13, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'JetBrains Mono',monospace" }}>{c[0]}</div>
-              <div style={{ width: 72, fontSize: 13, fontWeight: 700, color: c[1] === '$0' ? 'var(--text-muted)' : C_REV, fontFamily: "'JetBrains Mono',monospace" }}>{c[1]}</div>
-              <div style={{ flex: 1, minWidth: 0, fontSize: 11.5, color: 'var(--text-secondary)', fontFamily: "'Plus Jakarta Sans',sans-serif", lineHeight: 1.45 }}>{c[2]}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: "'Plus Jakarta Sans',sans-serif", lineHeight: 1.5 }}>
-          Reported GAAP revenue by quarter from each company\u2019s 8-K / 10-Q (IBRX = ANKTIVA net product revenue). 2026 bars are solid, 2025 comps faded. TEM Q4\u201925 and IBRX Q3\u201925 are derived from the FY2025 total minus the other three reported quarters. \u201c% guide\u201d = H1\u201926 revenue over the FY2026 guidance midpoint; a healthy back-half-weighted business sits around 42\u201347% at this point.
-        </div>
-      </div>
-
-      {/* FCF PER SHARE */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={sectionLabel}>FCF POR ACCIÓN · quarterly · last 6 quarters</div>
-        <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 8, marginBottom: 8 }}>
-          {Object.keys(FCF).map((sym) => (
-            <div key={sym} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'Space Grotesk',sans-serif" }}>{FCF[sym].name}</div>
-                <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono',monospace" }}>{sym} · {FCF[sym].shares} · {FCF[sym].q.length}Q</div>
-              </div>
-              <FcfChart sym={sym} mb={mb} />
-              <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 8, lineHeight: 1.5, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{FCF[sym].note}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
-          {FCF_CARDS.map((c, i) => (
-            <div key={c[0]} style={{ display: 'flex', alignItems: 'baseline', gap: 10, padding: '9px 16px', borderTop: i === 0 ? 'none' : '1px solid var(--border-subtle)', background: 'var(--surface)' }}>
-              <div style={{ width: 52, fontSize: 13, fontWeight: 700, color: 'var(--text-bright)', fontFamily: "'JetBrains Mono',monospace" }}>{c[0]}</div>
-              <div style={{ width: 72, fontSize: 13, fontWeight: 700, color: c[1].startsWith('+') ? '#22c55e' : '#993556', fontFamily: "'JetBrains Mono',monospace" }}>{c[1]}</div>
-              <div style={{ flex: 1, minWidth: 0, fontSize: 11.5, color: 'var(--text-secondary)', fontFamily: "'Plus Jakarta Sans',sans-serif", lineHeight: 1.45 }}>{c[2]}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 8, fontFamily: "'Plus Jakarta Sans',sans-serif", lineHeight: 1.5 }}>
-          Discrete quarterly FCF (operating cash flow − capex) from 10-K/10-Q filings via Macrotrends, YTD converted to standalone quarters. The latest INKT and NGEN bars (Q2'26) are flagged estimates derived from reported net loss / opex until the 10-Q cash-flow statements are in the data feed. CAI and PBLS IPO'd too recently for any public quarterly series; their real annual/quarterly burn is shown above instead of an invented one.
-        </div>
-      </div>
-
-      {/* TECHNICAL ANALYSIS + FORECAST — live, same engine as the Solana hubs */}
-      <BioTA tickers={TICKERS} mb={mb} sectionLabel={sectionLabel} />
 
       {/* COMPUTE BOTTLENECK */}
       <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border-subtle)', borderRadius: 8, padding: '14px 16px', marginBottom: 24 }}>
@@ -607,9 +610,15 @@ export default function BiologyIsCode() {
         </p>
       </div>
 
+
+        </div>
+      </details>
+
+      <details style={{ background: 'var(--surface-2)', border: '1px solid var(--border-subtle)', borderRadius: 8, padding: '12px 16px', marginBottom: 20 }}>
+        <summary style={{ cursor: 'pointer', fontSize: 12.5, fontWeight: 700, color: 'var(--text-secondary)', fontFamily: MONO }}>Metodología y notas</summary>
+        <div style={{ marginTop: 10 }}>
       {/* METHODOLOGY */}
-      <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border-subtle)', borderRadius: 8, padding: '14px 16px', marginBottom: 20 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.5px', marginBottom: 8, fontFamily: "'JetBrains Mono',monospace" }}>METODOLOGÍA & NOTAS</div>
+      <div>
         <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.7, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
           <li>Market caps and prices are a point-in-time snapshot ({AS_OF}) and move daily.</li>
           <li>Income-statement charts are annual GAAP actuals (FY2022–FY2025) from company filings and Yahoo Finance. NAUT and INKT are pre-revenue, so only operating income is plotted.</li>
@@ -621,6 +630,10 @@ export default function BiologyIsCode() {
           <li>This is data and research context, not investment advice.</li>
         </ul>
       </div>
+
+
+        </div>
+      </details>
 
       <footer style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderTop: '1px solid var(--border)', fontFamily: "'JetBrains Mono',monospace" }}>
         <a href="https://10am.pro" style={{ fontSize: 12, color: 'var(--text-muted)', textDecoration: 'none' }}>10am.pro</a>

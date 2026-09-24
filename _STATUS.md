@@ -6,6 +6,11 @@
 
 ---
 
+## Recent changes (Sep 23, 2026 · b)
+
+- **/biology-is-code — HORAS DE RESEARCH counter at the top of the page.** It sums `app/biology-is-code/research.log.js` against a GOAL of 100 h, the buy gate: shows COMPRA BLOQUEADA · faltan X h, which flips to COMPRA HABILITADA at ≥100 h. Also shows a bar by category, hours in the last 30 days with an ETA, and a collapsible log. The 63 h backfill is flagged `est: true`, reconstructed from project history (Jun 12 source → Sep 23 TA).
+  - **Adding hours:** Hernán says them in chat (e.g. "sumá 2h de podcast") → append `{ d, cat, h, note }` to LOG → build → push. Categories: fuentes, tesis, earnings, modelo, charting, noticias.
+
 ## Recent changes (Sep 23, 2026)
 
 - **/biology-is-code — ANÁLISIS TÉCNICO section (live TA + forecast 1M/3M/1Y for all 9 tickers).** Same engine as the Solana hubs (`lib/thesis/ta.js`: 7-check regime, pivot auto-structure, measured moves, directional path, explicit invalidation). Board (regime bar, bias, 1M/3M/1Y % vs live price, invalidation, ✕ when invalidated) + per-ticker detail: trend strip, structure chart, fan chart, path cards, editor read.

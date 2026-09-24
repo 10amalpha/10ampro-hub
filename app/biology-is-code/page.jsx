@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import BioTA from './BioTA';
+import ResearchClock from './ResearchClock';
 
 // ============================================================
 // BIOLOGY IS CODE — The Biological Operating System
@@ -340,6 +341,9 @@ export default function BiologyIsCode() {
           {theme === 'dark' ? '☀' : '☾'}
         </button>
       </header>
+
+      {/* RESEARCH HOURS — buy gate at 100h */}
+      <ResearchClock mb={mb} />
 
       {/* HERO */}
       <div style={{ marginBottom: 22 }}>

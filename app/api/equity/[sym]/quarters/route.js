@@ -12,6 +12,7 @@ const TAGS = {
   cost: ['CostOfRevenue', 'CostOfGoodsAndServicesSold', 'CostOfServices', 'CostOfGoodsSold'],
   gross: ['GrossProfit'],
   op: ['OperatingIncomeLoss'],
+  opex: ['OperatingExpenses', 'CostsAndExpenses'],
   net: ['NetIncomeLoss'],
 };
 const days = (a, b) => (new Date(b) - new Date(a)) / 86400000;
@@ -43,6 +44,9 @@ async function sec(sym) {
     }
     out[k] = Object.fromEntries(Object.entries(q).sort().slice(-8).map(([e, x]) => [e, { v: Math.round(x.v / 1e4) / 100, ...(x.derived ? { derived: true } : {}), tag: x.tag }]));
   }
+  // filers that tag only total operating expenses: operating income = revenue − opex
+  for (const [e, x] of Object.entries(out.opex || {})) if (!out.op[e]) out.op[e] = { v: Math.round(((out.revenue[e]?.v || 0) - x.v) * 100) / 100, fromOpex: true };
+  out.op = Object.fromEntries(Object.entries(out.op).sort().slice(-8));
   return { cik, name: j.entityName, ...out };
 }
 

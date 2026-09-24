@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import { computeTrend, autoStructure, buildForecast } from '../lib/thesis/ta';
-import { TAStructure } from '../lib/thesis/TACharts';
+import { TAStructure, TAFan } from '../lib/thesis/TACharts';
 import { EDITOR_TA } from './ta.editor';
 
 // Live TA for the Biology is Code dossier — same engine as the Solana hubs (lib/thesis/ta.js).
@@ -86,6 +86,16 @@ export function TAModule({ sym, A, mb }) {
         </div>
         <TAStructure key={sym} series={d.series} st={st} fc={fc} mb={mb} minBars={60} />
       </div>
+
+      {/* forecast chart: live price → 1M / 3M / 1Y with invalidation zone */}
+      {fc && <div style={{ marginTop: 12, border: '1px solid var(--border)', borderRadius: 6, padding: '6px 2px 2px' }}>
+        <div style={{ display: 'flex', gap: 12, fontSize: 10.5, padding: '0 10px 4px', color: 'var(--text-muted)', flexWrap: 'wrap', fontFamily: MONO }}>
+          <span style={{ color: fcCol, fontWeight: 800 }}>Forecast de precio · {fc.dir === 'BEAR' ? 'bajista' : 'alcista'}</span>
+          <span><span style={{ color: fcCol }}>▬</span> path</span><span><span style={{ color: invCol }}>╌</span> invalidación</span>
+          {!mb && <span style={{ marginLeft: 'auto' }}>escala log · sombra = tolerancia</span>}
+        </div>
+        <TAFan key={sym} price={price} fc={fc} mb={mb} />
+      </div>}
 
       {/* forecast path */}
       {fc && <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : 'repeat(3,1fr)', gap: 8, marginTop: 10 }}>

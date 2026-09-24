@@ -26,7 +26,7 @@
   3. **Sticky ticker selector** (bias-colored dot)
   4. **Dossier**: identity + live price → 5 key numbers (mcap, Q2 rev, H1 vs guide, FCF/sh, TA) → next print → thesis line → quarterly revenue | FCF/share → annual income statement (compact) → TA module (regime, editor read, structure chart with projected path, 1M/3M/1Y cards, invalidation, pattern/watch/decision, levels) → full quarter note (collapsed) → prev/next.
   5. Thesis (hero, scaling law, stack, value chain, compute) and methodology collapsed at the bottom.
-  - BioTA.jsx now exports `useBioData` (fetches the 9 series once) + `TAModule`. The fan chart was dropped from the dossier because the structure chart already draws the projected path and invalidation.
+  - BioTA.jsx now exports `useBioData` (fetches the 9 series once) + `TAModule`. The fan chart was dropped in the redesign and restored on Sep 24 at Hernán's request: every dossier shows the forecast chart (live price → 1M/3M/1Y, tolerance band, invalidation zone) below the structure chart. Don't remove it again.
   - All data blocks (TICKERS, FIN, QREV, FCF, cards) are unchanged; the dossier reads them per ticker. When adding a ticker, fill all blocks and it appears everywhere.
 - **Lección 23:** multi-ticker research pages are organized by ticker, not by data type. One place per name, with the cross-ticker comparison living only in the board.
 

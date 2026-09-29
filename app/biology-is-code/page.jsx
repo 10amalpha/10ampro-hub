@@ -77,7 +77,7 @@ const FCF = {
     note: 'Remarkably stable burn (~$70\u201380M/q) despite ANKTIVA revenue ramp. Huge share count keeps per-share burn at pennies.' },
   RXRX: { name: 'Recursion Pharmaceuticals', shares: '540M sh',
     q: [['Q1\u201925', -133.8], ['Q2\u201925', -79.6], ['Q3\u201925', -117.6], ['Q4\u201925', -47.3], ['Q1\u201926', -81.4], ['Q2\u201926', -106.0]],
-    note: 'Volatile burn despite 30% opex cuts \u2014 partnership inflows make quarters lumpy. Cash $665M, runway to early 2028.' },
+    note: 'Volatile burn despite 30% opex cuts \u2014 partnership inflows make quarters lumpy. Cash $556.8M (Jun 30; $665M was Mar 31), runway to early 2028.' },
   NAUT: { name: 'Nautilus Biotechnology', shares: '127M sh',
     q: [['Q1\u201925', -14.2], ['Q2\u201925', -13.7], ['Q3\u201925', -11.5], ['Q4\u201925', -12.6], ['Q1\u201926', -13.6], ['Q2\u201926', -14.2]],
     note: 'Metronomic ~$13M/q burn, pre-revenue. FY25 burn actually declined 15% vs FY24 \u2014 disciplined for a platform builder.' },
@@ -239,6 +239,19 @@ const CHAIN = {
     ['NervGen ($NGEN)', 'Nervous-system regeneration (NVG-291).'],
     ['Parabilis ($PBLS)', 'Solving flat-protein errors (Helicon peptides).'],
   ] },
+};
+
+// CASH ON HAND — Jun 30, 2026 balance (cash + equivalents + marketable securities), from Q2 FY2026 10-Q / 8-K / deck. cash in $M; burn = quarterly cash outflow ($M, positive = burn); runway = company guidance where given.
+const CASH = {
+  HIMS: { cash: 840, cashTxt: '$840M+', asof: 'Jun 30 \u201926 · deck Q2', burn: 68.2, burnTxt: '−$68M FCF Q2', runway: 'Genera caja', runwaySub: 'FCF+ esperado en H2\u201926', note: 'Caja e inversiones a corto plazo tras un facility de receivables de $400M y un convertible de ~$400M. El −$68M de Q2 fue working capital del ramp de Wegovy de marca, no pérdida operativa. Balance apalancado por los convertibles: mirar caja neta, no bruta.' },
+  TEM: { cash: 820.7, cashTxt: '$820.7M', asof: 'Jun 30 \u201926 · 8-K', burn: 18.6, burnTxt: '−$18.6M FCF Q2', runway: 'Cerca del breakeven', runwaySub: 'menor salida de la serie', note: 'Caja y valores tras un convertible cupón cero de $460M. Q2 fue el primer trimestre GAAP positivo y la quema de FCF más chica de seis. La adquisición pendiente de Personalis (~$1.5B) es el uso de caja a vigilar.' },
+  CAI: { cash: 791.7, cashTxt: '$791.7M', asof: 'Jun 30 \u201926 · 10-Q', burn: -6.4, burnTxt: '+$6.4M FCF Q2', runway: 'Autofinanciada', runwaySub: 'OCF +$28.5M en Q2', note: '$689.5M en caja y equivalentes + $102.2M en valores a corto plazo. Quinto trimestre seguido de EBITDA ajustado positivo; la caja sube, no baja. Recompra de $100M autorizada ($82M disponibles).' },
+  IBRX: { cash: 357, cashTxt: '$357M', asof: 'Jun 30 \u201926 · 8-K', burn: 70, burnTxt: '−$70M FCF Q2', runway: '~5 trimestres', runwaySub: 'a burn constante, sin ATM', note: 'Caja y valores. La quema es notablemente estable (~$70–80M/q) pese al ramp de ANKTIVA; sin financiamiento nuevo la caja llega a mediados de 2027. Históricamente cubre el gap con ATM y préstamos del fundador — la dilución es el costo del runway. PDUFA Jan 6 \u201927 antes de que apriete.' },
+  RXRX: { cash: 556.8, cashTxt: '$556.8M', asof: 'Jun 30 \u201926 · 8-K', burn: 105.9, burnTxt: '−$106M OCF Q2', runway: 'Hasta early 2028', runwaySub: 'guía, sin financiamiento nuevo', note: 'Caja, equivalentes y caja restringida: $753.9M en dic \u201925 → $665.2M en mar → $556.8M en jun. Q2 se llevó $106M en OCF por working capital y un comp difícil (crédito fiscal UK de $28.6M en Q2\u201925). Opex cash 2026 guiado bajo $375M; los partnerships (> $500M acumulados) hacen los trimestres irregulares.' },
+  NAUT: { cash: 129, cashTxt: '~$129M', asof: 'Jun 30 \u201926 · 10-Q', burn: 14.2, burnTxt: '−$14.2M FCF Q2', runway: 'Hasta Q1 2028', runwaySub: 'guía; ronda antes de mid-2027', note: 'La caja supera la capitalización bursátil: el mercado valora la plataforma por debajo de cero. Quema metronómica de ~$13–14M/q, OpEx −7% YoY. Management espera levantar capital antes de mid-2027 — los términos de esa ronda son el hito financiero clave.' },
+  INKT: { cash: 8.8, cashTxt: '$8.8M', asof: 'Jun 30 \u201926 · 10-Q', burn: 2.5, burnTxt: '−$2.5M est. Q2', runway: '~3–4 trimestres', runwaySub: 'el más ajustado del basket', note: 'Cash cayó $0.7M en el trimestre; la quema absoluta es la más chica del basket pero el float de ~5M acciones hace que cada ronda pese. Depende de Agenus (accionista mayoritario) y del programa de acceso pagado por paciente para estirar. Financiamiento inminente es el escenario base.' },
+  PBLS: { cash: 1100, cashTxt: '$1.1B', asof: 'Jun 30 \u201926 · 10-Q', burn: 52.5, burnTxt: '−$52.5M net loss Q2', runway: '~5 años', runwaySub: 'a burn actual', note: 'IPO (Jun 10) + private placement levantaron $787.9M netos. Pérdida neta de $52.5M en Q2 (R&D $39.4M); a ese ritmo la caja cubre el Phase 3 de zolucatetide en desmoides y varios programas más sin volver al mercado.' },
+  NGEN: { cash: 61.1, cashTxt: 'US$61.1M', asof: 'Jun 30 \u201926 · MD&A', burn: 8.5, burnTxt: '−US$8.5M est. Q2', runway: 'Hasta 1H 2028', runwaySub: 'guía: cubre el readout de RESTORE', note: '$60M levantados en mayo 2026 + ~$50M vía ATM. La quema acelera con el arranque del Phase 3 RESTORE (opex C$12.2M en Q2); la guía dice que la caja alcanza hasta el readout de 1H28, que es el evento binario.' },
 };
 
 // RESEARCH — external theses folded into the dossier (paraphrased, attributed). Only tickers with a vetted source render this module.
@@ -592,6 +605,25 @@ export default function BiologyIsCode() {
             <QPLChart q={Q} mb={mb} />
             <QPLTable q={Q} mb={mb} />
             {(QREV[active]?.note || QREV_CARD[active]?.[2] || Q.foot) && <div style={{ fontSize: 11.5, color: 'var(--text-muted)', lineHeight: 1.5, fontFamily: SANS, marginTop: 8 }}>{[QREV[active]?.note || QREV_CARD[active]?.[2], Q.foot].filter(Boolean).join(' ')}</div>}
+          </Module>); })()}
+
+        {/* cash on hand */}
+        {CASH[active] && (() => { const Cs = CASH[active]; const cap = capOf(tk); const ratio = cap ? (Cs.cash / cap) * 100 : null; const q = Cs.burn > 0 ? Cs.cash / Cs.burn : null; return (
+          <Module title="Cash on hand" aside={`${Cs.asof} · caja + equivalentes + valores`} style={{ marginBottom: 18 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr 1fr' : 'repeat(4,1fr)', gap: 8, marginBottom: 10 }}>
+              {[
+                ['Caja', Cs.cashTxt, Cs.asof.split(' · ')[0], 'bright'],
+                ['Quema / trimestre', Cs.burnTxt, Cs.burn > 0 ? 'salida de caja' : 'entrada de caja', Cs.burn > 0 ? 'bad' : 'good'],
+                ['Runway', Cs.runway, Cs.runwaySub, q != null && q < 4 ? 'bad' : q != null && q < 8 ? 'warn' : 'good'],
+                ['Caja / mcap', ratio != null ? Math.round(ratio) + '%' : '—', ratio != null ? (ratio >= 100 ? 'caja > capitalización' : `mcap ${fmtCap(cap)} en vivo`) : '', ratio != null && ratio >= 100 ? 'good' : 'muted'],
+              ].map(([k, v, sub, tone]) => (
+                <div key={k} style={{ background: 'var(--surface-2)', borderRadius: 6, padding: '8px 11px' }}>
+                  <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO }}>{k}</div>
+                  <div style={{ fontSize: 17, fontWeight: 800, fontFamily: MONO, marginTop: 2, color: tone === 'bad' ? '#e0697f' : tone === 'good' ? GRN : tone === 'warn' ? 'var(--gold)' : 'var(--text-bright)' }}>{v}</div>
+                  {sub ? <div style={{ fontSize: 11, fontFamily: MONO, color: 'var(--text-muted)' }}>{sub}</div> : null}
+                </div>))}
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.55, fontFamily: SANS }}>{Cs.note}{q != null && <> A la quema de Q2, la caja cubre ~{q.toFixed(1)} trimestres.</>}</div>
           </Module>); })()}
 
         {/* cash */}

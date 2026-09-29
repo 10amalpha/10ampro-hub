@@ -297,3 +297,8 @@ On every standalone page, the header hub/back button **must link to `https://10a
 - NAUT: síntesis de Antonio Linares, "Nautilus: Tesla for Proteomics" (28 sep 2026): tesis (máquina que imprime lecturas de proteoma, algoritmo Tesla, única con resolución de proteoforma), flywheel (tau 5 años → oncología 1 año → meses; ~20 assays mid-2028), muestra (tejido → 100× menos early 2027 → CSF 2028 → sangre), APOE→tau, CV 5.5% vs 25%, unit economics ($1M/instrumento + consumibles), valuación ($120M vs terminal value), hitos (AKT1 early access, 100× muestra, pre-órdenes, ronda antes de mid-2027) y riesgos. Todo parafraseado y atribuido.
 - Nota de la fila de NAUT en el basket board ajustada. Ledger +1.5h (fuentes).
 - Patrón para los otros 8: agregar una entrada en `RESEARCH` con src/tagline/thesis/points/milestones/risks/stance; el módulo aparece solo.
+
+## 2026-09-29 (2) — biology-is-code: módulo CASH ON HAND en cada dossier
+- Nuevo `CASH` (9 tickers) + módulo "Cash on hand" entre P&L trimestral y FCF/acción: 4 cells (caja Jun 30 '26, quema/trimestre, runway, caja/mcap calculado con el mcap en vivo) + nota + trimestres cubiertos a la quema de Q2.
+- Datos (Jun 30 '26): HIMS $840M+ (deck), TEM $820.7M, CAI $791.7M (689.5 cash + 102.2 valores, 10-Q), IBRX $357M, RXRX $556.8M (8-K; corregido el $665M viejo de la nota FCF, que era Mar 31), NAUT ~$129M, INKT $8.8M, PBLS $1.1B, NGEN US$61.1M.
+- Lección 23: cuando una cifra de caja aparece dos veces en la página (nota P&L vs nota FCF) revisar que sea el mismo cierre — RXRX tenía Q1 y Q2 mezclados.

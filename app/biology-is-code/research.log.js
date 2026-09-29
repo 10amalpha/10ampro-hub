@@ -28,6 +28,7 @@ export const LOG = [
   { d: '2026-09-15', cat: 'modelo', h: 4, est: true, note: 'Ingresos trimestrales Q1’25–Q2’26 y % de guía ejecutada' },
   { d: '2026-09-23', cat: 'charting', h: 6, est: true, note: '9 charts: régimen, estructura, niveles, paths 1M / 3M / 1Y con invalidación' },
   { d: '2026-09-24', cat: 'modelo', h: 1, note: 'P&L trimestral Q1’25–Q2’26 de los 9 tickers (ingresos, margen bruto, resultado operativo y neto), verificado contra SEC XBRL y Yahoo' },
+  { d: '2026-09-29', cat: 'modelo', h: 1.5, note: 'Cash on hand de los 9 tickers al 30 jun ’26 (10-Q/8-K), quema, runway y caja/mcap en vivo' },
   { d: '2026-09-29', cat: 'fuentes', h: 1.5, note: 'NAUT: lectura y síntesis de "Nautilus: Tesla for Proteomics" (A. Linares, post-Q2 FY26) → módulo Research en el dossier' },
   { d: '2026-09-23', cat: 'noticias', h: 9, est: true, note: 'Seguimiento continuo jun–sep (~40 min / semana × 14 semanas): podcasts, noticias, hilos' },
 ];

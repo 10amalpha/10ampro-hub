@@ -313,3 +313,6 @@ On every standalone page, the header hub/back button **must link to `https://10a
 - New dossier module (before the quarterly P&L): tier + rationale, plus `HOLDERS` — public disclosures with source links (Antonio Linares: NAUT micro position via Substack + "$NAUT is $PLTR for peptides" X post; $IBRX and $HIMS in his X bio; Hernán: HIMS core position).
 - Tier order was set from the Sep 28 prioritization chat; Hernán can reorder by editing `ENTRY.rank`.
 - Observation: NAUT closed +32% at $1.47 today — above the 1.18 invalidation, the live engine flags the BEAR editor read as invalidated. Editor TA for NAUT needs a rewrite in the next TA pass.
+
+## 2026-09-29 (5) — NAUT is an experimental holding
+- Hernán holds an experimental NAUT position (avg cost ~$0.9086). ENTRY: NAUT → rank 2, tier "HOLDING · EXP"; IBRX/RXRX/TEM shift to 3/4/5. Added to HOLDERS. Board order now HIMS, NAUT, IBRX, RXRX, TEM, INKT, CAI, PBLS, NGEN.

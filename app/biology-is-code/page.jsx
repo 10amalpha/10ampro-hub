@@ -217,11 +217,11 @@ function QRevChart({ sym }) {
 // ENTRY — Hernán's preferred entry order for the basket. Governs the board order (not market cap) and the "Entry" column / dossier module.
 // tier: HOLDING (in the portfolio) · BUILD (accumulate on the plan) · STUDY (size only after valuation work) · OPTION (small, cash-backed, binary) · MONITOR (watch Q3 first)
 const ENTRY = {
-  HIMS: { rank: 1, tier: 'HOLDING', color: '#22c55e', why: 'Already a core position. The ORCHESTRATE layer — the only ticker that owns the consumer. Q3 (Nov 9) guided +47–50% is the next test; below the EMA200 the chart is not paying for it yet.' },
-  IBRX: { rank: 2, tier: 'BUILD', color: '#22c55e', why: 'Approved product with a real commercial ramp (ANKTIVA +92% YoY) and a dated binary: PDUFA Jan 6, 2027. Size before the event, not during. Study dilution history, EU launch margins and competition.' },
-  RXRX: { rank: 3, tier: 'BUILD', color: '#22c55e', why: 'Purest expression of the MODEL node. Runway into early 2028 and REC-4881 Ph2 / regulatory updates before year-end. If the platform validates clinically, the re-rating is large; if not, the cash buys time.' },
-  TEM: { rank: 4, tier: 'STUDY', color: '#D4A843', why: 'Largest by market cap and the clinical READ layer, but the risk now is valuation after the +70% run, not the business. Study before touching; the pullback to 72–74 is the technical entry.' },
-  NAUT: { rank: 5, tier: 'OPTION', color: '#f59e0b', why: 'Cash above market cap, science de-risked, commercialization starting — but pre-revenue, a raise before mid-2027 and Nasdaq $1 compliance. Small, cash-backed option; overlaps the proteomics exposure already held via QSI.' },
+  HIMS: { rank: 1, tier: 'HOLDING', color: '#22c55e', why: 'Core position. The ORCHESTRATE layer — the only ticker that owns the consumer. Q3 (Nov 9) guided +47–50% is the next test; below the EMA200 the chart is not paying for it yet.' },
+  IBRX: { rank: 3, tier: 'BUILD', color: '#22c55e', why: 'Approved product with a real commercial ramp (ANKTIVA +92% YoY) and a dated binary: PDUFA Jan 6, 2027. Size before the event, not during. Study dilution history, EU launch margins and competition.' },
+  RXRX: { rank: 4, tier: 'BUILD', color: '#22c55e', why: 'Purest expression of the MODEL node. Runway into early 2028 and REC-4881 Ph2 / regulatory updates before year-end. If the platform validates clinically, the re-rating is large; if not, the cash buys time.' },
+  TEM: { rank: 5, tier: 'STUDY', color: '#D4A843', why: 'Largest by market cap and the clinical READ layer, but the risk now is valuation after the +70% run, not the business. Study before touching; the pullback to 72–74 is the technical entry.' },
+  NAUT: { rank: 2, tier: 'HOLDING · EXP', color: '#22c55e', why: 'Experimental position, opened around $0.91 while cash sat above market cap. The thesis (science de-risked, assay flywheel, commercialization starting) is intact; the risks are pre-revenue burn, a raise before mid-2027 and Nasdaq $1 compliance. Stays small until the raise terms and the 100× sample cut land; overlaps the proteomics exposure held via QSI.' },
   INKT: { rank: 6, tier: 'OPTION', color: '#f59e0b', why: 'Real cost edge (iNKT vs CAR-T) and the first randomized ARDS test underway, but $8.8M of cash and a ~5M-share float make financing the dominant risk. Lottery-sized only.' },
   CAI: { rank: 7, tier: 'MONITOR', color: '#888780', why: 'Business is inflecting (fifth EBITDA-positive quarter, self-funded), but the stock is at its 52-week high with RSI ~80. Wait for the 28–29 retest and the Q3 print.' },
   PBLS: { rank: 8, tier: 'MONITOR', color: '#888780', why: 'Fresh IPO, $1.1B cash, zero revenue: flows move the price. Lockup expiry around mid-December is the supply event to wait for; zone of interest 25–28.6.' },
@@ -232,6 +232,7 @@ const TICKERS = TICKERS_BY_MCAP.slice().sort((a, b) => ENTRY[a.sym].rank - ENTRY
 // MARKET ENTRIES — notable public holders / disclosures per ticker, with the source link. Data, not endorsement.
 const HOLDERS = {
   NAUT: [
+    { who: 'Hernán (10AMPRO)', what: 'Experimental position, average cost ~$0.91. Sized as a cash-backed option, not a build.', src: '10am.pro', url: 'https://10am.pro' },
     { who: 'Antonio Linares', what: 'Micro position; adding gradually as milestones land (AKT1 early access, 100× sample cut, pre-orders, raise terms).', src: 'Substack, "Nautilus: Tesla for Proteomics", Sep 28, 2026', url: 'https://antoniolinares.substack.com' },
     { who: 'Antonio Linares', what: '"$NAUT is $PLTR for peptides" — proteoform map as the Ontology.', src: 'X, @alc2022', url: 'https://x.com/alc2022/status/2036442913282924959' },
   ],

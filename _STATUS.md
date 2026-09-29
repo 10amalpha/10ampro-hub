@@ -291,3 +291,9 @@ On every standalone page, the header hub/back button **must link to `https://10a
 - Data (revenue $M): HIMS 586.0/544.8/599.0/617.8/608.1/753.0 (H1'26 42.5% de $3.2B); TEM 255.7/314.6/334.2/367.3*/348.1/382.5 (45.7% de $1.6B); CAI 120.9/181.4/216.8/292.9/216.2/263.7 (46.4% de $1.035B); IBRX 16.5/26.4/31.8*/38.3/44.2/50.7; RXRX 14.7/19.2/5.2/35.5/6.5/7.7. (*derivado de FY2025 menos trimestres reportados.)
 - Fuentes: 8-K/10-Q y press releases oficiales (SEC EDGAR, IR sites). Metodología actualizada.
 - Lección 22: cuando FY en curso está a mitad, el anual no sirve para decidir — siempre mostrar trimestres ejecutados vs. comps y % de guía consumido.
+
+## 2026-09-29 — biology-is-code: módulo RESEARCH en el dossier (NAUT)
+- Nuevo bloque `RESEARCH` (const keyed por ticker) + módulo "Research · tesis externa" en el dossier, entre Técnico y Nota completa. Solo renderiza para tickers con fuente vetada; hoy NAUT.
+- NAUT: síntesis de Antonio Linares, "Nautilus: Tesla for Proteomics" (28 sep 2026): tesis (máquina que imprime lecturas de proteoma, algoritmo Tesla, única con resolución de proteoforma), flywheel (tau 5 años → oncología 1 año → meses; ~20 assays mid-2028), muestra (tejido → 100× menos early 2027 → CSF 2028 → sangre), APOE→tau, CV 5.5% vs 25%, unit economics ($1M/instrumento + consumibles), valuación ($120M vs terminal value), hitos (AKT1 early access, 100× muestra, pre-órdenes, ronda antes de mid-2027) y riesgos. Todo parafraseado y atribuido.
+- Nota de la fila de NAUT en el basket board ajustada. Ledger +1.5h (fuentes).
+- Patrón para los otros 8: agregar una entrada en `RESEARCH` con src/tagline/thesis/points/milestones/risks/stance; el módulo aparece solo.

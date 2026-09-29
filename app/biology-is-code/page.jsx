@@ -26,7 +26,7 @@ const TICKERS = [
   { sym: 'PBLS', name: 'Parabilis Medicines', layer: 'WRITE', mcap: '$5.0B', price: '$40.42', note: 'Helicon peptides for flat / undruggable proteins. IPO Jun 2026; $1.1B cash after first public quarter.' },
   { sym: 'RXRX', name: 'Recursion Pharmaceuticals', layer: 'READ', mcap: '$1.95B', price: '$3.63', note: 'Wetlab simulation; physics\u2192chemistry\u2192biology. Q2: opex cut ~40%, Genentech optioned first neuro target.' },
   { sym: 'NGEN', name: 'NervGen Pharma', layer: 'WRITE', mcap: '$249M', price: '$2.32', note: 'Nervous-system regeneration (NVG-291). Ph3 RESTORE screening starts Sep 2026; funded to 1H28 readout.' },
-  { sym: 'NAUT', name: 'Nautilus Biotechnology', layer: 'READ', mcap: '$115M', price: '$0.90', note: '10B-protein mapping. First revenue booked in Q2; Nature Methods tau-proteoform paper (Sep 4). Cash still tops market cap.' },
+  { sym: 'NAUT', name: 'Nautilus Biotechnology', layer: 'READ', mcap: '$115M', price: '$0.90', note: '10B-protein mapping. First revenue booked in Q2; Nature Methods tau-proteoform paper (Sep 4); APOE→tau proteoform link. Cash still tops market cap. Research module added.' },
   { sym: 'INKT', name: 'MiNK Therapeutics', layer: 'WRITE', mcap: '$55M', price: '$11.07', note: 'Immune bypass \u2014 iNKT cells target stable lipids, not peptides. Randomized Ph2 in ARDS dosing; $8.8M cash.' },
 ];
 
@@ -239,6 +239,26 @@ const CHAIN = {
     ['NervGen ($NGEN)', 'Nervous-system regeneration (NVG-291).'],
     ['Parabilis ($PBLS)', 'Solving flat-protein errors (Helicon peptides).'],
   ] },
+};
+
+// RESEARCH — external theses folded into the dossier (paraphrased, attributed). Only tickers with a vetted source render this module.
+const RESEARCH = {
+  NAUT: {
+    src: 'Antonio Linares — "Nautilus: Tesla for Proteomics" (update post-Q2 FY2026, 28 sep 2026)',
+    tagline: 'Una máquina que imprime lecturas del proteoma a costo marginal decreciente, acumulando hacia un gemelo digital que vuelve la enfermedad resoluble.',
+    thesis: 'La tesis: el valor de AI × biología se concentra en la capa proteómica, porque es donde la enfermedad aparece y se sostiene (las proteínas se acoplan por forma, como un Lego). Nautilus es hoy la única empresa que lee el proteoma con resolución de proteoforma. Lo que el mercado lee como debilidad — el giro a verticales específicas (neuro, oncología) — Linares lo lee como el primer paso del "algoritmo Tesla": construir una máquina que imprime soluciones verticales a un problema industrial masivo, a costo marginal decreciente y cada vez más difícil de replicar. Cada assay nuevo llega más rápido que el anterior; con suficientes verticales, la cobertura se vuelve indistinguible de un gemelo digital del proteoma.',
+    points: [
+      ['Flywheel', 'Tau (primer assay) tardó ~5 años. Los primeros assays de oncología (AKT1, EGFR, p53) cruzaron la misma barra técnica en ~1 año. Guía: cadencia de meses; ~20 assays de proteoforma para mid-2028 (+ inmunología, cardiología).'],
+      ['Muestra', 'Hoy: solo tejido cerebral (9 de 10 llamadas de venta piden CSF o sangre). Early 2027: ~100× menos muestra → abre sangre en oncología. 2028: CSF para tau. Sangre: "coming soon", sin fecha.'],
+      ['APOE → tau', 'Primera vez que las variantes de riesgo de APOE (ε2/ε3/ε4) se mapean a firmas distintas de proteoformas de tau — el eslabón mecanístico que el campo persiguió por décadas. Es el "proof point" de la capa READ: gen → forma exacta de proteína → enfermedad.'],
+      ['Precisión', 'CV ~5.5% en el instrumento alfa del Buck Institute vs ~25% de norma en la industria.'],
+      ['Unit economics', 'Precio objetivo ~$1M por instrumento + consumibles de pocos miles de dólares por muestra. Ola de lanzamiento comercial apuntada a mid-2027.'],
+      ['Valuación', 'Mcap ~$120M vs. un valor terminal que el autor pone en el orden del trillón si la plataforma mapea proteomas desde sangre a escala. OpEx −7% YoY, runway hasta 2028. Acción −70% desde marzo mientras los fundamentales fueron en dirección contraria.'],
+    ],
+    milestones: ['AKT1 entrando a early access', 'Reducción 100× en muestra (early 2027)', 'Pre-órdenes de instrumentos', 'Términos de la ronda (espera levantar antes de mid-2027)'],
+    risks: ['Balance delgado, revenue inmaterial, quema de caja; el riesgo financiero es la preocupación central', 'Dilución: ronda antes de mid-2027 con la acción bajo $1', 'Ejecución: la tesis depende de que la cadencia de assays y la reducción de muestra se cumplan'],
+    stance: 'Posición micro para el autor; suma gradualmente a medida que cada hito se materializa. Coincide con nuestra regla: opción respaldada por caja, sin sumar bajo la EMA50.',
+  },
 };
 
 // Quarterly P&L module: grouped bars (revenue / gross / operating) + compact table. Replaces the annual view.
@@ -585,6 +605,32 @@ export default function BiologyIsCode() {
         <Module title="Técnico y forecast" aside="en vivo · mismo motor que los hubs de Solana" style={{ marginBottom: 18 }}>
           <TAModule sym={active} A={A} mb={mb} />
         </Module>
+
+        {/* research — external thesis */}
+        {RESEARCH[active] && (() => { const R = RESEARCH[active]; return (
+          <Module title="Research · tesis externa" aside={mb ? 'fuente citada abajo' : 'paráfrasis · fuente citada abajo'} style={{ marginBottom: 18 }}>
+            <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text-bright)', fontFamily: DISP, lineHeight: 1.45, marginBottom: 8 }}>{R.tagline}</div>
+            <p style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: SANS, lineHeight: 1.6, margin: '0 0 12px' }}>{R.thesis}</p>
+            <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 8, marginBottom: 12 }}>
+              {R.points.map(([k, v]) => (
+                <div key={k} style={{ background: 'var(--surface-2)', borderRadius: 6, padding: '9px 11px' }}>
+                  <div style={{ fontSize: 10.5, color: 'var(--gold)', fontFamily: MONO, fontWeight: 700, marginBottom: 3 }}>{k}</div>
+                  <div style={{ fontSize: 12.5, color: 'var(--text-primary)', fontFamily: SANS, lineHeight: 1.5 }}>{v}</div>
+                </div>))}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 10 }}>
+              <div>
+                <div style={{ fontSize: 10.5, color: GRN, fontFamily: MONO, fontWeight: 700, marginBottom: 4 }}>HITOS A VIGILAR</div>
+                <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12.5, color: 'var(--text-primary)', fontFamily: SANS, lineHeight: 1.55 }}>{R.milestones.map((x) => <li key={x}>{x}</li>)}</ul>
+              </div>
+              <div>
+                <div style={{ fontSize: 10.5, color: RED, fontFamily: MONO, fontWeight: 700, marginBottom: 4 }}>RIESGOS</div>
+                <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12.5, color: 'var(--text-primary)', fontFamily: SANS, lineHeight: 1.55 }}>{R.risks.map((x) => <li key={x}>{x}</li>)}</ul>
+              </div>
+            </div>
+            <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', fontFamily: SANS, lineHeight: 1.5, borderLeft: '2px solid var(--gold)', paddingLeft: 10, marginBottom: 8 }}>{R.stance}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: MONO }}>Fuente: {R.src}. Paráfrasis y síntesis propia; no es recomendación de inversión.</div>
+          </Module>); })()}
 
         {/* full note */}
         <Module title="Nota completa del último trimestre">

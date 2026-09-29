@@ -17,8 +17,8 @@ const C_OP = '#f59e0b';
 
 const LAYER_COLOR = { READ: '#378ADD', ORCHESTRATE: '#D4A843', WRITE: '#22c55e' };
 
-// Market caps / prices: Sep 4, 2026 close. Moves daily.
-const TICKERS = [
+// Market caps / prices: Sep 4, 2026 close. Moves daily. Board order comes from ENTRY (below), not from this list.
+const TICKERS_BY_MCAP = [
   { sym: 'TEM', name: 'Tempus AI', layer: 'READ', mcap: '$11.7B', price: '$64.62', note: 'Deep oncology data, integrated with hospitals. Q2 rev $382.5M (+22%), first GAAP profit; +70% in 30 days on the Merck/Moderna mRNA-vaccine Ph3 win (Personalis deal).' },
   { sym: 'IBRX', name: 'ImmunityBio', layer: 'WRITE', mcap: '$8.6B', price: '$8.08', note: 'Immune system reboot (IL-15 superagonist). Q2 ANKTIVA sales $50.7M (+92%), 8th straight sequential gain; PDUFA Jan 6, 2027.' },
   { sym: 'CAI', name: 'Caris Life Sciences', layer: 'READ', mcap: '$7.1B', price: '$25.07', note: 'Molecular profiling. Record Q2 ($263.7M rev, +45%), adj-EBITDA positive; Caris Detect (MCED) launched.' },
@@ -213,6 +213,36 @@ function QRevChart({ sym }) {
     </svg>
   );
 }
+
+// ENTRY — Hernán's preferred entry order for the basket. Governs the board order (not market cap) and the "Entry" column / dossier module.
+// tier: HOLDING (in the portfolio) · BUILD (accumulate on the plan) · STUDY (size only after valuation work) · OPTION (small, cash-backed, binary) · MONITOR (watch Q3 first)
+const ENTRY = {
+  HIMS: { rank: 1, tier: 'HOLDING', color: '#22c55e', why: 'Already a core position. The ORCHESTRATE layer — the only ticker that owns the consumer. Q3 (Nov 9) guided +47–50% is the next test; below the EMA200 the chart is not paying for it yet.' },
+  IBRX: { rank: 2, tier: 'BUILD', color: '#22c55e', why: 'Approved product with a real commercial ramp (ANKTIVA +92% YoY) and a dated binary: PDUFA Jan 6, 2027. Size before the event, not during. Study dilution history, EU launch margins and competition.' },
+  RXRX: { rank: 3, tier: 'BUILD', color: '#22c55e', why: 'Purest expression of the MODEL node. Runway into early 2028 and REC-4881 Ph2 / regulatory updates before year-end. If the platform validates clinically, the re-rating is large; if not, the cash buys time.' },
+  TEM: { rank: 4, tier: 'STUDY', color: '#D4A843', why: 'Largest by market cap and the clinical READ layer, but the risk now is valuation after the +70% run, not the business. Study before touching; the pullback to 72–74 is the technical entry.' },
+  NAUT: { rank: 5, tier: 'OPTION', color: '#f59e0b', why: 'Cash above market cap, science de-risked, commercialization starting — but pre-revenue, a raise before mid-2027 and Nasdaq $1 compliance. Small, cash-backed option; overlaps the proteomics exposure already held via QSI.' },
+  INKT: { rank: 6, tier: 'OPTION', color: '#f59e0b', why: 'Real cost edge (iNKT vs CAR-T) and the first randomized ARDS test underway, but $8.8M of cash and a ~5M-share float make financing the dominant risk. Lottery-sized only.' },
+  CAI: { rank: 7, tier: 'MONITOR', color: '#888780', why: 'Business is inflecting (fifth EBITDA-positive quarter, self-funded), but the stock is at its 52-week high with RSI ~80. Wait for the 28–29 retest and the Q3 print.' },
+  PBLS: { rank: 8, tier: 'MONITOR', color: '#888780', why: 'Fresh IPO, $1.1B cash, zero revenue: flows move the price. Lockup expiry around mid-December is the supply event to wait for; zone of interest 25–28.6.' },
+  NGEN: { rank: 9, tier: 'MONITOR', color: '#888780', why: 'No clinical catalyst until the RESTORE readout in 1H28 and burn accelerating. Nothing to do until the 1.59–2.34 base resolves or the Q3 filing changes the picture.' },
+};
+const TICKERS = TICKERS_BY_MCAP.slice().sort((a, b) => ENTRY[a.sym].rank - ENTRY[b.sym].rank);
+
+// MARKET ENTRIES — notable public holders / disclosures per ticker, with the source link. Data, not endorsement.
+const HOLDERS = {
+  NAUT: [
+    { who: 'Antonio Linares', what: 'Micro position; adding gradually as milestones land (AKT1 early access, 100× sample cut, pre-orders, raise terms).', src: 'Substack, "Nautilus: Tesla for Proteomics", Sep 28, 2026', url: 'https://antoniolinares.substack.com' },
+    { who: 'Antonio Linares', what: '"$NAUT is $PLTR for peptides" — proteoform map as the Ontology.', src: 'X, @alc2022', url: 'https://x.com/alc2022/status/2036442913282924959' },
+  ],
+  IBRX: [
+    { who: 'Antonio Linares', what: 'Lists $IBRX among his early positions in his X bio.', src: 'X, @alc2022 profile', url: 'https://x.com/alc2022' },
+  ],
+  HIMS: [
+    { who: 'Hernán (10AMPRO)', what: 'Core position — see the ORCHESTRATE thesis below.', src: '10am.pro', url: 'https://10am.pro' },
+    { who: 'Antonio Linares', what: 'Lists $HIMS among his early positions in his X bio.', src: 'X, @alc2022 profile', url: 'https://x.com/alc2022' },
+  ],
+};
 
 const TABS = ['HIMS', 'TEM', 'CAI', 'IBRX', 'RXRX', 'NAUT', 'INKT', 'PBLS', 'NGEN'];
 
@@ -504,7 +534,7 @@ export default function BiologyIsCode() {
     </div>
   );
 
-  const cols = mb ? '68px 1fr 76px 64px' : '92px 96px 84px 110px 96px 110px 70px 84px';
+  const cols = mb ? '84px 1fr 76px 64px' : '108px 96px 84px 100px 92px 92px 96px 60px 80px';
 
   return (
     <div style={{ maxWidth: 980, margin: '0 auto', padding: mb ? '6px 10px' : '10px 20px' }}>
@@ -529,17 +559,18 @@ export default function BiologyIsCode() {
       {/* BASKET BOARD — one row per ticker, click opens the dossier */}
       <div style={{ border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden', marginBottom: 6 }}>
         <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 8, padding: '8px 12px', background: 'var(--surface-2)', fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO }}>
-          <span>Ticker</span><span>Price</span>{!mb && <span>Mcap</span>}{!mb && <span>Revenue Q2’26</span>}{!mb && <span>FCF/sh Q2’26</span>}<span>Technical</span><span style={{ textAlign: 'right' }}>1M</span>{!mb && <span style={{ textAlign: 'right' }}>Invalidation</span>}
+          <span>#&nbsp;Ticker</span><span>Price</span>{!mb && <span>Mcap</span>}{!mb && <span>Revenue Q2’26</span>}{!mb && <span>FCF/sh Q2’26</span>}{!mb && <span>Entry</span>}<span>Technical</span><span style={{ textAlign: 'right' }}>1M</span>{!mb && <span style={{ textAlign: 'right' }}>Invalidation</span>}
         </div>
         {TICKERS.map((t) => {
           const x = live[t.sym] || {}; const on = t.sym === active; const f = fundamentals(t.sym); const L = x.d?.price; const bad = isInvalidated(x);
           return (
             <button key={t.sym} onClick={() => pick(t.sym, true)} style={{ display: 'grid', gridTemplateColumns: cols, gap: 8, alignItems: 'center', width: '100%', textAlign: 'left', padding: '9px 12px', border: 0, borderTop: '1px solid var(--border-subtle)', background: on ? 'var(--surface-2)' : 'var(--surface)', boxShadow: on ? 'inset 3px 0 0 var(--gold)' : 'none', cursor: 'pointer', fontFamily: MONO, fontSize: 12.5, color: 'var(--text-primary)' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 7 }}><span style={{ width: 7, height: 7, borderRadius: 2, background: LAYER_COLOR[t.layer], flexShrink: 0 }} /><b style={{ color: 'var(--text-bright)' }}>{t.sym}</b></span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 7 }}><span style={{ fontSize: 10.5, color: 'var(--text-muted)', width: 10 }}>{ENTRY[t.sym].rank}</span><span style={{ width: 7, height: 7, borderRadius: 2, background: LAYER_COLOR[t.layer], flexShrink: 0 }} /><b style={{ color: 'var(--text-bright)' }}>{t.sym}</b></span>
               <span>{L ? fmtPx(L) : t.price}{L && x.d.chg != null && !mb ? <span style={{ fontSize: 10.5, marginLeft: 5, color: x.d.chg >= 0 ? GRN : RED }}>{x.d.chg >= 0 ? '+' : ''}{x.d.chg.toFixed(1)}%</span> : null}</span>
               {!mb && <span>{fmtCap(capOf(t))}</span>}
               {!mb && <span>{f.rev ? <>{f.rev.v} {yoyEl(f.rev.yoy)}</> : '—'}</span>}
               {!mb && <span style={{ color: f.fcf?.v != null ? (f.fcf.v >= 0 ? GRN : RED) : 'var(--text-muted)' }}>{f.fcf?.v != null ? (f.fcf.v >= 0 ? '+' : '−') + '$' + Math.abs(f.fcf.v).toFixed(2) : 'no series'}</span>}
+              {!mb && <span style={{ fontSize: 10.5, fontWeight: 700, color: ENTRY[t.sym].color }}>{ENTRY[t.sym].tier}</span>}
               <span style={{ color: biasCol(x), fontWeight: 700, fontSize: 11.5 }}>{x.fc ? `${x.fc.dir} ${x.trend.score}/7` : x.d && !x.d.ok ? 'no data' : '…'}</span>
               <span style={{ textAlign: 'right', color: biasCol(x) }}>{x.fc && L ? pc(x.fc.path[0].target / L - 1, 0) : '—'}</span>
               {!mb && <span style={{ textAlign: 'right', fontSize: 11.5, color: bad ? RED : 'var(--text-secondary)' }}>{x.fc ? fmtPx(x.fc.invalidation) : '—'}{bad ? ' ✕' : ''}</span>}
@@ -547,7 +578,7 @@ export default function BiologyIsCode() {
           );
         })}
       </div>
-      <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: SANS, marginBottom: 18 }}>Live price and technicals. Mcap scaled to the live price from the snapshot share count ({AS_OF}). Fundamentals from the last reported quarter. Tap a row to open the dossier.</div>
+      <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: SANS, marginBottom: 18 }}>Ranked by preferred entry order, not market cap (HOLDING → BUILD → STUDY → OPTION → MONITOR). Live price and technicals; mcap scaled to the live price from the snapshot share count ({AS_OF}); fundamentals from the last reported quarter. Tap a row to open the dossier.</div>
 
       {/* TICKER DOSSIER */}
       <div ref={dossierRef} style={{ position: 'sticky', top: 0, zIndex: 20, background: 'var(--bg)', padding: '8px 0', marginBottom: 10, borderBottom: '1px solid var(--border)' }}>
@@ -586,6 +617,23 @@ export default function BiologyIsCode() {
         {F.rev?.next && <div style={{ fontSize: 11.5, color: 'var(--gold)', fontFamily: MONO, marginTop: 8 }}>Next report: {F.rev.next}</div>}
 
         <p style={{ fontSize: 14, color: 'var(--text-primary)', fontFamily: SANS, lineHeight: 1.6, margin: '12px 0 16px' }}>{tk.note}</p>
+
+        {/* entry stance + market entries */}
+        {(() => { const E = ENTRY[active]; const Hs = HOLDERS[active] || []; return (
+          <Module title="Entry & market entries" aside={`#${E.rank} of 9 in the preferred entry order`} style={{ marginBottom: 18 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 11, fontWeight: 800, fontFamily: MONO, color: E.color, border: `1px solid ${E.color}66`, borderRadius: 4, padding: '3px 8px', whiteSpace: 'nowrap' }}>{E.tier}</span>
+              <p style={{ flex: 1, minWidth: 220, margin: 0, fontSize: 13, color: 'var(--text-primary)', fontFamily: SANS, lineHeight: 1.6 }}>{E.why}</p>
+            </div>
+            {Hs.length > 0 && <div style={{ marginTop: 12 }}>
+              <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO, fontWeight: 700, marginBottom: 6 }}>WHO IS IN · public disclosures</div>
+              {Hs.map((h, i) => (
+                <div key={i} style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '150px 1fr', gap: mb ? 2 : 12, padding: '7px 0', borderTop: i ? '1px solid var(--border-subtle)' : 'none', fontSize: 12.5, fontFamily: SANS, lineHeight: 1.5 }}>
+                  <b style={{ color: 'var(--text-bright)' }}>{h.who}</b>
+                  <span style={{ color: 'var(--text-secondary)' }}>{h.what} <a href={h.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--gold)', fontFamily: MONO, fontSize: 11.5, textDecoration: 'none' }}>{h.src} ↗</a></span>
+                </div>))}
+            </div>}
+          </Module>); })()}
 
         {/* quarterly P&L — the main fundamental read */}
         {(() => { const Q = QFIN[active]; const hl = qHeadline(Q); return (

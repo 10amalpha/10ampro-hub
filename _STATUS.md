@@ -307,3 +307,9 @@ On every standalone page, the header hub/back button **must link to `https://10a
 - Standing rule from Hernán: the /biology-is-code page is 100% English. Translated every UI string, module title, table label, tooltip and data note in page.jsx (CASH, RESEARCH, methodology, thesis summary, footer quote), ta.editor.js (all 9 editor TA reads rewritten in English), BioTA.jsx, ResearchClock.jsx (+ 'en' locale), research.log.js (category labels + notes), layout.jsx metadata and the OG image route.
 - Also removed the stray "Research module added." from the NAUT basket-board note.
 - Lesson 24: new content on this page goes in English from the start — check `grep -E "á|é|í|ó|ú|ñ"` on the route before pushing.
+
+## 2026-09-29 (4) — biology-is-code: board ranked by preferred entry + "Entry & market entries" module
+- Board no longer sorts by market cap: `ENTRY` config (rank, tier, why) orders it HIMS → IBRX → RXRX → TEM → NAUT → INKT → CAI → PBLS → NGEN (HOLDING / BUILD / STUDY / OPTION / MONITOR). Rank number in the ticker cell, "Entry" tier column on desktop, footnote updated. `TICKERS_BY_MCAP` keeps the snapshot data; `TICKERS` is the sorted view.
+- New dossier module (before the quarterly P&L): tier + rationale, plus `HOLDERS` — public disclosures with source links (Antonio Linares: NAUT micro position via Substack + "$NAUT is $PLTR for peptides" X post; $IBRX and $HIMS in his X bio; Hernán: HIMS core position).
+- Tier order was set from the Sep 28 prioritization chat; Hernán can reorder by editing `ENTRY.rank`.
+- Observation: NAUT closed +32% at $1.47 today — above the 1.18 invalidation, the live engine flags the BEAR editor read as invalidated. Editor TA for NAUT needs a rewrite in the next TA pass.

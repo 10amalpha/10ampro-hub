@@ -30,5 +30,6 @@ export const LOG = [
   { d: '2026-09-24', cat: 'modelo', h: 1, note: 'Quarterly P&L Q1’25–Q2’26 for the 9 tickers (revenue, gross margin, operating and net result), verified against SEC XBRL and Yahoo' },
   { d: '2026-09-29', cat: 'modelo', h: 1.5, note: 'Cash on hand for the 9 tickers at Jun 30 ’26 (10-Q/8-K), burn, runway and live cash/mcap' },
   { d: '2026-09-29', cat: 'fuentes', h: 1.5, note: 'NAUT: read and synthesized "Nautilus: Tesla for Proteomics" (A. Linares, post-Q2 FY26) → Research module in the dossier' },
+  { d: '2026-09-29', cat: 'tesis', h: 1, note: 'Preferred entry order (HOLDING / BUILD / STUDY / OPTION / MONITOR) and public holders with sources' },
   { d: '2026-09-23', cat: 'noticias', h: 9, est: true, note: 'Continuous tracking Jun–Sep (~40 min / week × 14 weeks): podcasts, news, threads' },
 ];

@@ -15,9 +15,9 @@ const GOLD = '#D4A843';
 const GRN = '#22c55e';
 
 const LAYERS = [
-  { tag: 'READ', sub: 'Leer el código', color: BLUE, ticks: 'NAUT · TEM · CAI · RXRX' },
-  { tag: 'ORCHESTRATE', sub: 'Orquestar la data', color: GOLD, ticks: 'HIMS' },
-  { tag: 'WRITE', sub: 'Escribir la biología', color: GRN, ticks: 'IBRX · INKT · NGEN · PBLS' },
+  { tag: 'READ', sub: 'Read the code', color: BLUE, ticks: 'NAUT · TEM · CAI · RXRX' },
+  { tag: 'ORCHESTRATE', sub: 'Orchestrate the data', color: GOLD, ticks: 'HIMS' },
+  { tag: 'WRITE', sub: 'Write the biology', color: GRN, ticks: 'IBRX · INKT · NGEN · PBLS' },
 ];
 
 export async function GET() {
@@ -40,7 +40,7 @@ export async function GET() {
         <div style={{ display: 'flex', flexDirection: 'column', marginTop: 34 }}>
           <span style={{ fontSize: 74, fontWeight: 800, color: '#f4f4f5', letterSpacing: -2, lineHeight: 1.02 }}>Biology is Code</span>
           <span style={{ fontSize: 27, color: '#a1a1aa', marginTop: 12 }}>
-            El próximo superciclo de cómputo corre sobre biología humana.
+            The next computing supercycle runs on human biology.
           </span>
         </div>
 

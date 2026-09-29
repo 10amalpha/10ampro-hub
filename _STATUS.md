@@ -302,3 +302,8 @@ On every standalone page, the header hub/back button **must link to `https://10a
 - Nuevo `CASH` (9 tickers) + módulo "Cash on hand" entre P&L trimestral y FCF/acción: 4 cells (caja Jun 30 '26, quema/trimestre, runway, caja/mcap calculado con el mcap en vivo) + nota + trimestres cubiertos a la quema de Q2.
 - Datos (Jun 30 '26): HIMS $840M+ (deck), TEM $820.7M, CAI $791.7M (689.5 cash + 102.2 valores, 10-Q), IBRX $357M, RXRX $556.8M (8-K; corregido el $665M viejo de la nota FCF, que era Mar 31), NAUT ~$129M, INKT $8.8M, PBLS $1.1B, NGEN US$61.1M.
 - Lección 23: cuando una cifra de caja aparece dos veces en la página (nota P&L vs nota FCF) revisar que sea el mismo cierre — RXRX tenía Q1 y Q2 mezclados.
+
+## 2026-09-29 (3) — biology-is-code: full English (no more Spanglish)
+- Standing rule from Hernán: the /biology-is-code page is 100% English. Translated every UI string, module title, table label, tooltip and data note in page.jsx (CASH, RESEARCH, methodology, thesis summary, footer quote), ta.editor.js (all 9 editor TA reads rewritten in English), BioTA.jsx, ResearchClock.jsx (+ 'en' locale), research.log.js (category labels + notes), layout.jsx metadata and the OG image route.
+- Also removed the stray "Research module added." from the NAUT basket-board note.
+- Lesson 24: new content on this page goes in English from the start — check `grep -E "á|é|í|ó|ú|ñ"` on the route before pushing.

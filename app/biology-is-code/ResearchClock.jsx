@@ -5,8 +5,8 @@ import { GOAL, CATS, LOG } from './research.log';
 // Research-hours counter: sums research.log.js against the GOAL gate. Top of /biology-is-code.
 const MONO = "'JetBrains Mono',monospace", SANS = "'Plus Jakarta Sans',sans-serif";
 const GRN = '#22c55e', AMB = '#f59e0b';
-const f1 = (n) => (Math.round(n * 10) / 10).toLocaleString('es', { minimumFractionDigits: n % 1 ? 1 : 0, maximumFractionDigits: 1 });
-const dLabel = (s) => new Date(s + 'T12:00:00Z').toLocaleDateString('es', { day: '2-digit', month: 'short' });
+const f1 = (n) => (Math.round(n * 10) / 10).toLocaleString('en', { minimumFractionDigits: n % 1 ? 1 : 0, maximumFractionDigits: 1 });
+const dLabel = (s) => new Date(s + 'T12:00:00Z').toLocaleDateString('en', { month: 'short', day: '2-digit' });
 
 export default function ResearchClock({ mb }) {
   const [open, setOpen] = useState(false);
@@ -30,12 +30,12 @@ export default function ResearchClock({ mb }) {
         <div style={{ flex: 1, minWidth: mb ? '100%' : 120, order: mb ? 5 : 0, height: 8, borderRadius: 3, background: 'rgba(128,128,128,.15)', overflow: 'hidden', display: 'flex' }}>
           {byCat.map(([k, h]) => <div key={k} title={`${CATS[k].label}: ${f1(h)} h`} style={{ width: `${(h / Math.max(GOAL, total)) * 100}%`, background: CATS[k].color }} />)}
         </div>
-        <span style={{ fontSize: 11.5, fontWeight: 800, color: col, whiteSpace: 'nowrap' }}>{done ? 'Compra habilitada' : `Compra bloqueada · faltan ${f1(left)} h`}</span>
-        <button onClick={() => setOpen(!open)} aria-expanded={open} style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 4, color: 'var(--text-secondary)', fontFamily: MONO, fontSize: 11, padding: '3px 8px', cursor: 'pointer', whiteSpace: 'nowrap' }}>{open ? 'Cerrar' : 'Detalle'}</button>
+        <span style={{ fontSize: 11.5, fontWeight: 800, color: col, whiteSpace: 'nowrap' }}>{done ? 'Buying enabled' : `Buying locked · ${f1(left)} h to go`}</span>
+        <button onClick={() => setOpen(!open)} aria-expanded={open} style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 4, color: 'var(--text-secondary)', fontFamily: MONO, fontSize: 11, padding: '3px 8px', cursor: 'pointer', whiteSpace: 'nowrap' }}>{open ? 'Close' : 'Details'}</button>
       </div>
       {open && <div style={{ marginTop: 10 }}>
         <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', fontFamily: SANS, lineHeight: 1.6 }}>
-          <b style={{ color: 'var(--text-primary)' }}>Regla:</b> ni una acción de esta canasta antes de {GOAL} horas documentadas de research. Últimos 30 días: <b style={{ color: 'var(--text-primary)' }}>{f1(pace30)} h</b>{etaWeeks ? <>; a este ritmo el umbral llega en ~{etaWeeks} semanas</> : null}.
+          <b style={{ color: 'var(--text-primary)' }}>Rule:</b> not a single share of this basket before {GOAL} documented hours of research. Last 30 days: <b style={{ color: 'var(--text-primary)' }}>{f1(pace30)} h</b>{etaWeeks ? <>; at this pace the threshold arrives in ~{etaWeeks} weeks</> : null}.
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 14px', marginTop: 8, fontSize: 11.5, fontFamily: MONO, color: 'var(--text-secondary)' }}>
           {byCat.map(([k, h]) => <span key={k}><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: CATS[k].color, marginRight: 5 }} />{CATS[k].label} <b style={{ color: 'var(--text-primary)' }}>{f1(h)} h</b></span>)}
@@ -50,7 +50,7 @@ export default function ResearchClock({ mb }) {
             </div>
           ))}
         </div>
-        <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: SANS, marginTop: 6 }}>{f1(estH)} h son estimación retroactiva (reconstruida el 23 Sep 2026); lo nuevo se registra por sesión.</div>
+        <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: SANS, marginTop: 6 }}>{f1(estH)} h are a retroactive estimate (reconstructed Sep 23, 2026); new work is logged per session.</div>
       </div>}
     </div>
   );

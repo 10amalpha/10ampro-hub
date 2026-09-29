@@ -14,8 +14,8 @@ export const fmtPx = (n) => (n == null || isNaN(n) ? '—' : '$' + (n >= 1 ? n.t
 export const pc = (x, d = 1) => (x == null || isNaN(x) ? '—' : `${x >= 0 ? '+' : ''}${(x * 100).toFixed(d)}%`);
 
 const HOW = (dir, x) => (dir === 'BEAR'
-  ? [`Rechazo en ${fmtPx(Math.max(x.e200 || 0, x.res || 0))} → pierde el clúster de EMAs → ${fmtPx(x.t1)}.`, `Cede el riel inferior de la estructura → ${fmtPx(x.t3)}.`, `Retest de mínimos del ciclo → ${fmtPx(x.t12)}.`]
-  : [`Aguanta el clúster de EMAs → recupera ${fmtPx(x.t1)}.`, `Rompe el riel superior con volumen → ${fmtPx(x.t3)}.`, `Zona de oferta del ciclo anterior → ${fmtPx(x.t12)}.`]);
+  ? [`Rejection at ${fmtPx(Math.max(x.e200 || 0, x.res || 0))} → loses the EMA cluster → ${fmtPx(x.t1)}.`, `Gives up the lower rail of the structure → ${fmtPx(x.t3)}.`, `Retest of the cycle lows → ${fmtPx(x.t12)}.`]
+  : [`Holds the EMA cluster → reclaims ${fmtPx(x.t1)}.`, `Breaks the upper rail on volume → ${fmtPx(x.t3)}.`, `Supply zone of the prior cycle → ${fmtPx(x.t12)}.`]);
 
 function analyze(series, ed) {
   if (!series || series.c.length < 60) return { trend: null, st: null, fc: null };
@@ -50,9 +50,9 @@ const H = ({ children, c = 'var(--text-muted)' }) => <div style={{ fontSize: 11,
 export function TAModule({ sym, A, mb }) {
   const { trend, st, fc, d } = A || {}; const ed = EDITOR_TA[sym] || null;
   const price = d?.price;
-  if (!d) return <div style={{ color: 'var(--text-muted)', fontSize: 12, padding: 16, fontFamily: MONO }}>Cargando serie diaria…</div>;
-  if (!d.ok) return <div style={{ color: AMB, fontSize: 12, padding: 16, fontFamily: SANS }}>El feed de precios no responde ahora ({d.error}). Reintentá en unos minutos.</div>;
-  if (!trend) return <div style={{ color: 'var(--text-muted)', fontSize: 12.5, padding: 16, fontFamily: SANS }}>{sym} tiene {d.bars} sesiones de historia pública; el motor necesita al menos 60.</div>;
+  if (!d) return <div style={{ color: 'var(--text-muted)', fontSize: 12, padding: 16, fontFamily: MONO }}>Loading daily series…</div>;
+  if (!d.ok) return <div style={{ color: AMB, fontSize: 12, padding: 16, fontFamily: SANS }}>The price feed is not responding right now ({d.error}). Try again in a few minutes.</div>;
+  if (!trend) return <div style={{ color: 'var(--text-muted)', fontSize: 12.5, padding: 16, fontFamily: SANS }}>{sym} has {d.bars} sessions of public history; the engine needs at least 60.</div>;
   const col = trend.score >= 5 ? GRN : trend.score === 4 ? AMB : RED;
   const fcCol = fc?.dir === 'BEAR' ? RED : GRN, invCol = fc?.dir === 'BEAR' ? GRN : RED;
   const bad = isInvalidated(A);
@@ -64,14 +64,14 @@ export function TAModule({ sym, A, mb }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', fontFamily: MONO, marginBottom: 10 }}>
         <span style={{ fontSize: 14, fontWeight: 800, color: col }}>{trend.regime}</span>
         <span style={{ display: 'flex', gap: 3 }}>{trend.checks.map((x, i) => <span key={i} title={x[0]} style={{ width: 12, height: 6, borderRadius: 2, background: x[1] ? col : 'rgba(128,128,128,.2)' }} />)}</span>
-        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{trend.score}/7 checks alcistas</span>
-        {fc && <span style={{ marginLeft: mb ? 0 : 'auto', fontSize: 11.5, fontWeight: 800, color: bad ? invCol : fcCol }}>{fc.dir} {bad ? '· INVALIDADO' : '· intacto'} · invalida {fc.dir === 'BEAR' ? '>' : '<'} {fmtPx(fc.invalidation)}</span>}
+        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{trend.score}/7 bullish checks</span>
+        {fc && <span style={{ marginLeft: mb ? 0 : 'auto', fontSize: 11.5, fontWeight: 800, color: bad ? invCol : fcCol }}>{fc.dir} {bad ? '· INVALIDATED' : '· intact'} · invalidates {fc.dir === 'BEAR' ? '>' : '<'} {fmtPx(fc.invalidation)}</span>}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: mb ? 'repeat(3,1fr)' : 'repeat(6,1fr)', gap: 10, padding: '10px 12px', background: 'var(--surface-2)', borderRadius: 6, marginBottom: 12 }}>
         {stat('EMA 20 / 50', `${fmtPx(trend.e20)} / ${fmtPx(trend.e50)}`)}
         {stat('EMA 200', `${fmtPx(trend.e200)} ${trend.slope200 > 0 ? '↗' : '↘'}`, trend.last > trend.e200 ? GRN : RED)}
         {stat('RSI 14', trend.rsi.toFixed(0), trend.rsi > 70 || trend.rsi < 30 ? AMB : 'var(--text-primary)')}
-        {stat('MACD', trend.hist > 0 ? (trend.histUp ? '+ subiendo' : '+ bajando') : (trend.histUp ? '− subiendo' : '− bajando'), trend.hist > 0 ? GRN : RED)}
+        {stat('MACD', trend.hist > 0 ? (trend.histUp ? '+ rising' : '+ falling') : (trend.histUp ? '− rising' : '− falling'), trend.hist > 0 ? GRN : RED)}
         {stat('7d / 30d', `${pc(trend.chg7, 0)} / ${pc(trend.chg30, 0)}`, trend.chg30 > 0 ? GRN : RED)}
         {stat('Vol 20d vs 90d', trend.volRatio != null ? `${Math.round(trend.volRatio * 100)}%` : '—')}
       </div>
@@ -81,8 +81,8 @@ export function TAModule({ sym, A, mb }) {
       {/* structure + projected path on one chart */}
       <div style={{ border: '1px solid var(--border)', borderRadius: 6, padding: '6px 2px 2px' }}>
         <div style={{ display: 'flex', gap: 12, fontSize: 10.5, padding: '0 10px 4px', color: 'var(--text-muted)', flexWrap: 'wrap', fontFamily: MONO }}>
-          <span style={{ color: AMB, fontWeight: 700 }}>{st?.pattern || (d.bars < 90 ? 'Historia corta' : 'Sin estructura clara')}</span>
-          <span><span style={{ color: RED }}>╌</span> máximos</span><span><span style={{ color: GRN }}>╌</span> mínimos</span><span><span style={{ color: fcCol }}>●</span> path 1M / 3M / 1Y</span>
+          <span style={{ color: AMB, fontWeight: 700 }}>{st?.pattern || (d.bars < 90 ? 'Short history' : 'No clean structure')}</span>
+          <span><span style={{ color: RED }}>╌</span> highs</span><span><span style={{ color: GRN }}>╌</span> lows</span><span><span style={{ color: fcCol }}>●</span> path 1M / 3M / 1Y</span>
         </div>
         <TAStructure key={sym} series={d.series} st={st} fc={fc} mb={mb} minBars={60} />
       </div>
@@ -90,9 +90,9 @@ export function TAModule({ sym, A, mb }) {
       {/* forecast chart: live price → 1M / 3M / 1Y with invalidation zone */}
       {fc && <div style={{ marginTop: 12, border: '1px solid var(--border)', borderRadius: 6, padding: '6px 2px 2px' }}>
         <div style={{ display: 'flex', gap: 12, fontSize: 10.5, padding: '0 10px 4px', color: 'var(--text-muted)', flexWrap: 'wrap', fontFamily: MONO }}>
-          <span style={{ color: fcCol, fontWeight: 800 }}>Forecast de precio · {fc.dir === 'BEAR' ? 'bajista' : 'alcista'}</span>
-          <span><span style={{ color: fcCol }}>▬</span> path</span><span><span style={{ color: invCol }}>╌</span> invalidación</span>
-          {!mb && <span style={{ marginLeft: 'auto' }}>escala log · sombra = tolerancia</span>}
+          <span style={{ color: fcCol, fontWeight: 800 }}>Price forecast · {fc.dir === 'BEAR' ? 'bearish' : 'bullish'}</span>
+          <span><span style={{ color: fcCol }}>▬</span> path</span><span><span style={{ color: invCol }}>╌</span> invalidation</span>
+          {!mb && <span style={{ marginLeft: 'auto' }}>log scale · shading = tolerance</span>}
         </div>
         <TAFan key={sym} price={price} fc={fc} mb={mb} />
       </div>}
@@ -110,15 +110,15 @@ export function TAModule({ sym, A, mb }) {
 
       {ed && <>
         <div style={{ marginTop: 10, padding: '8px 12px', borderLeft: `3px solid ${invCol}`, background: 'var(--surface-2)', borderRadius: 4, fontSize: 12, color: 'var(--text-secondary)', fontFamily: SANS, lineHeight: 1.5 }}>
-          <b style={{ color: invCol }}>Invalidación.</b> {ed.invalidation.text}
+          <b style={{ color: invCol }}>Invalidation.</b> {ed.invalidation.text}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 14, marginTop: 14, fontSize: 12.5, lineHeight: 1.55, color: 'var(--text-secondary)', fontFamily: SANS }}>
-          <div><H>Patrón</H><div dangerouslySetInnerHTML={{ __html: ed.pattern }} /><div style={{ marginTop: 10 }}><H>Qué mirar</H><div dangerouslySetInnerHTML={{ __html: ed.watch }} /></div></div>
+          <div><H>Pattern</H><div dangerouslySetInnerHTML={{ __html: ed.pattern }} /><div style={{ marginTop: 10 }}><H>What to watch</H><div dangerouslySetInnerHTML={{ __html: ed.watch }} /></div></div>
           <div>
-            <H c="var(--gold)">Decisión</H>
+            <H c="var(--gold)">Decision</H>
             {ed.decision.map((x, i) => <div key={i} style={{ marginBottom: 5 }} dangerouslySetInnerHTML={{ __html: '› ' + x }} />)}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 10 }}>
-              {[['Resistencias', ed.levels.resistance, RED], ['Soportes', ed.levels.support, GRN]].map(([t, L, c]) => <div key={t}>
+              {[['Resistance', ed.levels.resistance, RED], ['Support', ed.levels.support, GRN]].map(([t, L, c]) => <div key={t}>
                 <H c={c}>{t}</H>
                 {L.map(([lv, why]) => <div key={lv} title={why} style={{ display: 'flex', justifyContent: 'space-between', gap: 6, fontSize: 11.5, padding: '2px 0', fontFamily: MONO }}>
                   <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{fmtPx(lv)}</span><span style={{ color: 'var(--text-muted)' }}>{price ? pc(lv / price - 1, 0) : ''}</span>
@@ -128,7 +128,7 @@ export function TAModule({ sym, A, mb }) {
           </div>
         </div>
       </>}
-      <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 10, fontFamily: SANS }}>{ed ? `Lectura del editor: ${ed.updated}. El régimen y la estructura se recalculan en vivo.` : 'Forecast automático del motor.'} Precios diarios ajustados (Yahoo). No es consejo de inversión.</div>
+      <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 10, fontFamily: SANS }}>{ed ? `Editor read: ${ed.updated}. Regime and structure are recalculated live.` : 'Automatic engine forecast.'} Adjusted daily prices (Yahoo). Not investment advice.</div>
     </div>
   );
 }

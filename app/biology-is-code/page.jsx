@@ -26,7 +26,7 @@ const TICKERS = [
   { sym: 'PBLS', name: 'Parabilis Medicines', layer: 'WRITE', mcap: '$5.0B', price: '$40.42', note: 'Helicon peptides for flat / undruggable proteins. IPO Jun 2026; $1.1B cash after first public quarter.' },
   { sym: 'RXRX', name: 'Recursion Pharmaceuticals', layer: 'READ', mcap: '$1.95B', price: '$3.63', note: 'Wetlab simulation; physics\u2192chemistry\u2192biology. Q2: opex cut ~40%, Genentech optioned first neuro target.' },
   { sym: 'NGEN', name: 'NervGen Pharma', layer: 'WRITE', mcap: '$249M', price: '$2.32', note: 'Nervous-system regeneration (NVG-291). Ph3 RESTORE screening starts Sep 2026; funded to 1H28 readout.' },
-  { sym: 'NAUT', name: 'Nautilus Biotechnology', layer: 'READ', mcap: '$115M', price: '$0.90', note: '10B-protein mapping. First revenue booked in Q2; Nature Methods tau-proteoform paper (Sep 4); APOE→tau proteoform link. Cash still tops market cap. Research module added.' },
+  { sym: 'NAUT', name: 'Nautilus Biotechnology', layer: 'READ', mcap: '$115M', price: '$0.90', note: '10B-protein mapping. First revenue booked in Q2; Nature Methods tau-proteoform paper (Sep 4); APOE→tau proteoform link. Cash still tops market cap.' },
   { sym: 'INKT', name: 'MiNK Therapeutics', layer: 'WRITE', mcap: '$55M', price: '$11.07', note: 'Immune bypass \u2014 iNKT cells target stable lipids, not peptides. Randomized Ph2 in ARDS dosing; $8.8M cash.' },
 ];
 
@@ -243,34 +243,34 @@ const CHAIN = {
 
 // CASH ON HAND — Jun 30, 2026 balance (cash + equivalents + marketable securities), from Q2 FY2026 10-Q / 8-K / deck. cash in $M; burn = quarterly cash outflow ($M, positive = burn); runway = company guidance where given.
 const CASH = {
-  HIMS: { cash: 840, cashTxt: '$840M+', asof: 'Jun 30 \u201926 · deck Q2', burn: 68.2, burnTxt: '−$68M FCF Q2', runway: 'Genera caja', runwaySub: 'FCF+ esperado en H2\u201926', note: 'Caja e inversiones a corto plazo tras un facility de receivables de $400M y un convertible de ~$400M. El −$68M de Q2 fue working capital del ramp de Wegovy de marca, no pérdida operativa. Balance apalancado por los convertibles: mirar caja neta, no bruta.' },
-  TEM: { cash: 820.7, cashTxt: '$820.7M', asof: 'Jun 30 \u201926 · 8-K', burn: 18.6, burnTxt: '−$18.6M FCF Q2', runway: 'Cerca del breakeven', runwaySub: 'menor salida de la serie', note: 'Caja y valores tras un convertible cupón cero de $460M. Q2 fue el primer trimestre GAAP positivo y la quema de FCF más chica de seis. La adquisición pendiente de Personalis (~$1.5B) es el uso de caja a vigilar.' },
-  CAI: { cash: 791.7, cashTxt: '$791.7M', asof: 'Jun 30 \u201926 · 10-Q', burn: -6.4, burnTxt: '+$6.4M FCF Q2', runway: 'Autofinanciada', runwaySub: 'OCF +$28.5M en Q2', note: '$689.5M en caja y equivalentes + $102.2M en valores a corto plazo. Quinto trimestre seguido de EBITDA ajustado positivo; la caja sube, no baja. Recompra de $100M autorizada ($82M disponibles).' },
-  IBRX: { cash: 357, cashTxt: '$357M', asof: 'Jun 30 \u201926 · 8-K', burn: 70, burnTxt: '−$70M FCF Q2', runway: '~5 trimestres', runwaySub: 'a burn constante, sin ATM', note: 'Caja y valores. La quema es notablemente estable (~$70–80M/q) pese al ramp de ANKTIVA; sin financiamiento nuevo la caja llega a mediados de 2027. Históricamente cubre el gap con ATM y préstamos del fundador — la dilución es el costo del runway. PDUFA Jan 6 \u201927 antes de que apriete.' },
-  RXRX: { cash: 556.8, cashTxt: '$556.8M', asof: 'Jun 30 \u201926 · 8-K', burn: 105.9, burnTxt: '−$106M OCF Q2', runway: 'Hasta early 2028', runwaySub: 'guía, sin financiamiento nuevo', note: 'Caja, equivalentes y caja restringida: $753.9M en dic \u201925 → $665.2M en mar → $556.8M en jun. Q2 se llevó $106M en OCF por working capital y un comp difícil (crédito fiscal UK de $28.6M en Q2\u201925). Opex cash 2026 guiado bajo $375M; los partnerships (> $500M acumulados) hacen los trimestres irregulares.' },
-  NAUT: { cash: 129, cashTxt: '~$129M', asof: 'Jun 30 \u201926 · 10-Q', burn: 14.2, burnTxt: '−$14.2M FCF Q2', runway: 'Hasta Q1 2028', runwaySub: 'guía; ronda antes de mid-2027', note: 'La caja supera la capitalización bursátil: el mercado valora la plataforma por debajo de cero. Quema metronómica de ~$13–14M/q, OpEx −7% YoY. Management espera levantar capital antes de mid-2027 — los términos de esa ronda son el hito financiero clave.' },
-  INKT: { cash: 8.8, cashTxt: '$8.8M', asof: 'Jun 30 \u201926 · 10-Q', burn: 2.5, burnTxt: '−$2.5M est. Q2', runway: '~3–4 trimestres', runwaySub: 'el más ajustado del basket', note: 'Cash cayó $0.7M en el trimestre; la quema absoluta es la más chica del basket pero el float de ~5M acciones hace que cada ronda pese. Depende de Agenus (accionista mayoritario) y del programa de acceso pagado por paciente para estirar. Financiamiento inminente es el escenario base.' },
-  PBLS: { cash: 1100, cashTxt: '$1.1B', asof: 'Jun 30 \u201926 · 10-Q', burn: 52.5, burnTxt: '−$52.5M net loss Q2', runway: '~5 años', runwaySub: 'a burn actual', note: 'IPO (Jun 10) + private placement levantaron $787.9M netos. Pérdida neta de $52.5M en Q2 (R&D $39.4M); a ese ritmo la caja cubre el Phase 3 de zolucatetide en desmoides y varios programas más sin volver al mercado.' },
-  NGEN: { cash: 61.1, cashTxt: 'US$61.1M', asof: 'Jun 30 \u201926 · MD&A', burn: 8.5, burnTxt: '−US$8.5M est. Q2', runway: 'Hasta 1H 2028', runwaySub: 'guía: cubre el readout de RESTORE', note: '$60M levantados en mayo 2026 + ~$50M vía ATM. La quema acelera con el arranque del Phase 3 RESTORE (opex C$12.2M en Q2); la guía dice que la caja alcanza hasta el readout de 1H28, que es el evento binario.' },
+  HIMS: { cash: 840, cashTxt: '$840M+', asof: 'Jun 30 \u201926 · Q2 deck', burn: 68.2, burnTxt: '−$68M FCF Q2', runway: 'Cash-generative', runwaySub: 'FCF+ expected in H2\u201926', note: 'Cash and short-term investments after a $400M receivables facility and a ~$400M convertible. The −$68M in Q2 was working capital from the branded-Wegovy ramp, not an operating loss. Balance sheet is levered through the convertibles: look at net cash, not gross.' },
+  TEM: { cash: 820.7, cashTxt: '$820.7M', asof: 'Jun 30 \u201926 · 8-K', burn: 18.6, burnTxt: '−$18.6M FCF Q2', runway: 'Near breakeven', runwaySub: 'smallest outflow in the series', note: 'Cash and securities after a $460M zero-coupon convertible. Q2 was the first GAAP-positive quarter and the smallest FCF burn of the six. The pending Personalis acquisition (~$1.5B) is the use of cash to watch.' },
+  CAI: { cash: 791.7, cashTxt: '$791.7M', asof: 'Jun 30 \u201926 · 10-Q', burn: -6.4, burnTxt: '+$6.4M FCF Q2', runway: 'Self-funded', runwaySub: 'OCF +$28.5M in Q2', note: '$689.5M in cash and equivalents + $102.2M in short-term marketable securities. Fifth straight quarter of positive adjusted EBITDA; cash is going up, not down. $100M buyback authorized ($82M remaining).' },
+  IBRX: { cash: 357, cashTxt: '$357M', asof: 'Jun 30 \u201926 · 8-K', burn: 70, burnTxt: '−$70M FCF Q2', runway: '~5 quarters', runwaySub: 'at constant burn, no ATM', note: 'Cash and securities. Burn is remarkably stable (~$70–80M/q) despite the ANKTIVA ramp; with no new financing the cash lasts to mid-2027. Historically it bridges the gap with ATM sales and founder loans — dilution is the price of runway. PDUFA Jan 6 \u201927 lands before it gets tight.' },
+  RXRX: { cash: 556.8, cashTxt: '$556.8M', asof: 'Jun 30 \u201926 · 8-K', burn: 105.9, burnTxt: '−$106M OCF Q2', runway: 'Into early 2028', runwaySub: 'guidance, no new financing', note: 'Cash, equivalents and restricted cash: $753.9M in Dec \u201925 → $665.2M in Mar → $556.8M in Jun. Q2 consumed $106M of OCF on working capital and a tough comp (a $28.6M UK tax credit in Q2\u201925). 2026 cash opex guided below $375M; partnerships (>$500M cumulative) make the quarters lumpy.' },
+  NAUT: { cash: 129, cashTxt: '~$129M', asof: 'Jun 30 \u201926 · 10-Q', burn: 14.2, burnTxt: '−$14.2M FCF Q2', runway: 'Into Q1 2028', runwaySub: 'guidance; raise before mid-2027', note: 'Cash exceeds market cap: the market values the platform below zero. Metronomic burn of ~$13–14M/q, OpEx −7% YoY. Management expects to raise before mid-2027 — the terms of that round are the key financial milestone.' },
+  INKT: { cash: 8.8, cashTxt: '$8.8M', asof: 'Jun 30 \u201926 · 10-Q', burn: 2.5, burnTxt: '−$2.5M est. Q2', runway: '~3–4 quarters', runwaySub: 'tightest in the basket', note: 'Cash fell $0.7M in the quarter; the absolute burn is the smallest in the basket, but the ~5M-share float makes every raise heavy. Depends on Agenus (majority holder) and the paid named-patient program to stretch. Imminent financing is the base case.' },
+  PBLS: { cash: 1100, cashTxt: '$1.1B', asof: 'Jun 30 \u201926 · 10-Q', burn: 52.5, burnTxt: '−$52.5M net loss Q2', runway: '~5 years', runwaySub: 'at current burn', note: 'IPO (Jun 10) + private placement raised $787.9M net. Net loss of $52.5M in Q2 (R&D $39.4M); at that pace the cash covers the zolucatetide Phase 3 in desmoids and several more programs without going back to market.' },
+  NGEN: { cash: 61.1, cashTxt: 'US$61.1M', asof: 'Jun 30 \u201926 · MD&A', burn: 8.5, burnTxt: '−US$8.5M est. Q2', runway: 'Into 1H 2028', runwaySub: 'guidance: covers the RESTORE readout', note: '$60M raised in May 2026 + ~$50M via ATM. Burn is accelerating with the start of the Phase 3 RESTORE (opex C$12.2M in Q2); guidance says the cash lasts to the 1H28 readout, which is the binary event.' },
 };
 
 // RESEARCH — external theses folded into the dossier (paraphrased, attributed). Only tickers with a vetted source render this module.
 const RESEARCH = {
   NAUT: {
-    src: 'Antonio Linares — "Nautilus: Tesla for Proteomics" (update post-Q2 FY2026, 28 sep 2026)',
-    tagline: 'Una máquina que imprime lecturas del proteoma a costo marginal decreciente, acumulando hacia un gemelo digital que vuelve la enfermedad resoluble.',
-    thesis: 'La tesis: el valor de AI × biología se concentra en la capa proteómica, porque es donde la enfermedad aparece y se sostiene (las proteínas se acoplan por forma, como un Lego). Nautilus es hoy la única empresa que lee el proteoma con resolución de proteoforma. Lo que el mercado lee como debilidad — el giro a verticales específicas (neuro, oncología) — Linares lo lee como el primer paso del "algoritmo Tesla": construir una máquina que imprime soluciones verticales a un problema industrial masivo, a costo marginal decreciente y cada vez más difícil de replicar. Cada assay nuevo llega más rápido que el anterior; con suficientes verticales, la cobertura se vuelve indistinguible de un gemelo digital del proteoma.',
+    src: 'Antonio Linares — "Nautilus: Tesla for Proteomics" (post-Q2 FY2026 update, Sep 28, 2026)',
+    tagline: 'A machine that prints proteome reads at falling marginal cost, compounding toward a digital twin that makes disease solvable.',
+    thesis: 'The thesis: the value of AI × biology concentrates in the proteomic layer, because that is where disease shows up and sustains itself (proteins lock together by shape, like Lego). Nautilus is today the only company reading the proteome at proteoform resolution. What the market reads as weakness — the pivot to specific verticals (neuro, oncology) — Linares reads as the first step of the "Tesla algorithm": build a machine that prints vertical solutions to a massive industrial problem, at falling marginal cost and increasingly hard to replicate. Each new assay arrives faster than the last; with enough verticals, coverage becomes indistinguishable from a digital twin of the proteome.',
     points: [
-      ['Flywheel', 'Tau (primer assay) tardó ~5 años. Los primeros assays de oncología (AKT1, EGFR, p53) cruzaron la misma barra técnica en ~1 año. Guía: cadencia de meses; ~20 assays de proteoforma para mid-2028 (+ inmunología, cardiología).'],
-      ['Muestra', 'Hoy: solo tejido cerebral (9 de 10 llamadas de venta piden CSF o sangre). Early 2027: ~100× menos muestra → abre sangre en oncología. 2028: CSF para tau. Sangre: "coming soon", sin fecha.'],
-      ['APOE → tau', 'Primera vez que las variantes de riesgo de APOE (ε2/ε3/ε4) se mapean a firmas distintas de proteoformas de tau — el eslabón mecanístico que el campo persiguió por décadas. Es el "proof point" de la capa READ: gen → forma exacta de proteína → enfermedad.'],
-      ['Precisión', 'CV ~5.5% en el instrumento alfa del Buck Institute vs ~25% de norma en la industria.'],
-      ['Unit economics', 'Precio objetivo ~$1M por instrumento + consumibles de pocos miles de dólares por muestra. Ola de lanzamiento comercial apuntada a mid-2027.'],
-      ['Valuación', 'Mcap ~$120M vs. un valor terminal que el autor pone en el orden del trillón si la plataforma mapea proteomas desde sangre a escala. OpEx −7% YoY, runway hasta 2028. Acción −70% desde marzo mientras los fundamentales fueron en dirección contraria.'],
+      ['Flywheel', 'Tau (first assay) took ~5 years. The first oncology assays (AKT1, EGFR, p53) cleared the same technical bar in ~1 year. Guidance: a cadence of months; ~20 proteoform assays by mid-2028 (+ immunology, cardiology).'],
+      ['Sample input', 'Today: brain tissue only (9 of 10 sales calls ask for CSF or blood). Early 2027: ~100× less sample → opens blood work in oncology. 2028: CSF for tau. Blood: "coming soon", no date.'],
+      ['APOE → tau', 'First time APOE risk variants (ε2/ε3/ε4) have been mapped to distinct tau proteoform signatures — the mechanistic link the field chased for decades. It is the READ-layer proof point: gene → exact protein form → disease.'],
+      ['Precision', 'CV ~5.5% on the Buck Institute alpha instrument vs ~25% industry norm.'],
+      ['Unit economics', 'Targeted price ~$1M per instrument + consumables of a few thousand dollars per sample. Commercial launch wave targeted for mid-2027.'],
+      ['Valuation', 'Mcap ~$120M vs a terminal value the author puts in the trillion range if the platform maps proteomes from blood at scale. OpEx −7% YoY, runway into 2028. Stock −70% since March while the fundamentals moved the other way.'],
     ],
-    milestones: ['AKT1 entrando a early access', 'Reducción 100× en muestra (early 2027)', 'Pre-órdenes de instrumentos', 'Términos de la ronda (espera levantar antes de mid-2027)'],
-    risks: ['Balance delgado, revenue inmaterial, quema de caja; el riesgo financiero es la preocupación central', 'Dilución: ronda antes de mid-2027 con la acción bajo $1', 'Ejecución: la tesis depende de que la cadencia de assays y la reducción de muestra se cumplan'],
-    stance: 'Posición micro para el autor; suma gradualmente a medida que cada hito se materializa. Coincide con nuestra regla: opción respaldada por caja, sin sumar bajo la EMA50.',
+    milestones: ['AKT1 entering early access', '100× sample-input reduction (early 2027)', 'Instrument pre-orders', 'Terms of the raise (expects to raise before mid-2027)'],
+    risks: ['Thin balance sheet, immaterial revenue, cash burn; financial risk is the central concern', 'Dilution: a raise before mid-2027 with the stock below $1', 'Execution: the thesis depends on the assay cadence and the sample reduction actually landing'],
+    stance: 'A micro position for the author; adds gradually as each milestone materializes. Matches our rule: an option backed by cash, no adding below the EMA50.',
   },
 };
 
@@ -286,7 +286,7 @@ function QPLChart({ q, mb }) {
   const y = (v) => T + ((max - v) / (max - min)) * (H - T - B); const y0 = y(0);
   const gw = (W - L - R) / 6, bw = Math.min(q.pre ? 30 : 20, (gw - (mb ? 10 : 18)) / series.length), cur = q.cur || '$';
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Resultados por trimestre">
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Quarterly results">
       <line x1={L} x2={W - R} y1={y0} y2={y0} stroke="var(--border)" strokeWidth="1.5" />
       {QL.map((ql, i) => {
         const last = i === 5; const gx = L + i * gw + (gw - bw * series.length - 3 * (series.length - 1)) / 2;
@@ -312,9 +312,9 @@ function QPLTable({ q, mb }) {
   const yoy = (arr, i) => (i >= 4 && arr[i] != null && arr[i - 4] ? ((arr[i] / arr[i - 4] - 1) * 100) : null);
   const pct = (v) => (v == null ? '\u2014' : (v >= 0 ? '+' : '') + Math.round(v) + '%');
   const rows = q.pre
-    ? [['Resultado operativo', q.op.map((v) => fmtS(v, cur)), true], ['Quema vs trimestre anterior', q.op.map((v, i) => (i && v != null && q.op[i - 1] != null ? pct(((Math.abs(v) / Math.abs(q.op[i - 1])) - 1) * 100) : '\u2014')), false, 'burn'], ['Resultado neto', q.net.map((v) => fmtS(v, cur))]]
-    : [['Ingresos', q.rev.map((v) => fmtS(v, cur)), true], ['Ingresos YoY', q.rev.map((_, i) => pct(yoy(q.rev, i)))], ['Margen bruto', q.gross.map((v, i) => (mgn(v, q.rev[i]) == null ? 's/d' : Math.round(mgn(v, q.rev[i])) + '%'))],
-       ['Resultado operativo', q.op.map((v) => fmtS(v, cur)), true], ['Margen operativo', q.op.map((v, i) => (mgn(v, q.rev[i]) == null ? '\u2014' : Math.round(mgn(v, q.rev[i])) + '%'))], ['Resultado neto', q.net.map((v) => fmtS(v, cur))]];
+    ? [['Operating result', q.op.map((v) => fmtS(v, cur)), true], ['Burn vs prior quarter', q.op.map((v, i) => (i && v != null && q.op[i - 1] != null ? pct(((Math.abs(v) / Math.abs(q.op[i - 1])) - 1) * 100) : '\u2014')), false, 'burn'], ['Net result', q.net.map((v) => fmtS(v, cur))]]
+    : [['Revenue', q.rev.map((v) => fmtS(v, cur)), true], ['Revenue YoY', q.rev.map((_, i) => pct(yoy(q.rev, i)))], ['Gross margin', q.gross.map((v, i) => (mgn(v, q.rev[i]) == null ? 'n/a' : Math.round(mgn(v, q.rev[i])) + '%'))],
+       ['Operating result', q.op.map((v) => fmtS(v, cur)), true], ['Operating margin', q.op.map((v, i) => (mgn(v, q.rev[i]) == null ? '\u2014' : Math.round(mgn(v, q.rev[i])) + '%'))], ['Net result', q.net.map((v) => fmtS(v, cur))]];
   const col = (t) => (t.startsWith('\u2013') ? '#e0697f' : t.startsWith('+') ? '#22c55e' : undefined);
   return (
     <div style={{ overflowX: 'auto', marginTop: 6 }}>
@@ -335,14 +335,14 @@ function qHeadline(q) {
   const cur = q.cur || '$', i = 5, p = 1;
   if (q.pre) {
     const d = q.op[i] != null && q.op[p] != null ? (Math.abs(q.op[i]) / Math.abs(q.op[p]) - 1) * 100 : null;
-    return [['Quema operativa Q2\u201926', fmtS(q.op[i], cur), d == null ? '' : `${d >= 0 ? '+' : ''}${Math.round(d)}% vs Q2\u201925`, d != null && d > 0 ? 'bad' : 'good'],
-      ['Resultado neto Q2\u201926', fmtS(q.net[i], cur), q.net[p] != null ? `Q2\u201925: ${fmtS(q.net[p], cur)}` : '', null]];
+    return [['Operating burn Q2\u201926', fmtS(q.op[i], cur), d == null ? '' : `${d >= 0 ? '+' : ''}${Math.round(d)}% vs Q2\u201925`, d != null && d > 0 ? 'bad' : 'good'],
+      ['Net result Q2\u201926', fmtS(q.net[i], cur), q.net[p] != null ? `Q2\u201925: ${fmtS(q.net[p], cur)}` : '', null]];
   }
   const g = (q.rev[i] / q.rev[p] - 1) * 100, gm = mgn(q.gross[i], q.rev[i]), gm0 = mgn(q.gross[p], q.rev[p]), om = mgn(q.op[i], q.rev[i]), om0 = mgn(q.op[p], q.rev[p]);
   const pts = (a, b) => (a == null || b == null ? '' : `${a - b >= 0 ? '+' : ''}${(a - b).toFixed(1)} pts vs Q2\u201925`);
-  return [['Ingresos Q2\u201926', fmtS(q.rev[i], cur), `${g >= 0 ? '+' : ''}${Math.round(g)}% YoY`, g >= 0 ? 'good' : 'bad'],
-    ['Margen bruto', gm == null ? 's/d' : gm.toFixed(1) + '%', pts(gm, gm0), gm != null && gm0 != null ? (gm >= gm0 ? 'good' : 'bad') : null],
-    ['Margen operativo', om == null ? '\u2014' : om.toFixed(1) + '%', pts(om, om0), om != null && om0 != null ? (om >= om0 ? 'good' : 'bad') : null]];
+  return [['Revenue Q2\u201926', fmtS(q.rev[i], cur), `${g >= 0 ? '+' : ''}${Math.round(g)}% YoY`, g >= 0 ? 'good' : 'bad'],
+    ['Gross margin', gm == null ? 'n/a' : gm.toFixed(1) + '%', pts(gm, gm0), gm != null && gm0 != null ? (gm >= gm0 ? 'good' : 'bad') : null],
+    ['Operating margin', om == null ? '\u2014' : om.toFixed(1) + '%', pts(om, om0), om != null && om0 != null ? (om >= om0 ? 'good' : 'bad') : null]];
 }
 
 function fmtM(v) {
@@ -437,7 +437,7 @@ const FCF_CARD = Object.fromEntries(FCF_CARDS.map((c) => [c[0], c]));
 function fundamentals(sym) {
   const q = QREV[sym], Q = QFIN[sym];
   const r5 = Q.rev[5], r1 = Q.rev[1];
-  const rev = { v: fmtS(r5, Q.cur || '$'), yoy: r5 && r1 ? (r5 / r1 - 1) * 100 : null, guidePct: q?.guide ? ((Q.rev[4] + r5) / q.guide) * 100 : null, guideTxt: q ? q.guideTxt : 'sin guía', next: q?.next || null };
+  const rev = { v: fmtS(r5, Q.cur || '$'), yoy: r5 && r1 ? (r5 / r1 - 1) * 100 : null, guidePct: q?.guide ? ((Q.rev[4] + r5) / q.guide) * 100 : null, guideTxt: q ? q.guideTxt : 'no guidance', next: q?.next || null };
   const f = FCF[sym];
   const fcf = f ? { v: f.q[f.q.length - 1][1] / FCF_SH[sym], abs: f.q[f.q.length - 1][1], label: f.q[f.q.length - 1][0] } : FCF_CARD[sym] ? { card: FCF_CARD[sym][1] } : null;
   return { rev, fcf };
@@ -513,7 +513,7 @@ export default function BiologyIsCode() {
           <img src="/logo.jpg" alt="10AMPRO" style={{ width: 34, height: 34, borderRadius: 6 }} />
           <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>← 10am.pro</span>
         </a>
-        <button onClick={toggleTheme} title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+        <button onClick={toggleTheme} title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
           style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text-primary)', fontSize: 16, width: 36, height: 32, cursor: 'pointer' }}>
           {theme === 'dark' ? '☀' : '☾'}
         </button>
@@ -521,7 +521,7 @@ export default function BiologyIsCode() {
 
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
         <h1 style={{ margin: 0, fontSize: mb ? 24 : 30, fontWeight: 800, color: 'var(--text-bright)', fontFamily: DISP, lineHeight: 1.1 }}>Biology is Code</h1>
-        <span style={{ fontSize: 11.5, color: 'var(--text-muted)', fontFamily: MONO }}>9 tickers en tres capas: Read, Orchestrate, Write</span>
+        <span style={{ fontSize: 11.5, color: 'var(--text-muted)', fontFamily: MONO }}>9 tickers across three layers: Read, Orchestrate, Write</span>
       </div>
 
       <ResearchClock mb={mb} />
@@ -529,7 +529,7 @@ export default function BiologyIsCode() {
       {/* BASKET BOARD — one row per ticker, click opens the dossier */}
       <div style={{ border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden', marginBottom: 6 }}>
         <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 8, padding: '8px 12px', background: 'var(--surface-2)', fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO }}>
-          <span>Ticker</span><span>Precio</span>{!mb && <span>Mcap</span>}{!mb && <span>Ingresos Q2’26</span>}{!mb && <span>FCF/acc. Q2’26</span>}<span>Técnico</span><span style={{ textAlign: 'right' }}>1M</span>{!mb && <span style={{ textAlign: 'right' }}>Invalida</span>}
+          <span>Ticker</span><span>Price</span>{!mb && <span>Mcap</span>}{!mb && <span>Revenue Q2’26</span>}{!mb && <span>FCF/sh Q2’26</span>}<span>Technical</span><span style={{ textAlign: 'right' }}>1M</span>{!mb && <span style={{ textAlign: 'right' }}>Invalidation</span>}
         </div>
         {TICKERS.map((t) => {
           const x = live[t.sym] || {}; const on = t.sym === active; const f = fundamentals(t.sym); const L = x.d?.price; const bad = isInvalidated(x);
@@ -539,15 +539,15 @@ export default function BiologyIsCode() {
               <span>{L ? fmtPx(L) : t.price}{L && x.d.chg != null && !mb ? <span style={{ fontSize: 10.5, marginLeft: 5, color: x.d.chg >= 0 ? GRN : RED }}>{x.d.chg >= 0 ? '+' : ''}{x.d.chg.toFixed(1)}%</span> : null}</span>
               {!mb && <span>{fmtCap(capOf(t))}</span>}
               {!mb && <span>{f.rev ? <>{f.rev.v} {yoyEl(f.rev.yoy)}</> : '—'}</span>}
-              {!mb && <span style={{ color: f.fcf?.v != null ? (f.fcf.v >= 0 ? GRN : RED) : 'var(--text-muted)' }}>{f.fcf?.v != null ? (f.fcf.v >= 0 ? '+' : '−') + '$' + Math.abs(f.fcf.v).toFixed(2) : 'sin serie'}</span>}
-              <span style={{ color: biasCol(x), fontWeight: 700, fontSize: 11.5 }}>{x.fc ? `${x.fc.dir} ${x.trend.score}/7` : x.d && !x.d.ok ? 'sin datos' : '…'}</span>
+              {!mb && <span style={{ color: f.fcf?.v != null ? (f.fcf.v >= 0 ? GRN : RED) : 'var(--text-muted)' }}>{f.fcf?.v != null ? (f.fcf.v >= 0 ? '+' : '−') + '$' + Math.abs(f.fcf.v).toFixed(2) : 'no series'}</span>}
+              <span style={{ color: biasCol(x), fontWeight: 700, fontSize: 11.5 }}>{x.fc ? `${x.fc.dir} ${x.trend.score}/7` : x.d && !x.d.ok ? 'no data' : '…'}</span>
               <span style={{ textAlign: 'right', color: biasCol(x) }}>{x.fc && L ? pc(x.fc.path[0].target / L - 1, 0) : '—'}</span>
               {!mb && <span style={{ textAlign: 'right', fontSize: 11.5, color: bad ? RED : 'var(--text-secondary)' }}>{x.fc ? fmtPx(x.fc.invalidation) : '—'}{bad ? ' ✕' : ''}</span>}
             </button>
           );
         })}
       </div>
-      <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: SANS, marginBottom: 18 }}>Precio y técnico en vivo. Mcap escalado al precio en vivo desde las acciones del snapshot ({AS_OF}). Fundamentales del último trimestre reportado. Tocá una fila para abrir la ficha.</div>
+      <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: SANS, marginBottom: 18 }}>Live price and technicals. Mcap scaled to the live price from the snapshot share count ({AS_OF}). Fundamentals from the last reported quarter. Tap a row to open the dossier.</div>
 
       {/* TICKER DOSSIER */}
       <div ref={dossierRef} style={{ position: 'sticky', top: 0, zIndex: 20, background: 'var(--bg)', padding: '8px 0', marginBottom: 10, borderBottom: '1px solid var(--border)' }}>
@@ -571,25 +571,25 @@ export default function BiologyIsCode() {
           </div>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: mb ? 22 : 26, fontWeight: 800, color: 'var(--text-bright)', fontFamily: MONO }}>{px ? fmtPx(px) : tk.price}</div>
-            <div style={{ fontSize: 12, fontFamily: MONO, color: A.d?.chg >= 0 ? GRN : RED }}>{A.d?.chg != null ? `${A.d.chg >= 0 ? '+' : ''}${A.d.chg.toFixed(2)}% hoy` : ' '}</div>
+            <div style={{ fontSize: 12, fontFamily: MONO, color: A.d?.chg >= 0 ? GRN : RED }}>{A.d?.chg != null ? `${A.d.chg >= 0 ? '+' : ''}${A.d.chg.toFixed(2)}% today` : ' '}</div>
           </div>
         </div>
 
         {/* key numbers */}
         <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr 1fr' : 'repeat(5,1fr)', gap: mb ? 12 : 16, padding: '14px 0', margin: '12px 0 4px', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
-          {cell('Market cap', fmtCap(capOf(tk)), 'en vivo')}
-          {cell('Ingresos Q2’26', F.rev ? F.rev.v : '—', F.rev?.yoy != null ? <>{yoyEl(F.rev.yoy)} YoY</> : 'pre-revenue')}
-          {cell('H1’26 vs guía FY', F.rev?.guidePct != null ? Math.round(F.rev.guidePct) + '%' : '—', F.rev?.guideTxt || 'sin guía')}
-          {cell('FCF / acción', F.fcf?.v != null ? (F.fcf.v >= 0 ? '+' : '−') + '$' + Math.abs(F.fcf.v).toFixed(2) : F.fcf?.card || '—', F.fcf?.v != null ? `${F.fcf.label} · ${F.fcf.abs >= 0 ? '+' : '−'}$${Math.abs(F.fcf.abs).toFixed(1)}M` : 'sin serie trimestral')}
-          {cell('Técnico', A.fc ? `${A.fc.dir} ${A.trend.score}/7` : '…', A.fc ? `1M ${fmtPx(A.fc.path[0].target)} · inv. ${fmtPx(A.fc.invalidation)}` : '')}
+          {cell('Market cap', fmtCap(capOf(tk)), 'live')}
+          {cell('Revenue Q2’26', F.rev ? F.rev.v : '—', F.rev?.yoy != null ? <>{yoyEl(F.rev.yoy)} YoY</> : 'pre-revenue')}
+          {cell('H1’26 vs FY guide', F.rev?.guidePct != null ? Math.round(F.rev.guidePct) + '%' : '—', F.rev?.guideTxt || 'no guidance')}
+          {cell('FCF / share', F.fcf?.v != null ? (F.fcf.v >= 0 ? '+' : '−') + '$' + Math.abs(F.fcf.v).toFixed(2) : F.fcf?.card || '—', F.fcf?.v != null ? `${F.fcf.label} · ${F.fcf.abs >= 0 ? '+' : '−'}$${Math.abs(F.fcf.abs).toFixed(1)}M` : 'no quarterly series')}
+          {cell('Technical', A.fc ? `${A.fc.dir} ${A.trend.score}/7` : '…', A.fc ? `1M ${fmtPx(A.fc.path[0].target)} · inv. ${fmtPx(A.fc.invalidation)}` : '')}
         </div>
-        {F.rev?.next && <div style={{ fontSize: 11.5, color: 'var(--gold)', fontFamily: MONO, marginTop: 8 }}>Próximo reporte: {F.rev.next}</div>}
+        {F.rev?.next && <div style={{ fontSize: 11.5, color: 'var(--gold)', fontFamily: MONO, marginTop: 8 }}>Next report: {F.rev.next}</div>}
 
         <p style={{ fontSize: 14, color: 'var(--text-primary)', fontFamily: SANS, lineHeight: 1.6, margin: '12px 0 16px' }}>{tk.note}</p>
 
         {/* quarterly P&L — the main fundamental read */}
         {(() => { const Q = QFIN[active]; const hl = qHeadline(Q); return (
-          <Module title="Resultados por trimestre" aside={`${Q.cur === 'C$' ? 'C$' : 'USD'} millones · Q1\u201925 → Q2\u201926 · último ER: Q2 FY2026`} style={{ marginBottom: 18 }}>
+          <Module title="Quarterly results" aside={`${Q.cur === 'C$' ? 'C$' : 'USD'} millions · Q1\u201925 → Q2\u201926 · last ER: Q2 FY2026`} style={{ marginBottom: 18 }}>
             <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr 1fr' : `repeat(${hl.length},1fr)`, gap: 8, marginBottom: 10 }}>
               {hl.map(([k, v, sub, tone]) => (
                 <div key={k} style={{ background: 'var(--surface-2)', borderRadius: 6, padding: '8px 11px' }}>
@@ -599,8 +599,8 @@ export default function BiologyIsCode() {
                 </div>))}
             </div>
             <div style={{ display: 'flex', gap: 14, fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO, marginBottom: 2, flexWrap: 'wrap' }}>
-              {!Q.pre && <><span><span style={{ display: 'inline-block', width: 9, height: 9, borderRadius: 2, background: C_REV, marginRight: 5 }} />Ingresos</span><span><span style={{ display: 'inline-block', width: 9, height: 9, borderRadius: 2, background: C_GP, marginRight: 5 }} />Utilidad bruta</span></>}
-              <span><span style={{ display: 'inline-block', width: 9, height: 9, borderRadius: 2, background: C_OP, marginRight: 5 }} />Resultado operativo</span>
+              {!Q.pre && <><span><span style={{ display: 'inline-block', width: 9, height: 9, borderRadius: 2, background: C_REV, marginRight: 5 }} />Revenue</span><span><span style={{ display: 'inline-block', width: 9, height: 9, borderRadius: 2, background: C_GP, marginRight: 5 }} />Gross profit</span></>}
+              <span><span style={{ display: 'inline-block', width: 9, height: 9, borderRadius: 2, background: C_OP, marginRight: 5 }} />Operating result</span>
             </div>
             <QPLChart q={Q} mb={mb} />
             <QPLTable q={Q} mb={mb} />
@@ -609,13 +609,13 @@ export default function BiologyIsCode() {
 
         {/* cash on hand */}
         {CASH[active] && (() => { const Cs = CASH[active]; const cap = capOf(tk); const ratio = cap ? (Cs.cash / cap) * 100 : null; const q = Cs.burn > 0 ? Cs.cash / Cs.burn : null; return (
-          <Module title="Cash on hand" aside={`${Cs.asof} · caja + equivalentes + valores`} style={{ marginBottom: 18 }}>
+          <Module title="Cash on hand" aside={`${Cs.asof} · cash + equivalents + securities`} style={{ marginBottom: 18 }}>
             <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr 1fr' : 'repeat(4,1fr)', gap: 8, marginBottom: 10 }}>
               {[
-                ['Caja', Cs.cashTxt, Cs.asof.split(' · ')[0], 'bright'],
-                ['Quema / trimestre', Cs.burnTxt, Cs.burn > 0 ? 'salida de caja' : 'entrada de caja', Cs.burn > 0 ? 'bad' : 'good'],
+                ['Cash', Cs.cashTxt, Cs.asof.split(' · ')[0], 'bright'],
+                ['Burn / quarter', Cs.burnTxt, Cs.burn > 0 ? 'cash outflow' : 'cash inflow', Cs.burn > 0 ? 'bad' : 'good'],
                 ['Runway', Cs.runway, Cs.runwaySub, q != null && q < 4 ? 'bad' : q != null && q < 8 ? 'warn' : 'good'],
-                ['Caja / mcap', ratio != null ? Math.round(ratio) + '%' : '—', ratio != null ? (ratio >= 100 ? 'caja > capitalización' : `mcap ${fmtCap(cap)} en vivo`) : '', ratio != null && ratio >= 100 ? 'good' : 'muted'],
+                ['Cash / mcap', ratio != null ? Math.round(ratio) + '%' : '—', ratio != null ? (ratio >= 100 ? 'cash > market cap' : `mcap ${fmtCap(cap)} live`) : '', ratio != null && ratio >= 100 ? 'good' : 'muted'],
               ].map(([k, v, sub, tone]) => (
                 <div key={k} style={{ background: 'var(--surface-2)', borderRadius: 6, padding: '8px 11px' }}>
                   <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO }}>{k}</div>
@@ -623,24 +623,24 @@ export default function BiologyIsCode() {
                   {sub ? <div style={{ fontSize: 11, fontFamily: MONO, color: 'var(--text-muted)' }}>{sub}</div> : null}
                 </div>))}
             </div>
-            <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.55, fontFamily: SANS }}>{Cs.note}{q != null && <> A la quema de Q2, la caja cubre ~{q.toFixed(1)} trimestres.</>}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.55, fontFamily: SANS }}>{Cs.note}{q != null && <> At the Q2 burn rate, cash covers ~{q.toFixed(1)} quarters.</>}</div>
           </Module>); })()}
 
         {/* cash */}
-        <Module title="FCF por acción" aside={FCF[active] ? `trimestral · ${FCF[active].shares}` : 'quema de caja'} style={{ marginBottom: 18 }}>
+        <Module title="FCF per share" aside={FCF[active] ? `quarterly · ${FCF[active].shares}` : 'cash burn'} style={{ marginBottom: 18 }}>
           {FCF[active] ? <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1.1fr 1fr', gap: 14, alignItems: 'center' }}><FcfChart sym={active} mb={mb} /><div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.55, fontFamily: SANS }}>{FCF[active].note}</div></div>
             : FCF_CARD[active] ? <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.5, fontFamily: SANS }}><b style={{ fontFamily: MONO, color: RED }}>{FCF_CARD[active][1]}</b> · {FCF_CARD[active][2]}</div>
-            : <div style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>Sin serie.</div>}
+            : <div style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>No series.</div>}
         </Module>
 
         {/* technical */}
-        <Module title="Técnico y forecast" aside="en vivo · mismo motor que los hubs de Solana" style={{ marginBottom: 18 }}>
+        <Module title="Technicals & forecast" aside="live · same engine as the Solana hubs" style={{ marginBottom: 18 }}>
           <TAModule sym={active} A={A} mb={mb} />
         </Module>
 
         {/* research — external thesis */}
         {RESEARCH[active] && (() => { const R = RESEARCH[active]; return (
-          <Module title="Research · tesis externa" aside={mb ? 'fuente citada abajo' : 'paráfrasis · fuente citada abajo'} style={{ marginBottom: 18 }}>
+          <Module title="Research · external thesis" aside={mb ? 'source cited below' : 'paraphrased · source cited below'} style={{ marginBottom: 18 }}>
             <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text-bright)', fontFamily: DISP, lineHeight: 1.45, marginBottom: 8 }}>{R.tagline}</div>
             <p style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: SANS, lineHeight: 1.6, margin: '0 0 12px' }}>{R.thesis}</p>
             <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 8, marginBottom: 12 }}>
@@ -652,22 +652,22 @@ export default function BiologyIsCode() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 10 }}>
               <div>
-                <div style={{ fontSize: 10.5, color: GRN, fontFamily: MONO, fontWeight: 700, marginBottom: 4 }}>HITOS A VIGILAR</div>
+                <div style={{ fontSize: 10.5, color: GRN, fontFamily: MONO, fontWeight: 700, marginBottom: 4 }}>MILESTONES TO WATCH</div>
                 <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12.5, color: 'var(--text-primary)', fontFamily: SANS, lineHeight: 1.55 }}>{R.milestones.map((x) => <li key={x}>{x}</li>)}</ul>
               </div>
               <div>
-                <div style={{ fontSize: 10.5, color: RED, fontFamily: MONO, fontWeight: 700, marginBottom: 4 }}>RIESGOS</div>
+                <div style={{ fontSize: 10.5, color: RED, fontFamily: MONO, fontWeight: 700, marginBottom: 4 }}>RISKS</div>
                 <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12.5, color: 'var(--text-primary)', fontFamily: SANS, lineHeight: 1.55 }}>{R.risks.map((x) => <li key={x}>{x}</li>)}</ul>
               </div>
             </div>
             <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', fontFamily: SANS, lineHeight: 1.5, borderLeft: '2px solid var(--gold)', paddingLeft: 10, marginBottom: 8 }}>{R.stance}</div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: MONO }}>Fuente: {R.src}. Paráfrasis y síntesis propia; no es recomendación de inversión.</div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: MONO }}>Source: {R.src}. Paraphrased and synthesized; not investment advice.</div>
           </Module>); })()}
 
         {/* full note */}
-        <Module title="Nota completa del último trimestre">
+        <Module title="Full note on the latest quarter">
           <details>
-            <summary style={{ cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)', fontFamily: MONO }}>Leer la nota (resultados, guía, catalizadores)</summary>
+            <summary style={{ cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)', fontFamily: MONO }}>Read the note (results, guidance, catalysts)</summary>
             {d.stats && <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 8, marginTop: 8 }}>{d.stats.map((x) => <div key={x[0]} style={{ background: 'var(--surface-2)', borderRadius: 6, padding: '8px 11px' }}><div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO }}>{x[0]}</div><div style={{ fontSize: 12.5, color: 'var(--text-primary)', fontFamily: SANS, fontWeight: 600, lineHeight: 1.4 }}>{x[1]}</div></div>)}</div>}
             <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.65, fontFamily: SANS, marginTop: 8 }}>{d.note}</div>
           </details>
@@ -681,7 +681,7 @@ export default function BiologyIsCode() {
 
       {/* THESIS — context, collapsed below the dossier */}
       <details style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: mb ? '12px' : '14px 18px', marginBottom: 12 }}>
-        <summary style={{ cursor: 'pointer', fontSize: 14, fontWeight: 700, color: 'var(--text-bright)', fontFamily: DISP }}>La tesis: del químico reactivo a un sistema operativo biológico</summary>
+        <summary style={{ cursor: 'pointer', fontSize: 14, fontWeight: 700, color: 'var(--text-bright)', fontFamily: DISP }}>The thesis: from reactive chemistry to a biological operating system</summary>
         <div style={{ marginTop: 16 }}>
       {/* HERO */}
       <div style={{ marginBottom: 22 }}>
@@ -771,14 +771,14 @@ export default function BiologyIsCode() {
       </details>
 
       <details style={{ background: 'var(--surface-2)', border: '1px solid var(--border-subtle)', borderRadius: 8, padding: '12px 16px', marginBottom: 20 }}>
-        <summary style={{ cursor: 'pointer', fontSize: 12.5, fontWeight: 700, color: 'var(--text-secondary)', fontFamily: MONO }}>Metodología y notas</summary>
+        <summary style={{ cursor: 'pointer', fontSize: 12.5, fontWeight: 700, color: 'var(--text-secondary)', fontFamily: MONO }}>Methodology & notes</summary>
         <div style={{ marginTop: 10 }}>
       {/* METHODOLOGY */}
       <div>
         <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.7, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
           <li>Market caps and prices are a point-in-time snapshot ({AS_OF}) and move daily.</li>
-          <li>Resultados por trimestre (Q1'25–Q2'26, último ER = Q2 FY2026): ingresos totales, utilidad bruta, resultado operativo y neto por trimestre, desde los datos XBRL de los 10-Q/10-K en la SEC (Q4 = año fiscal menos Q1–Q3), cruzados con Yahoo Finance. IBRX muestra ingresos totales (ANKTIVA + otros). NervGen reporta en C$ bajo IFRS. PBLS no tiene Q3/Q4'25 públicos (era privada). Los pre-revenue (NAUT, INKT, PBLS, NGEN) muestran resultado operativo y neto.</li>
-          <li>2026 executed revenue is charted in the INGRESOS POR TRIMESTRE section (Q1'25–Q2'26, reported GAAP revenue from 8-K/10-Q releases); the annual bars stop at FY2025 because FY2026 is not yet complete. Q2 FY2026 results for all nine tickers (reported Jul 28 – Aug 13, 2026) are also reflected in each ticker's commentary. HIMS figures are from its Aug 10 Q2 deck and call; the rest from company press releases and 10-Q/8-K filings. Post-quarter developments through Sep 4 (FTC/Visa at HIMS, Merck–Moderna readout for TEM, Nature Methods for NAUT) are noted where material.</li>
+          <li>Quarterly results (Q1'25–Q2'26, last ER = Q2 FY2026): total revenue, gross profit, operating and net result per quarter, from the XBRL data of the 10-Q/10-K filings on the SEC (Q4 = fiscal year minus Q1–Q3), cross-checked with Yahoo Finance. IBRX shows total revenue (ANKTIVA + other). NervGen reports in C$ under IFRS. PBLS has no public Q3/Q4'25 (it was private). Pre-revenue names (NAUT, INKT, PBLS, NGEN) show operating and net result.</li>
+          <li>2026 executed revenue is charted in the Quarterly results section (Q1'25–Q2'26, reported GAAP revenue from 8-K/10-Q releases); the annual bars stop at FY2025 because FY2026 is not yet complete. Q2 FY2026 results for all nine tickers (reported Jul 28 – Aug 13, 2026) are also reflected in each ticker's commentary. HIMS figures are from its Aug 10 Q2 deck and call; the rest from company press releases and 10-Q/8-K filings. Post-quarter developments through Sep 4 (FTC/Visa at HIMS, Merck–Moderna readout for TEM, Nature Methods for NAUT) are noted where material.</li>
           <li>CAI (IPO Jun 2025) shows only FY2024–FY2025; its gross profit is estimated from margin and its operating income is approximate (2025 distorted by IPO stock comp).</li>
           <li>IBRX operating income for 2022 and 2025 is approximate (derived from R&D + SG&A).</li>
           <li>PBLS (IPO Jun 2026) and NGEN (Nasdaq Jan 2026) are pre-revenue with limited public history — shown as info cards, not charts.</li>
@@ -793,7 +793,7 @@ export default function BiologyIsCode() {
 
       <footer style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderTop: '1px solid var(--border)', fontFamily: "'JetBrains Mono',monospace" }}>
         <a href="https://10am.pro" style={{ fontSize: 12, color: 'var(--text-muted)', textDecoration: 'none' }}>10am.pro</a>
-        <span style={{ fontSize: 12, color: '#22c55e', fontWeight: 700 }}>Hasta la muerte, toda derrota es psicológica.</span>
+        <span style={{ fontSize: 12, color: '#22c55e', fontWeight: 700 }}>Until death, every defeat is psychological.</span>
       </footer>
     </div>
   );

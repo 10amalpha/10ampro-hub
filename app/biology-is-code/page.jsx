@@ -232,14 +232,17 @@ const TICKERS = TICKERS_BY_MCAP.slice().sort((a, b) => ENTRY[a.sym].rank - ENTRY
 // MARKET ENTRIES — notable public holders / disclosures per ticker, with the source link. Data, not endorsement.
 const HOLDERS = {
   NAUT: [
+    { who: 'Antonio Linares', what: 'Discloses being long HIMS, ImmunityBio and Nautilus, in logarithmically declining allocation (HIMS largest).', src: 'Substack, "Life Extension per Token", Sep 30, 2026', url: 'https://antoniolinares.substack.com' },
     { who: 'Hernán (10AMPRO)', what: 'Experimental position, average cost ~$0.91. Sized as a cash-backed option, not a build.', src: '10am.pro', url: 'https://10am.pro' },
     { who: 'Antonio Linares', what: 'Micro position; adding gradually as milestones land (AKT1 early access, 100× sample cut, pre-orders, raise terms).', src: 'Substack, "Nautilus: Tesla for Proteomics", Sep 28, 2026', url: 'https://antoniolinares.substack.com' },
     { who: 'Antonio Linares', what: '"$NAUT is $PLTR for peptides" — proteoform map as the Ontology.', src: 'X, @alc2022', url: 'https://x.com/alc2022/status/2036442913282924959' },
   ],
   IBRX: [
+    { who: 'Antonio Linares', what: 'Discloses being long HIMS, ImmunityBio and Nautilus, in logarithmically declining allocation (HIMS largest).', src: 'Substack, "Life Extension per Token", Sep 30, 2026', url: 'https://antoniolinares.substack.com' },
     { who: 'Antonio Linares', what: 'Lists $IBRX among his early positions in his X bio.', src: 'X, @alc2022 profile', url: 'https://x.com/alc2022' },
   ],
   HIMS: [
+    { who: 'Antonio Linares', what: 'Discloses being long HIMS, ImmunityBio and Nautilus, in logarithmically declining allocation (HIMS largest).', src: 'Substack, "Life Extension per Token", Sep 30, 2026', url: 'https://antoniolinares.substack.com' },
     { who: 'Hernán (10AMPRO)', what: 'Core position — see the ORCHESTRATE thesis below.', src: '10am.pro', url: 'https://10am.pro' },
     { who: 'Antonio Linares', what: 'Lists $HIMS among his early positions in his X bio.', src: 'X, @alc2022 profile', url: 'https://x.com/alc2022' },
   ],
@@ -287,8 +290,79 @@ const CASH = {
 
 // RESEARCH — external theses folded into the dossier (paraphrased, attributed). Only tickers with a vetted source render this module.
 const RESEARCH = {
+  RXRX: {
+    src: 'Antonio Linares — \"Life Extension per Token\" (RXRX, TEM and NAUT Q2 2026 ER update, Sep 30, 2026)',
+    tagline: 'Recursion owns the mechanism: how molecules hit targets and how cells respond. Its atlas now discovers biology instead of optimizing what is already known.',
+    thesis: 'The thesis: medicine runs on a read function (capture the patient\u2019s state) and a write function (deliver the treatment). Recursion sits on the write side, upstream of the patient. The September deal with Tempus draws the line in the value chain: Recursion pays $42M over three years for Tempus\u2019s multimodal patient data (extended to 2029), Tempus pays $12M to license Recursion\u2019s TxFM RNA model. One explains why a treatment should work, the other shows whether it did. In Q2 the Genentech collaboration surfaced a novel neurological target generatively — nobody proposed the hypothesis; the foundation models compared 17,000+ genes across tens of millions of data points from an atlas of over a trillion lab-grown neurons and microglia, and the atlas is reusable for the next target.',
+    points: [
+      ['RXRX–TEM deal', '$42M (RXRX → TEM, 3 years, patient data) and $12M (TEM → RXRX, TxFM RNA licence, non-exclusive). Partnership extended to November 2029. Money flows both ways — each side pays for the layer it does not own.'],
+      ['Generative discovery', 'Genentech neuro target emerged from a 1T+ cell atlas; Genentech advanced it into a joint discovery program. The atlas is built once and mined again.'],
+      ['Clinic', 'REC-4881 (rare inherited colon disease): polyps −43% in three months, effect held off-drug, no approved treatment exists; next Phase 2 update and FDA feedback due November 2026. REC-7735 (PI3K H1047R, ~130× selective): IND cleared in Q2, Phase 1 in 2026.'],
+      ['Efficiency', 'REC-7735 designed in 10 months from 242 compounds vs an industry norm of ~4 years and ~2,500. Recursion average holds at ~18 months and ~330 compounds, quarter after quarter.'],
+      ['Costs', '2026 spending guidance cut to $375M in Q2 — about 40% below 2024, with no outcome targets dropped.'],
+      ['Proteomic gap', 'Recursion combines cell images, RNA, chemistry and standard proteomics, but mass spec measures how much protein is present, not which form it takes. A proteoform read (NAUT) is the missing input that would sharpen its write function.'],
+    ],
+    milestones: ['REC-4881 Phase 2 update + FDA feedback (November 2026)', 'REC-7735 Phase 1 start', 'Further targets out of the Genentech atlas', 'Tempus data flowing into TxFM (deal runs to 2029)'],
+    risks: ['Clinical: REC-4881 primary endpoint still under discussion with the FDA', 'Platform proof is still mostly efficiency metrics, not approved drugs', 'Proteomic resolution lags the state of the art'],
+    stance: 'Incrementally bullish as part of the RXRX / TEM / NAUT basket. Our tier: BUILD — no adding until the research clock unlocks buying.',
+  },
+  TEM: {
+    src: 'Antonio Linares — \"Life Extension per Token\" (RXRX, TEM and NAUT Q2 2026 ER update, Sep 30, 2026)',
+    tagline: 'Tempus owns the outcomes: real patients, their molecular reads and what happened to them — and sells what it learns back to pharma.',
+    thesis: 'The thesis: the best gauge of whether the bio-data value chain works is the distribution layer, where read and write actually reach a body. Tempus reads inside the clinic across 5,000+ hospitals; Hims reads and writes through the phone. Both grow fast for the same reason: data improves outcomes, and customers pay for that precision. Tempus completes the key:value pair on the PI3K/AKT example — it finds the patients who carry H1047R (PIK3CA on xT / xF panels), then reads whether the drug worked.',
+    points: [
+      ['Revenue', 'TTM ~$1.4B (5.0× since Q3 2021, ~40% CAGR over 19 quarters, includes Ambry Genetics). Market cap ~$14.9B at Sep 29 close.'],
+      ['Data licensing', 'Q2 2026: algorithm attach rate 45%, data licensing +36%. Physicians pay for the insight, not just the test.'],
+      ['Lens', 'CEO Lefkofsky on the Q2 call: customers do not just want the data, they want GPUs provisioned inside Lens and are building models that stay there — the stickiness argument.'],
+      ['RXRX deal', 'Receives $42M over three years for multimodal patient data; pays $12M for the TxFM RNA licence. Extended to November 2029.'],
+      ['Visibility', 'Management claims visibility into growth rates for 2026 and 2027 on a stronger pipeline and more demand than ever.'],
+      ['vs HIMS', 'HIMS TTM $2.6B at ~$6.7B mcap vs TEM $1.4B at ~$14.9B — the author reads the gap as the market not seeing Hims as the dominant distribution player.'],
+    ],
+    milestones: ['Q3 2026 results (data licensing growth, attach rate)', 'Lens compute / model-hosting revenue disclosure', 'New pharma data deals in the Recursion mold'],
+    risks: ['Premium valuation relative to the rest of the basket', 'Ambry integration and hospital-system concentration', 'Pharma data budgets are cyclical'],
+    stance: 'Incrementally bullish for the author. Our tier: STUDY — the most expensive name in the basket on a revenue multiple.',
+  },
+  HIMS: {
+    src: 'Antonio Linares — \"Life Extension per Token\" (RXRX, TEM and NAUT Q2 2026 ER update, Sep 30, 2026)',
+    tagline: 'Hims owns the distribution layer from the consumer side: reads and writes through the phone, and is paid when the customer stays well.',
+    thesis: 'The thesis: Hims and Tempus own the distribution layer from opposite ends. Hims reads and writes direct to consumer; subscription billing means it is paid when the customer stays well. Hims Labs blood panels (including Grail\u2019s Galleri cancer test) sit on the read side; retesting the same person over time closes the key:value pair. TTM revenue ~$2.6B (11.3× since Q3 2021, ~66% CAGR) at a market cap of ~$6.7B, which the author reads as an arbitrage vs Tempus.',
+    points: [
+      ['Revenue', 'TTM ~$2.6B, 66.5% CAGR over 19 quarters; GLP-1s were the inflection.'],
+      ['Read side', 'Hims Labs blood panels incl. Galleri; the same person retested over time.'],
+      ['Arbitrage', '$2.6B revenue at ~$6.7B mcap vs Tempus $1.4B at ~$14.9B.'],
+      ['Author position', 'Largest of his three disclosed longs (HIMS > IBRX > NAUT, logarithmically declining).'],
+    ],
+    milestones: ['Q3 2026 results (Nov 9)', 'Hims Labs / Galleri attach and retest data', 'Resolution of FTC / payment-network headwinds'],
+    risks: ['Regulatory and payment-network pressure (see news module)', 'GLP-1 pricing and compounding exposure'],
+    stance: 'The author\u2019s largest position in the thesis. Ours: core HOLDING.',
+  },
+  IBRX: {
+    src: 'Antonio Linares — \"Life Extension per Token\" (RXRX, TEM and NAUT Q2 2026 ER update, Sep 30, 2026)',
+    tagline: 'ImmunityBio writes to the immune system itself: Anktiva tells the body to make more NK and T cells, and each new layer only has to swap the target.',
+    thesis: 'The thesis: three companies contribute to the write function in a particularly appealing way. ImmunityBio\u2019s Anktiva, an IL-15 superagonist, reboots NK and T cells; every additional program stacked on top only needs to change the target. It is a platform write, not a single-disease drug.',
+    points: [
+      ['Mechanism', 'IL-15 superagonist → more NK and T cells; a system-wide reboot.'],
+      ['Platform', 'Each new layer swaps the target rather than rebuilding the mechanism.'],
+      ['Author position', 'Second of his three disclosed longs (HIMS > IBRX > NAUT).'],
+    ],
+    milestones: ['Anktiva label expansions', 'Combination programs on the IL-15 base'],
+    risks: ['Commercial execution and cash needs', 'Single-mechanism concentration'],
+    stance: 'Long for the author. Ours: BUILD.',
+  },
+  INKT: {
+    src: 'Antonio Linares — \"Life Extension per Token\" (RXRX, TEM and NAUT Q2 2026 ER update, Sep 30, 2026)',
+    tagline: 'MiNK writes with a single off-the-shelf cell: the same iNKT cell, from the same donor batch, switched to attack in solid tumors or to calm in lung failure.',
+    thesis: 'The thesis: one cell, every disease. MiNK\u2019s iNKT cells go unmodified from one donor batch into an attack program in solid tumors and a calming program in lung failure — no per-patient engineering, which is the unit-economics moat vs CAR-T.',
+    points: [
+      ['One cell', 'Same iNKT cell, same donor batch, two opposite programs without modification.'],
+      ['Off the shelf', 'No per-patient manufacturing; the cost structure CAR-T cannot match.'],
+    ],
+    milestones: ['Solid-tumor and lung-failure readouts', 'Manufacturing scale data'],
+    risks: ['Micro-cap financing risk', 'Early clinical evidence'],
+    stance: 'Named by the author as one of three appealing write-side operations (no position disclosed). Ours: OPTION.',
+  },
   NAUT: {
-    src: 'Antonio Linares — "Nautilus: Tesla for Proteomics" (post-Q2 FY2026 update, Sep 28, 2026)',
+    src: 'Antonio Linares — "Nautilus: Tesla for Proteomics" (Sep 28, 2026) and "Life Extension per Token" (Sep 30, 2026)',
     tagline: 'A machine that prints proteome reads at falling marginal cost, compounding toward a digital twin that makes disease solvable.',
     thesis: 'The thesis: the value of AI × biology concentrates in the proteomic layer, because that is where disease shows up and sustains itself (proteins lock together by shape, like Lego). Nautilus is today the only company reading the proteome at proteoform resolution. What the market reads as weakness — the pivot to specific verticals (neuro, oncology) — Linares reads as the first step of the "Tesla algorithm": build a machine that prints vertical solutions to a massive industrial problem, at falling marginal cost and increasingly hard to replicate. Each new assay arrives faster than the last; with enough verticals, coverage becomes indistinguishable from a digital twin of the proteome.',
     points: [
@@ -297,6 +371,8 @@ const RESEARCH = {
       ['APOE → tau', 'First time APOE risk variants (ε2/ε3/ε4) have been mapped to distinct tau proteoform signatures — the mechanistic link the field chased for decades. It is the READ-layer proof point: gene → exact protein form → disease.'],
       ['Precision', 'CV ~5.5% on the Buck Institute alpha instrument vs ~25% industry norm.'],
       ['Unit economics', 'Targeted price ~$1M per instrument + consumables of a few thousand dollars per sample. Commercial launch wave targeted for mid-2027.'],
+      ['Update Sep 30 (ER piece)', 'Valued ~$170M vs ~$129M cash at Jun 30; burns ~$14M/quarter; raise expected before mid-2027 at a valuation that makes it dilutive. The author calls it an extreme asymmetry and is most drawn to NAUT of the RXRX/TEM/NAUT trio.'],
+      ['AKT1 ↔ REC-7735', 'The first cancer assay (AKT1) reads whether the PI3K/AKT growth pathway is actually running in a tumor — the same pathway Recursion\u2019s REC-7735 is built to shut down. Read the protein (NAUT) → write the drug (RXRX) → find and re-read the patient (TEM). No deal exists between NAUT and RXRX; this is a capability map, not a partnership.'],
       ['Valuation', 'Mcap ~$120M vs a terminal value the author puts in the trillion range if the platform maps proteomes from blood at scale. OpEx −7% YoY, runway into 2028. Stock −70% since March while the fundamentals moved the other way.'],
     ],
     milestones: ['AKT1 entering early access', '100× sample-input reduction (early 2027)', 'Instrument pre-orders', 'Terms of the raise (expects to raise before mid-2027)'],

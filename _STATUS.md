@@ -316,3 +316,10 @@ On every standalone page, the header hub/back button **must link to `https://10a
 
 ## 2026-09-29 (5) — NAUT is an experimental holding
 - Hernán holds an experimental NAUT position (avg cost ~$0.9086). ENTRY: NAUT → rank 2, tier "HOLDING · EXP"; IBRX/RXRX/TEM shift to 3/4/5. Added to HOLDERS. Board order now HIMS, NAUT, IBRX, RXRX, TEM, INKT, CAI, PBLS, NGEN.
+
+## 2026-09-30 (1) — biology-is-code: "Life Extension per Token" (Linares) → 5 new Research modules
+- Source: A. Linares, "Life Extension per Token" (RXRX, TEM and NAUT Q2 2026 ER update, Sep 30). New `RESEARCH` entries for RXRX (RXRX–TEM $42M/$12M deal to 2029, Genentech generative neuro target, REC-4881 −43% polyps, REC-7735 IND in 10 months / 242 compounds, $375M spend guidance, proteomic gap), TEM (TTM $1.4B, 45% attach, data licensing +36%, Lens stickiness, HIMS arbitrage), HIMS, IBRX, INKT (shorter).
+- NAUT module: src now cites both pieces; two new cards — Sep 30 valuation update (~$170M vs ~$129M cash, ~$14M/qtr burn, raise before mid-2027) and AKT1 ↔ REC-7735 pathway map.
+- HOLDERS: Linares now discloses long HIMS > IBRX > NAUT (logarithmically declining) — added to all three.
+- Article URL not indexed yet; Substack root used as `url` — replace with the post permalink when it surfaces.
+- Ledger +2h (fuentes).

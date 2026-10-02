@@ -84,13 +84,7 @@ async function fetchYahoo(symbols) {
 // ─── CoinGecko ──────────────────────────────────────────────
 async function fetchCrypto() {
   try {
-    const ids = [
-      'bitcoin','solana','sui','ethereum','jupiter-exchange-solana','nosana',
-      'jito-governance-token','genesysgo-shadow','helium','zcash',
-      'jito-staked-sol','ripple',
-      'metaplex','jupiter-perpetuals-liquidity-provider-token',
-      'meteora','pump-fun'
-    ].join(',');
+    const ids = CRYPTO_IDS.join(',');
 
     // Fetch listed tokens + 2Z by contract address in parallel
     const [mainRes, tzRes] = await Promise.all([
@@ -120,6 +114,7 @@ async function fetchCrypto() {
 // ─── Briefing data (direct import — no self-fetch) ──────────
 import { getBriefingData } from './lib/briefing';
 import { HUBS } from './lib/thesis/registry';
+import { STOCK_TICKERS, CRYPTO_MAP, CRYPTO_IDS } from './lib/watchlist';
 
 // ─── Signal Calculation ─────────────────────────────────────
 function calcSignals(quotes) {
@@ -268,7 +263,7 @@ export default async function HubPage() {
     fetchYahoo(['^GSPC', '^VIX', 'DX-Y.NYB', 'CL=F', 'JPY=X', 'COP=X', '^TNX', '^IRX', '^MOVE']),
     fetchCrypto(),
     getBriefingData(),
-    fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC','TEM','IBRX','CAI','PBLS','RXRX','NGEN','NAUT','INKT']),
+    fetchYahoo(STOCK_TICKERS),
     fetchYahoo(BIO_SYMS),
   ]);
   // Solana basket (anchor thesis /sol + alt hubs). Bias from each hub config's TOKEN.ta; Nosana has no config → bias kept in sync with app/nosana/page.jsx.
@@ -462,16 +457,6 @@ export default async function HubPage() {
     .map(formatCalEvent);
 
   // ─── Watchlist ───
-  const STOCK_TICKERS = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC', 'TEM','IBRX','CAI','PBLS','RXRX','NGEN','NAUT','INKT'];
-  const CRYPTO_MAP = {
-    BTC: 'bitcoin', SOL: 'solana', SUI: 'sui', ETH: 'ethereum',
-    JUP: 'jupiter-exchange-solana', NOS: 'nosana',
-    JTO: 'jito-governance-token', SHDW: 'genesysgo-shadow',
-    '2Z': '2z-protocol', MET: 'meteora', HNT: 'helium', ZEC: 'zcash',
-    JITOSOL: 'jito-staked-sol',
-    XRP: 'ripple', JLP: 'jupiter-perpetuals-liquidity-provider-token',
-    PUMP: 'pump-fun',
-  };
 
   const wl = [
     ...STOCK_TICKERS.map(t => {

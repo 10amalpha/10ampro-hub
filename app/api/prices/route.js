@@ -6,6 +6,7 @@
 
 // Force dynamic — this endpoint must always return fresh prices
 export const dynamic = 'force-dynamic';
+import { STOCK_TICKERS, CRYPTO_MAP, CRYPTO_IDS } from '../../lib/watchlist';
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
@@ -60,11 +61,7 @@ async function fetchYahoo(symbols) {
 
 async function fetchCrypto() {
   try {
-    const ids = [
-      'bitcoin','solana','sui','ethereum','jupiter-exchange-solana','nosana',
-      'jito-governance-token','genesysgo-shadow','helium','zcash',
-      'jito-staked-sol','ripple','metaplex','jupiter-perpetuals-liquidity-provider-token'
-    ].join(',');
+    const ids = CRYPTO_IDS.join(',');
     const [mainRes, tzRes] = await Promise.all([
       fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`),
       fetch(`https://api.coingecko.com/api/v3/simple/token_price/solana?contract_addresses=J6pQQ3FAcJQeWPPGppWRb4nM8jU3wLyYbRrLh7feMfvd&vs_currencies=usd&include_24hr_change=true`),
@@ -128,14 +125,6 @@ function fmt(n, dec = 2) {
   return n.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
 }
 
-const STOCK_TICKERS = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC'];
-const CRYPTO_MAP = {
-  BTC: 'bitcoin', SOL: 'solana', SUI: 'sui', ETH: 'ethereum',
-  JUP: 'jupiter-exchange-solana', NOS: 'nosana',
-  JTO: 'jito-governance-token', SHDW: 'genesysgo-shadow',
-  '2Z': '2z-protocol', MET: 'metaplex', HNT: 'helium', ZEC: 'zcash',
-  JITOSOL: 'jito-staked-sol', XRP: 'ripple', JLP: 'jupiter-perpetuals-liquidity-provider-token',
-};
 
 export async function GET() {
   try {

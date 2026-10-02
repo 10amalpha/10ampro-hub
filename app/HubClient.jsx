@@ -129,6 +129,11 @@ function MC({ m, bd = true, mb, span = 1 }) {
   );
 }
 
+// Earnings page per ticker. Nasdaq's earnings page covers NYSE + Nasdaq listings (date, EPS estimate, surprise history).
+// Override for tickers Nasdaq does not carry (NGEN is TSX-V / OTC).
+const ER_OVERRIDE = { NGEN: 'https://finance.yahoo.com/quote/NGEN' };
+const erUrl = (t) => ER_OVERRIDE[t] || `https://www.nasdaq.com/market-activity/stocks/${t.toLowerCase()}/earnings`;
+
 // ─── TESIS EN FORMACIÓN ──────────────────────────────────────
 // Two anchor theses, same visual grammar: header (anchor link) + grid of ticker boxes, each linking to its dossier / hub.
 // BIO_META mirrors TICKERS_BY_MCAP in app/biology-is-code/page.jsx; bias from ta.editor.js. SOL boxes get price + bias from page.jsx (hub configs).
@@ -495,10 +500,12 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
               <span style={{ fontSize: 13, fontWeight: 700, color: '#a78bfa' }}>📊 EARNINGS RADAR</span>
             </div>
             {nextUp && (
-              <div style={{
+              <a href={erUrl(nextUp.t)} target="_blank" rel="noopener" title={`Earnings de ${nextUp.t} →`} style={{
                 padding: '9px 12px', background: '#a78bfa08', borderBottom: '1px solid var(--border)',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              }}>
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', textDecoration: 'none', cursor: 'pointer',
+              }}
+                onMouseEnter={ev => ev.currentTarget.style.background = '#a78bfa14'}
+                onMouseLeave={ev => ev.currentTarget.style.background = '#a78bfa08'}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ fontSize: 14 }}>{nextUp.e}</span>
                   <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>{nextUp.t}</span>
@@ -510,16 +517,16 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
                   <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{nextUp.d} · <span style={{ color: '#a78bfa', fontWeight: 700 }}>{nextUp.days}d</span></span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: '#a78bfa', background: '#a78bfa18', padding: '1px 5px', borderRadius: 2, border: '1px solid #a78bfa30' }}>NEXT UP</span>
                 </div>
-              </div>
+              </a>
             )}
             <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr' }}>
               {restEarn.map((e, i) => {
                 const lastRow = mb ? i === restEarn.length - 1 : i >= restEarn.length - (restEarn.length % 2 === 0 ? 2 : 1);
                 const rightCol = !mb && i % 2 === 1;
                 return (
-                  <div key={i} style={{
+                  <a key={i} href={erUrl(e.t)} target="_blank" rel="noopener" title={`Earnings de ${e.t} →`} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, minWidth: 0,
-                    padding: '7px 10px',
+                    padding: '7px 10px', textDecoration: 'none', cursor: 'pointer',
                     borderBottom: lastRow ? 'none' : '1px solid var(--border-subtle)',
                     borderLeft: rightCol ? '1px solid var(--border-subtle)' : 'none',
                   }}
@@ -535,7 +542,7 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
                       {e.time && <span style={{ fontSize: 10, color: 'var(--text-muted)', background: 'var(--surface-2)', padding: '0px 4px', borderRadius: 2 }}>{e.time}</span>}
                       <span style={{ fontSize: 13, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{e.d} · <span style={{ color: e.days <= 7 ? '#a78bfa' : 'var(--text-muted)', fontWeight: e.days <= 7 ? 700 : 400 }}>{e.days}d</span></span>
                     </div>
-                  </div>
+                  </a>
                 );
               })}
             </div>

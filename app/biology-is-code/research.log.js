@@ -32,5 +32,7 @@ export const LOG = [
   { d: '2026-09-29', cat: 'fuentes', h: 1.5, note: 'NAUT: read and synthesized "Nautilus: Tesla for Proteomics" (A. Linares, post-Q2 FY26) → Research module in the dossier' },
   { d: '2026-09-29', cat: 'tesis', h: 1, note: 'Preferred entry order (HOLDING / BUILD / STUDY / OPTION / MONITOR) and public holders with sources' },
   { d: '2026-09-30', cat: 'fuentes', h: 2, note: 'Read and synthesized "Life Extension per Token" (A. Linares, RXRX / TEM / NAUT Q2 ER update) → Research modules for RXRX, TEM, HIMS, IBRX, INKT; NAUT update; holders refreshed' },
+  { d: '2026-10-02', cat: 'fuentes', h: 2, note: 'QSI onboarded as the 10th ticker (READ): synthesized Hernán\u2019s "AI + Biología = Quantum-Si" (Nov 2025) and "La Cadena" (May 2026) → Research module, holders, chain position' },
+  { d: '2026-10-02', cat: 'earnings', h: 1.5, note: 'QSI: FY22–FY25 income statements, Q1\u201925–Q2\u201926 P&L and FCF from 8-K/10-Q, cash on hand, Proteus delay / RIF / 18-AA / HUPO data' },
   { d: '2026-09-23', cat: 'noticias', h: 9, est: true, note: 'Continuous tracking Jun–Sep (~40 min / week × 14 weeks): podcasts, news, threads' },
 ];

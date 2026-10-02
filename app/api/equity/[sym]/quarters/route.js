@@ -4,7 +4,7 @@
 //   yahoo: fundamentals-timeseries (quarterly)
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-const ALLOWED = new Set(['TEM', 'IBRX', 'CAI', 'HIMS', 'PBLS', 'RXRX', 'NGEN', 'NAUT', 'INKT']);
+const ALLOWED = new Set(['TEM', 'IBRX', 'CAI', 'HIMS', 'PBLS', 'RXRX', 'NGEN', 'NAUT', 'QSI', 'INKT']);
 const SEC_UA = '10AMPRO research info@10am.pro';
 const YUA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 const TAGS = {

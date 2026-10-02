@@ -323,3 +323,11 @@ On every standalone page, the header hub/back button **must link to `https://10a
 - HOLDERS: Linares now discloses long HIMS > IBRX > NAUT (logarithmically declining) — added to all three.
 - Article URL not indexed yet; Substack root used as `url` — replace with the post permalink when it surfaces.
 - Ledger +2h (fuentes).
+
+## 2026-10-02 — biology-is-code: QSI added as the 10th ticker (READ)
+- Source: Hernán's own Substacks "AI + Biología = Quantum-Si" (Nov 1, 2025) and "La Cadena" (May 13, 2026). Synthesized in English into a `RESEARCH.QSI` module (sensor-of-AI thesis, chip mechanics, Proteus, competitive map, four-layer chain, Oct 2026 update) + `HOLDERS.QSI` (Hernán: shares + 2027 calls, small; ARK ~9–12% late 2025; NVIDIA collab) + CHAIN.READ item + TABS.
+- Data: FIN FY22–FY25 (rev 0 / 1.08 / 3.06 / 2.44; op −123.8 / −111.2 / −108.6 / −116.1), QFIN Q1'25–Q2'26 from 8-K press releases (Q3'25 derived from 9M/FY; FY25 has $18.7M one-time litigation/lease charges — footnoted), FCF 6 quarters = 10-Q OCF less ~$0.6M/q capex, CASH $169.9M Jun 30 '26 / −$20.5M usage Q2 / runway Q4 2028 (post-RIF guidance), QREV card H1'26 $0.60M, FY26 guide ~$1.0M.
+- Board: price $1.07 / mcap ~$235M at Sep 30 close (218.9M sh = 199M A + 20M B) — NOT the Sep 4 snapshot; the footer says so. ENTRY: QSI rank 3 "HOLDING · EXP"; IBRX→4, RXRX→5, TEM→6, INKT→7, CAI→8, PBLS→9, NGEN→10.
+- Infra: QSI added to the ALLOWED sets of /api/equity/[sym] and /quarters; OG image READ ticks; layout metadata 9→10 tickers; methodology notes.
+- Pending: editor TA read for QSI (falls back to the live auto-forecast for now — write it in the next TA pass; price just broke $1 on Sep 29–Oct 1 so the live engine should be BULL-leaning). Substack permalinks for the two posts not resolved — HOLDERS/RESEARCH link to 10am.pro root; swap when known. Next QSI ER Nov 5.
+- Ledger +3.5h (fuentes 2, earnings 1.5).

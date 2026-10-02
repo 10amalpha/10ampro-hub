@@ -15,7 +15,7 @@ const GOLD = '#D4A843';
 const GRN = '#22c55e';
 
 const LAYERS = [
-  { tag: 'READ', sub: 'Read the code', color: BLUE, ticks: 'NAUT · TEM · CAI · RXRX' },
+  { tag: 'READ', sub: 'Read the code', color: BLUE, ticks: 'NAUT · QSI · TEM · CAI · RXRX' },
   { tag: 'ORCHESTRATE', sub: 'Orchestrate the data', color: GOLD, ticks: 'HIMS' },
   { tag: 'WRITE', sub: 'Write the biology', color: GRN, ticks: 'IBRX · INKT · NGEN · PBLS' },
 ];

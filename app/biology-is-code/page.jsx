@@ -26,6 +26,7 @@ const TICKERS_BY_MCAP = [
   { sym: 'PBLS', name: 'Parabilis Medicines', layer: 'WRITE', mcap: '$5.0B', price: '$40.42', note: 'Helicon peptides for flat / undruggable proteins. IPO Jun 2026; $1.1B cash after first public quarter.' },
   { sym: 'RXRX', name: 'Recursion Pharmaceuticals', layer: 'READ', mcap: '$1.95B', price: '$3.63', note: 'Wetlab simulation; physics\u2192chemistry\u2192biology. Q2: opex cut ~40%, Genentech optioned first neuro target.' },
   { sym: 'NGEN', name: 'NervGen Pharma', layer: 'WRITE', mcap: '$249M', price: '$2.32', note: 'Nervous-system regeneration (NVG-291). Ph3 RESTORE screening starts Sep 2026; funded to 1H28 readout.' },
+  { sym: 'QSI', name: 'Quantum-Si', layer: 'READ', mcap: '$235M', price: '$1.07', note: 'Single-molecule protein sequencing on a semiconductor chip. Proteus launch pushed to Q2 2027; 18 of 20 amino acids now read; interim HUPO data Sep 28 (30× more alignments vs Platinum Pro). Stock +40% from the mid-Sep base. Price/mcap: Sep 30 close.' },
   { sym: 'NAUT', name: 'Nautilus Biotechnology', layer: 'READ', mcap: '$115M', price: '$0.90', note: '10B-protein mapping. First revenue booked in Q2; Nature Methods tau-proteoform paper (Sep 4); APOE→tau proteoform link. Cash still tops market cap.' },
   { sym: 'INKT', name: 'MiNK Therapeutics', layer: 'WRITE', mcap: '$55M', price: '$11.07', note: 'Immune bypass \u2014 iNKT cells target stable lipids, not peptides. Randomized Ph2 in ARDS dosing; $8.8M cash.' },
 ];
@@ -47,6 +48,9 @@ const FIN = {
   RXRX: { type: 'chart', name: 'Recursion Pharmaceuticals', sub: 'RXRX · ≈ $3.63/sh · READ', mcap: '$1.95B', years: [2022, 2023, 2024, 2025],
     revenue: [39.7, 43.9, 58.5, 74.3], gross: [-8.6, 1.3, 13.3, 3.3], op: [-245.7, -350.1, -479.0, -648.1],
     note: 'FY2022–FY2025. Revenue is mostly partnership / collaboration income. Gross profit is thin and volatile; the operating loss widened sharply as R&D scaled. Q2 FY2026 (Aug 5): $7.7M revenue (vs ~$12M consensus), EPS \u2013$0.25; management cut 2026 opex guidance ~40%, cited >$500M of cumulative partnership inflows and ended the quarter with $557M cash (runway into 2028). Genentech optioned the collaboration\u2019s first neuroscience target into a joint discovery program — the platform\u2019s clearest external validation to date. Five clinical programs with readouts over the next 12\u201318 months.' },
+  QSI: { type: 'chart', name: 'Quantum-Si', sub: 'QSI · ≈ $1.07/sh · READ', mcap: '$235M', years: [2022, 2023, 2024, 2025],
+    revenue: [0, 1.08, 3.06, 2.44], gross: [0, 0.49, 1.60, 1.15], op: [-123.8, -111.2, -108.6, -116.1],
+    note: 'FY2022–FY2025. Platinum (first-gen single-molecule protein sequencer) started shipping in 2023: revenue went $1.1M → $3.1M, then fell back to $2.4M in 2025 as the company deliberately slowed Platinum sales ahead of Proteus (placement programs, upgrade credits). The operating loss has been flat at ~$110–120M a year; FY2025 includes $18.7M of one-time legacy-litigation and lease-termination charges, so adjusted opex actually fell 13% to $86.3M. Q2 FY2026 (Aug 13): revenue $344K (−42% YoY), gross margin 50%, net loss $23.5M, cash $169.9M. The quarter\u2019s real news was the Proteus delay — commercial launch moved from year-end 2026 to Q2 2027 for one more integrated-instrument design cycle — plus a ~20% reduction in force (~$12M annualized savings) that stretches the runway into Q4 2028, and a new ~$4B non-human proteomics market (agriculture, pathogen typing, viral surveillance) surfaced by Platinum customers. FY2026 guidance unchanged: ~$1.0M revenue, ≤$98M adjusted opex, ≤$93M cash usage. Since the print the science has moved faster than the schedule: 18 of 20 amino acids detected on integrated Proteus instruments (Sep 15; all 20 targeted in 2026, possibly in the launch kit), and interim HUPO data (Sep 28) showing Proteus with 30× more alignments, a 1.4% vs 6.6% false-discovery rate and 4.3× more amino acids per run than Platinum Pro. List price $425K.' },
   NAUT: { type: 'chart', name: 'Nautilus Biotechnology', sub: 'NAUT · ≈ $0.90/sh · READ', mcap: '$115M', years: [2022, 2023, 2024, 2025],
     revenue: [0, 0, 0, 0], gross: [0, 0, 0, 0], op: [-63.6, -76.2, -81.5, -71.4],
     note: 'FY2022–FY2025. Pre-revenue (proteomics platform not yet commercial); the chart shows operating loss only. Shares have fallen below $1, so the ~$129M cash balance (Q2 FY2026, runway into Q1 2028) now exceeds the ~$113M market cap. Q2 opex ~$15.9M; R&D refocused on proteoform assays, and Q2 FY2026 (Jul 28) booked the company\u2019s first revenue ($190K) from the Voyager early-access program. On Sep 4 a Nature Methods paper reported the first large-scale single-molecule quantification of tau proteoforms — disease-associated modifications that read directly as biomarkers and drug targets for neurodegeneration, the READ-layer thesis in one publication.' },
@@ -78,6 +82,9 @@ const FCF = {
   RXRX: { name: 'Recursion Pharmaceuticals', shares: '540M sh',
     q: [['Q1\u201925', -133.8], ['Q2\u201925', -79.6], ['Q3\u201925', -117.6], ['Q4\u201925', -47.3], ['Q1\u201926', -81.4], ['Q2\u201926', -106.0]],
     note: 'Volatile burn despite 30% opex cuts \u2014 partnership inflows make quarters lumpy. Cash $556.8M (Jun 30; $665M was Mar 31), runway to early 2028.' },
+  QSI: { name: 'Quantum-Si', shares: '219M sh',
+    q: [['Q1\u201925', -26.8], ['Q2\u201925', -20.8], ['Q3\u201925', -32.9], ['Q4\u201925', -16.6], ['Q1\u201926', -26.2], ['Q2\u201926', -19.0]],
+    note: 'Operating cash flow from the 10-Q/10-K less ~$0.6M/q of capex (FY25 capex $2.5M). Q3\u201925 is inflated by legal-settlement payments; Q4\u201925 and Q2\u201926 are the lightest quarters. H1\u201926 OCF \u2013$44.1M vs \u2013$46.4M a year ago; FY26 cash-usage guidance \u2264$93M, and the August RIF takes ~$12M/yr out from here. ~219M shares (199M Class A + 20M Class B) keep per-share burn around \u2013$0.10/q.' },
   NAUT: { name: 'Nautilus Biotechnology', shares: '127M sh',
     q: [['Q1\u201925', -14.2], ['Q2\u201925', -13.7], ['Q3\u201925', -11.5], ['Q4\u201925', -12.6], ['Q1\u201926', -13.6], ['Q2\u201926', -14.2]],
     note: 'Metronomic ~$13M/q burn, pre-revenue. FY25 burn actually declined 15% vs FY24 \u2014 disciplined for a platform builder.' },
@@ -88,7 +95,7 @@ const FCF = {
     q: [['Q1\u201925', -2.9], ['Q2\u201925', -2.8], ['Q3\u201925', -3.9], ['Q4\u201925', -4.5], ['Q1\u201926', -6.0], ['Q2\u201926', -8.5]],
     note: 'Now 6 quarters. Burn accelerating as Phase 3 RESTORE start-up costs land: Q2\u201926 bar is an estimate from reported opex (C$12.2M \u2248 US$8.9M, less non-cash comp); $60M raised May 2026, cash US$61.1M funds through the 1H28 readout.' },
 };
-const FCF_SH = { HIMS: 231, TEM: 180.4, IBRX: 1047, RXRX: 540, NAUT: 126.6, INKT: 5.0, NGEN: 80.9 };
+const FCF_SH = { HIMS: 231, TEM: 180.4, IBRX: 1047, RXRX: 540, QSI: 218.9, NAUT: 126.6, INKT: 5.0, NGEN: 80.9 };
 
 // IPOs too recent for any public quarterly FCF series \u2014 real annual/TTM burn shown instead.
 const FCF_CARDS = [
@@ -150,6 +157,7 @@ const QREV = {
 };
 // Revenue-negligible or pre-revenue names: what 2026 actually printed.
 const QREV_CARDS = [
+  ['QSI', '$0.60M', 'H1\u201926: $258K (Q1) + $344K (Q2), down from $1.43M in H1\u201925. Deliberate: Platinum sales are being throttled with upgrade credits and placements ahead of Proteus. FY26 guided ~$1.0M; Proteus (list $425K) ships Q2 2027, so the revenue line restarts in 2027.'],
   ['NAUT', '$0.19M', 'Q2\u201926 (Jul 28): first revenue ever, from the Voyager early-access program. Q1\u201926 and all of 2025 were $0. Not a revenue story until the platform is commercial (targeted 2027).'],
   ['PBLS', '$0.15M', 'Q2\u201926 (Aug 13): $148K of collaboration revenue in the first public quarter after the Jun 10 IPO. Pre-revenue; watch the $50M Regeneron upfront and milestones instead.'],
   ['INKT', '$0', 'No revenue in 2025 or 2026. Clinical-stage; a paid named-patient access program launched in Q2\u201926 but has not produced reported revenue yet.'],
@@ -166,6 +174,8 @@ const QFIN = {
   IBRX: { rev: [16.52, 26.43, 32.06, 38.29, 44.21, 51.24], gross: [16.46, 26.29, 31.88, 37.90, 43.97, 50.94], op: [-64.43, -71.28, -55.63, -64.68, -69.79, -61.70], net: [-129.65, -92.55, -67.25, -62.05, -632.78, -230.38],
     foot: 'Resultado neto de Q1\u201926 (\u2013$633M) y Q2\u201926 (\u2013$230M) dominado por partidas no operativas; el resultado operativo es la serie limpia.' },
   RXRX: { rev: [14.75, 19.22, 5.18, 35.54, 6.47, 7.67], gross: [-7.08, -0.94, -9.51, 21.26, -6.02, -3.82], op: [-191.37, -176.23, -172.20, -108.33, -128.50, -134.97], net: [-202.49, -171.90, -162.25, -108.12, -117.50, -131.00] },
+  QSI:  { rev: [0.84, 0.59, 0.55, 0.45, 0.26, 0.34], gross: [0.49, 0.35, 0.19, 0.12, 0.07, 0.17], op: [-25.11, -30.12, -39.77, -21.09, -24.05, -25.63], net: [-19.19, -28.84, -35.70, -17.61, -21.67, -23.53], pre: true,
+    foot: 'Q2\u201925, Q3\u201925 and FY25 include $18.7M of one-time legacy-litigation and lease-termination charges (Q3\u201925 alone $15.4M); adjusted opex is the clean series ($18–24M/q). Revenue is sub-$1M, so the chart shows operating result.' },
   NAUT: { rev: [0, 0, 0, 0, 0, 0.19], gross: [null, null, null, null, null, 0.17], op: [-18.84, -17.10, -15.47, -15.42, -16.12, -15.75], net: [-16.61, -15.03, -13.57, -13.78, -14.70, -14.47], pre: true },
   INKT: { rev: [0, 0, 0, 0, 0, 0], gross: [null, null, null, null, null, null], op: [-2.70, -4.05, -3.18, -2.71, -2.88, -3.22], net: [-2.77, -4.24, -2.89, -2.60, -2.74, -3.13], pre: true },
   PBLS: { rev: [0, 0, null, null, 0, 0.15], gross: [null, null, null, null, null, null], op: [-40.24, -36.52, null, null, -47.45, -50.89], net: [-38.33, -34.81, null, null, -45.32, -52.46], pre: true,
@@ -218,19 +228,25 @@ function QRevChart({ sym }) {
 // tier: HOLDING (in the portfolio) · BUILD (accumulate on the plan) · STUDY (size only after valuation work) · OPTION (small, cash-backed, binary) · MONITOR (watch Q3 first)
 const ENTRY = {
   HIMS: { rank: 1, tier: 'HOLDING', color: '#22c55e', why: 'Core position. The ORCHESTRATE layer — the only ticker that owns the consumer. Q3 (Nov 9) guided +47–50% is the next test; below the EMA200 the chart is not paying for it yet.' },
-  IBRX: { rank: 3, tier: 'BUILD', color: '#22c55e', why: 'Approved product with a real commercial ramp (ANKTIVA +92% YoY) and a dated binary: PDUFA Jan 6, 2027. Size before the event, not during. Study dilution history, EU launch margins and competition.' },
-  RXRX: { rank: 4, tier: 'BUILD', color: '#22c55e', why: 'Purest expression of the MODEL node. Runway into early 2028 and REC-4881 Ph2 / regulatory updates before year-end. If the platform validates clinically, the re-rating is large; if not, the cash buys time.' },
-  TEM: { rank: 5, tier: 'STUDY', color: '#D4A843', why: 'Largest by market cap and the clinical READ layer, but the risk now is valuation after the +70% run, not the business. Study before touching; the pullback to 72–74 is the technical entry.' },
+  IBRX: { rank: 4, tier: 'BUILD', color: '#22c55e', why: 'Approved product with a real commercial ramp (ANKTIVA +92% YoY) and a dated binary: PDUFA Jan 6, 2027. Size before the event, not during. Study dilution history, EU launch margins and competition.' },
+  RXRX: { rank: 5, tier: 'BUILD', color: '#22c55e', why: 'Purest expression of the MODEL node. Runway into early 2028 and REC-4881 Ph2 / regulatory updates before year-end. If the platform validates clinically, the re-rating is large; if not, the cash buys time.' },
+  TEM: { rank: 6, tier: 'STUDY', color: '#D4A843', why: 'Largest by market cap and the clinical READ layer, but the risk now is valuation after the +70% run, not the business. Study before touching; the pullback to 72–74 is the technical entry.' },
   NAUT: { rank: 2, tier: 'HOLDING · EXP', color: '#22c55e', why: 'Experimental position, opened around $0.91 while cash sat above market cap. The thesis (science de-risked, assay flywheel, commercialization starting) is intact; the risks are pre-revenue burn, a raise before mid-2027 and Nasdaq $1 compliance. Stays small until the raise terms and the 100× sample cut land; overlaps the proteomics exposure held via QSI.' },
-  INKT: { rank: 6, tier: 'OPTION', color: '#f59e0b', why: 'Real cost edge (iNKT vs CAR-T) and the first randomized ARDS test underway, but $8.8M of cash and a ~5M-share float make financing the dominant risk. Lottery-sized only.' },
-  CAI: { rank: 7, tier: 'MONITOR', color: '#888780', why: 'Business is inflecting (fifth EBITDA-positive quarter, self-funded), but the stock is at its 52-week high with RSI ~80. Wait for the 28–29 retest and the Q3 print.' },
-  PBLS: { rank: 8, tier: 'MONITOR', color: '#888780', why: 'Fresh IPO, $1.1B cash, zero revenue: flows move the price. Lockup expiry around mid-December is the supply event to wait for; zone of interest 25–28.6.' },
-  NGEN: { rank: 9, tier: 'MONITOR', color: '#888780', why: 'No clinical catalyst until the RESTORE readout in 1H28 and burn accelerating. Nothing to do until the 1.59–2.34 base resolves or the Q3 filing changes the picture.' },
+  QSI: { rank: 3, tier: 'HOLDING · EXP', color: '#22c55e', why: 'Held since the Nov 2025 deep dive: shares plus 2027 calls, sized small. The thesis is the sensor layer of the chain (AI designs peptides → QSI validates them one molecule at a time); the market has paid for it only in bursts (NVIDIA +119% in a day, the Sep 29 HUPO data +23%). What changed in 2026: Proteus slipped to Q2 2027, but 18/20 amino acids and the interim data de-risk the technology, and the RIF buys runway to Q4 2028. No adding until Proteus pre-orders or a close that holds above $1 with volume; the $300M shelf is the dilution overhang.' },
+  INKT: { rank: 7, tier: 'OPTION', color: '#f59e0b', why: 'Real cost edge (iNKT vs CAR-T) and the first randomized ARDS test underway, but $8.8M of cash and a ~5M-share float make financing the dominant risk. Lottery-sized only.' },
+  CAI: { rank: 8, tier: 'MONITOR', color: '#888780', why: 'Business is inflecting (fifth EBITDA-positive quarter, self-funded), but the stock is at its 52-week high with RSI ~80. Wait for the 28–29 retest and the Q3 print.' },
+  PBLS: { rank: 9, tier: 'MONITOR', color: '#888780', why: 'Fresh IPO, $1.1B cash, zero revenue: flows move the price. Lockup expiry around mid-December is the supply event to wait for; zone of interest 25–28.6.' },
+  NGEN: { rank: 10, tier: 'MONITOR', color: '#888780', why: 'No clinical catalyst until the RESTORE readout in 1H28 and burn accelerating. Nothing to do until the 1.59–2.34 base resolves or the Q3 filing changes the picture.' },
 };
 const TICKERS = TICKERS_BY_MCAP.slice().sort((a, b) => ENTRY[a.sym].rank - ENTRY[b.sym].rank);
 
 // MARKET ENTRIES — notable public holders / disclosures per ticker, with the source link. Data, not endorsement.
 const HOLDERS = {
+  QSI: [
+    { who: 'Hernán (10AMPRO)', what: 'Shares plus call options expiring 2027 — a small position (\"un tris\"), disclosed in the Nov 2025 deep dive and reaffirmed in \"La Cadena\" (May 2026).', src: '10am.pro, \"AI + Biología = Quantum-Si\" (Nov 1, 2025) · \"La Cadena\" (May 13, 2026)', url: 'https://10am.pro' },
+    { who: 'ARK Invest (ARKG)', what: 'Held ~9–12% of the company as of late 2025, a top-30 ARKG position; trimmed in October 2025. Anchor investor in the 2021 SPAC round.', src: 'Per the Nov 2025 deep dive; ARK daily trade disclosures', url: 'https://ark-funds.com' },
+    { who: 'NVIDIA', what: 'Technology collaboration (not an investment) announced Nov 20, 2024; stock +119% that day.', src: 'Company press release', url: 'https://ir.quantum-si.com/news' },
+  ],
   NAUT: [
     { who: 'Antonio Linares', what: 'Discloses being long HIMS, ImmunityBio and Nautilus, in logarithmically declining allocation (HIMS largest).', src: 'Substack, "Life Extension per Token", Sep 30, 2026', url: 'https://antoniolinares.substack.com' },
     { who: 'Hernán (10AMPRO)', what: 'Experimental position, average cost ~$0.91. Sized as a cash-backed option, not a build.', src: '10am.pro', url: 'https://10am.pro' },
@@ -248,7 +264,7 @@ const HOLDERS = {
   ],
 };
 
-const TABS = ['HIMS', 'TEM', 'CAI', 'IBRX', 'RXRX', 'NAUT', 'INKT', 'PBLS', 'NGEN'];
+const TABS = ['HIMS', 'TEM', 'CAI', 'IBRX', 'RXRX', 'NAUT', 'QSI', 'INKT', 'PBLS', 'NGEN'];
 
 const STACK = [
   { lvl: 'Level 5', label: 'Clinical outcomes', desc: 'Human health, lifespan, systemic performance.', c: '#22c55e' },
@@ -261,6 +277,7 @@ const STACK = [
 const CHAIN = {
   READ: { tag: 'READ', sub: 'Data extraction', items: [
     ['Nautilus ($NAUT)', '10B-protein mapping; Tau proteoforms / neuro.'],
+    ['Quantum-Si ($QSI)', 'Single-molecule protein sequencing on a semiconductor chip — the sensor that validates AI-designed peptides.'],
     ['Tempus & Caris ($TEM / $CAI)', 'Deep oncology data integrated with hospitals.'],
     ['Recursion ($RXRX)', 'Wetlab simulation lowering chemical toxicity.'],
   ] },
@@ -282,6 +299,7 @@ const CASH = {
   CAI: { cash: 791.7, cashTxt: '$791.7M', asof: 'Jun 30 \u201926 · 10-Q', burn: -6.4, burnTxt: '+$6.4M FCF Q2', runway: 'Self-funded', runwaySub: 'OCF +$28.5M in Q2', note: '$689.5M in cash and equivalents + $102.2M in short-term marketable securities. Fifth straight quarter of positive adjusted EBITDA; cash is going up, not down. $100M buyback authorized ($82M remaining).' },
   IBRX: { cash: 357, cashTxt: '$357M', asof: 'Jun 30 \u201926 · 8-K', burn: 70, burnTxt: '−$70M FCF Q2', runway: '~5 quarters', runwaySub: 'at constant burn, no ATM', note: 'Cash and securities. Burn is remarkably stable (~$70–80M/q) despite the ANKTIVA ramp; with no new financing the cash lasts to mid-2027. Historically it bridges the gap with ATM sales and founder loans — dilution is the price of runway. PDUFA Jan 6 \u201927 lands before it gets tight.' },
   RXRX: { cash: 556.8, cashTxt: '$556.8M', asof: 'Jun 30 \u201926 · 8-K', burn: 105.9, burnTxt: '−$106M OCF Q2', runway: 'Into early 2028', runwaySub: 'guidance, no new financing', note: 'Cash, equivalents and restricted cash: $753.9M in Dec \u201925 → $665.2M in Mar → $556.8M in Jun. Q2 consumed $106M of OCF on working capital and a tough comp (a $28.6M UK tax credit in Q2\u201925). 2026 cash opex guided below $375M; partnerships (>$500M cumulative) make the quarters lumpy.' },
+  QSI: { cash: 169.9, cashTxt: '$169.9M', asof: 'Jun 30 \u201926 · 10-Q', burn: 20.5, burnTxt: '−$20.5M cash usage Q2', runway: 'Into Q4 2028', runwaySub: 'guidance after the Aug RIF', note: 'Cash, equivalents and marketable securities (current + non-current). $215.8M at Dec \u201925 → $190.4M in Mar → $169.9M in Jun; FY26 usage guided ≤$93M. The ~20% workforce cut (~$12M/yr) moved the runway from Q2 to Q4 2028, i.e. past the Q2 2027 Proteus launch. A $300M shelf (Oct 2025) is on file — the raise, when it comes, is the dilution event to price.' },
   NAUT: { cash: 129, cashTxt: '~$129M', asof: 'Jun 30 \u201926 · 10-Q', burn: 14.2, burnTxt: '−$14.2M FCF Q2', runway: 'Into Q1 2028', runwaySub: 'guidance; raise before mid-2027', note: 'Cash exceeds market cap: the market values the platform below zero. Metronomic burn of ~$13–14M/q, OpEx −7% YoY. Management expects to raise before mid-2027 — the terms of that round are the key financial milestone.' },
   INKT: { cash: 8.8, cashTxt: '$8.8M', asof: 'Jun 30 \u201926 · 10-Q', burn: 2.5, burnTxt: '−$2.5M est. Q2', runway: '~3–4 quarters', runwaySub: 'tightest in the basket', note: 'Cash fell $0.7M in the quarter; the absolute burn is the smallest in the basket, but the ~5M-share float makes every raise heavy. Depends on Agenus (majority holder) and the paid named-patient program to stretch. Imminent financing is the base case.' },
   PBLS: { cash: 1100, cashTxt: '$1.1B', asof: 'Jun 30 \u201926 · 10-Q', burn: 52.5, burnTxt: '−$52.5M net loss Q2', runway: '~5 years', runwaySub: 'at current burn', note: 'IPO (Jun 10) + private placement raised $787.9M net. Net loss of $52.5M in Q2 (R&D $39.4M); at that pace the cash covers the zolucatetide Phase 3 in desmoids and several more programs without going back to market.' },
@@ -360,6 +378,23 @@ const RESEARCH = {
     milestones: ['Solid-tumor and lung-failure readouts', 'Manufacturing scale data'],
     risks: ['Micro-cap financing risk', 'Early clinical evidence'],
     stance: 'Named by the author as one of three appealing write-side operations (no position disclosed). Ours: OPTION.',
+  },
+  QSI: {
+    src: 'Hernán Jaramillo — \"AI + Biología = Quantum-Si\" (Nov 1, 2025) and \"La Cadena\" (May 13, 2026), 10am.pro',
+    tagline: 'Quantum-Si is not AI\u2019s competitor in biology. It is AI\u2019s sensor in biology — the only commercially available instrument that reads peptides one molecule at a time.',
+    thesis: 'The thesis: 20,000 genes become 220M+ protein forms, and disease lives at the protein layer (95% of drug targets are proteins). Reading proteins inherits the Levinthal problem — too many possibilities to brute-force — and mass spectrometry, the incumbent, needs ~1B copies of a molecule, cannot tell leucine from isoleucine and misses sub-stoichiometric modifications (the 30% of copies that often decide whether a drug works). Quantum-Si (founder Jonathan Rothberg, who already shrank DNA sequencing twice with 454 and Ion Torrent) reads single molecules on a chip with millions of wells, identifying each amino acid by the kinetic signature of fluorescent recognizers — a fingerprint, not a weight. Semiconductor economics apply: ~$50K benchtop vs $100K–1M mass spec, no specialist, Moore\u2019s-law cost curve. The May 2026 piece closes the loop: every platform shift is a four-layer chain (factory → sensor → raw material → channel). In bio: generative AI designs peptides (10,000 GLP-1 agonists in two weeks at Shanghai Jiao Tong; Lilly–Isomorphic, Novo–OpenAI), QSI validates them at scale, peptides are the non-patentable raw material (Myriad 2013; FDA/PCAC vote Jul 2026), and Hims is the channel. The chain is a product, not a sum: a sensor without AI demand is idle capacity — which is exactly what QSI\u2019s $3M-revenue / $100M-loss years looked like.',
+    points: [
+      ['The sensor gap', 'Pharma that designed 10 molecules a year could live with mass spec; an industry designing 10,000 a month cannot. Validating that an AI-designed sequence folds, carries the right PTMs and keeps activity needs single-molecule reads at industrial scale.'],
+      ['How the chip reads', 'Peptides sit one per well; 20 fluorescent recognizers bind and release, and the dwell time, intensity and on/off rhythm identify each residue in context; an enzyme clips the first amino acid and the cycle repeats across millions of wells. AI (ProteoVue) decodes the kinetic traces. At the Nov 2025 write-up: 13 of 20 amino acids read directly. Sep 2026: 18 on Proteus, all 20 targeted this year.'],
+      ['Proteus', 'The platform that moves from millions to billions of reads per run and toward de novo sequencing. Guided for year-end 2026 in the write-ups; now Q2 2027 (one more integrated-instrument design cycle). Interim HUPO data (Sep 28): 30× more alignments, 1.4% vs 6.6% FDR, 4.3× more amino acids per run vs Platinum Pro. List price $425K.'],
+      ['Validation', 'NVIDIA collaboration (Nov 2024, technology not capital) — protein sequencing needs extreme real-time compute, and NVIDIA read the sensor layer before most. ARK held ~10% via ARKG. >1,000 patents across recognizers, chip and algorithms.'],
+      ['Competitive map', 'Tier 1 mass spec (Thermo, Danaher, Agilent, Bruker) stays the high-throughput workhorse; Tier 2 next-gen proteomics (Nautilus, SomaLogic, Olink, Quanterix) attacks coverage and multiplexing; Tier 3 single-molecule sequencing is QSI essentially alone — nanopore protein sequencing is still academic. NAUT is the closest neighbor: affinity-based proteoform maps vs QSI\u2019s residue-level reads.'],
+      ['Financials in the write-ups', 'Revenue $1.1M → $3.1M (2023→2024), net loss $101M, cash to mid-2028, 58% gross margin: $150–200M of revenue needed to break even, i.e. years. The author\u2019s own verdict: a long-term bet on a category that is being born.'],
+      ['Update Oct 2026', 'Revenue fell to $2.4M in 2025 and ~$1M guided for 2026 as Platinum sales are throttled ahead of Proteus; Q2 FY26 net loss $23.5M; cash $169.9M; ~20% RIF stretches runway to Q4 2028. Stock −70% from the Nov 2024 spike, then +40% off the mid-September base on the 18-amino-acid and HUPO releases. Next ER Nov 5.'],
+    ],
+    milestones: ['All 20 amino acids on Proteus (2026)', 'Proteus pre-orders / early-access placements', 'Commercial launch Q2 2027 ($425K list)', 'FDA/PCAC peptide decisions feeding demand for peptide characterization', 'Terms of any raise off the $300M shelf'],
+    risks: ['Pre-revenue in practice: $33 of loss per $1 of revenue, dilution before profitability', 'Technology not complete — de novo sequencing still a goal, not a product; Proteus already slipped once', 'Mass spec keeps improving; Illumina and Nautilus crowd the proteomics lane; lab adoption is slow', 'Beta ~3: the stock trades on headlines, Nasdaq $1 compliance is a live risk below $1'],
+    stance: 'Author (Hernán) holds shares and 2027 calls, sized small; keeps it as the sensor leg of the chain. Ours: HOLDING · EXP — no adding until Proteus pre-orders or the raise terms are known.',
   },
   NAUT: {
     src: 'Antonio Linares — "Nautilus: Tesla for Proteomics" (Sep 28, 2026) and "Life Extension per Token" (Sep 30, 2026)',
@@ -628,7 +663,7 @@ export default function BiologyIsCode() {
 
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
         <h1 style={{ margin: 0, fontSize: mb ? 24 : 30, fontWeight: 800, color: 'var(--text-bright)', fontFamily: DISP, lineHeight: 1.1 }}>Biology is Code</h1>
-        <span style={{ fontSize: 11.5, color: 'var(--text-muted)', fontFamily: MONO }}>9 tickers across three layers: Read, Orchestrate, Write</span>
+        <span style={{ fontSize: 11.5, color: 'var(--text-muted)', fontFamily: MONO }}>10 tickers across three layers: Read, Orchestrate, Write</span>
       </div>
 
       <ResearchClock mb={mb} />
@@ -824,7 +859,7 @@ export default function BiologyIsCode() {
               color: [LAYER_COLOR.READ, LAYER_COLOR.ORCHESTRATE, LAYER_COLOR.WRITE][i] }}>{t}</span>
           ))}
         </div>
-        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 14, fontFamily: "'JetBrains Mono',monospace" }}>Snapshot · {AS_OF} · 9 tickers</div>
+        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 14, fontFamily: "'JetBrains Mono',monospace" }}>Snapshot · {AS_OF} · 10 tickers (QSI added Oct 2, 2026)</div>
       </div>
 
       {/* SCALING LAW */}
@@ -902,8 +937,8 @@ export default function BiologyIsCode() {
       <div>
         <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.7, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
           <li>Market caps and prices are a point-in-time snapshot ({AS_OF}) and move daily.</li>
-          <li>Quarterly results (Q1'25–Q2'26, last ER = Q2 FY2026): total revenue, gross profit, operating and net result per quarter, from the XBRL data of the 10-Q/10-K filings on the SEC (Q4 = fiscal year minus Q1–Q3), cross-checked with Yahoo Finance. IBRX shows total revenue (ANKTIVA + other). NervGen reports in C$ under IFRS. PBLS has no public Q3/Q4'25 (it was private). Pre-revenue names (NAUT, INKT, PBLS, NGEN) show operating and net result.</li>
-          <li>2026 executed revenue is charted in the Quarterly results section (Q1'25–Q2'26, reported GAAP revenue from 8-K/10-Q releases); the annual bars stop at FY2025 because FY2026 is not yet complete. Q2 FY2026 results for all nine tickers (reported Jul 28 – Aug 13, 2026) are also reflected in each ticker's commentary. HIMS figures are from its Aug 10 Q2 deck and call; the rest from company press releases and 10-Q/8-K filings. Post-quarter developments through Sep 4 (FTC/Visa at HIMS, Merck–Moderna readout for TEM, Nature Methods for NAUT) are noted where material.</li>
+          <li>Quarterly results (Q1'25–Q2'26, last ER = Q2 FY2026): total revenue, gross profit, operating and net result per quarter, from the XBRL data of the 10-Q/10-K filings on the SEC (Q4 = fiscal year minus Q1–Q3), cross-checked with Yahoo Finance. IBRX shows total revenue (ANKTIVA + other). NervGen reports in C$ under IFRS. PBLS has no public Q3/Q4'25 (it was private). Pre-revenue or revenue-immaterial names (NAUT, QSI, INKT, PBLS, NGEN) show operating and net result; QSI figures are from its 8-K press releases (Q3\u201925 derived from the 9-month and FY statements).</li>
+          <li>2026 executed revenue is charted in the Quarterly results section (Q1'25–Q2'26, reported GAAP revenue from 8-K/10-Q releases); the annual bars stop at FY2025 because FY2026 is not yet complete. Q2 FY2026 results for all ten tickers (reported Jul 28 – Aug 13, 2026) are also reflected in each ticker's commentary. HIMS figures are from its Aug 10 Q2 deck and call; the rest from company press releases and 10-Q/8-K filings. Post-quarter developments through Sep 4 (FTC/Visa at HIMS, Merck–Moderna readout for TEM, Nature Methods for NAUT) are noted where material. QSI was added on Oct 2, 2026 with its price and market cap at the Sep 30 close and news through Oct 1 (18 amino acids, HUPO interim data).</li>
           <li>CAI (IPO Jun 2025) shows only FY2024–FY2025; its gross profit is estimated from margin and its operating income is approximate (2025 distorted by IPO stock comp).</li>
           <li>IBRX operating income for 2022 and 2025 is approximate (derived from R&D + SG&A).</li>
           <li>PBLS (IPO Jun 2026) and NGEN (Nasdaq Jan 2026) are pre-revenue with limited public history — shown as info cards, not charts.</li>

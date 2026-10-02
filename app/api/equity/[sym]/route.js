@@ -5,7 +5,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-const ALLOWED = new Set(['TEM', 'IBRX', 'CAI', 'HIMS', 'PBLS', 'RXRX', 'NGEN', 'NAUT', 'INKT']);
+const ALLOWED = new Set(['TEM', 'IBRX', 'CAI', 'HIMS', 'PBLS', 'RXRX', 'NGEN', 'NAUT', 'QSI', 'INKT']);
 const json = (b, ttl = 900) => new Response(JSON.stringify(b), { status: 200, headers: { 'content-type': 'application/json', 'cache-control': `public, s-maxage=${ttl}, stale-while-revalidate=${ttl * 4}` } });
 const r4 = (v) => (v == null || !isFinite(v) ? null : +Number(v).toPrecision(4));
 const day = (ts) => new Date(ts).toISOString().slice(0, 10);

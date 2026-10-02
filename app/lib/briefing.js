@@ -96,6 +96,15 @@ const WATCHLIST = [
   { ticker: 'DUOL', name: 'Duolingo', emoji: '🦉' },
   { ticker: 'MSTR', name: 'Strategy', emoji: '₿' },
   { ticker: 'BE', name: 'Bloom Energy', emoji: '🔋' },
+  // Biology Is Code basket (HIMS and QSI already above). Keep in sync with BIO_META in app/HubClient.jsx.
+  { ticker: 'TEM', name: 'Tempus AI', emoji: '🧬', bio: true },
+  { ticker: 'IBRX', name: 'ImmunityBio', emoji: '🧬', bio: true },
+  { ticker: 'CAI', name: 'Caris Life Sci.', emoji: '🧬', bio: true },
+  { ticker: 'PBLS', name: 'Parabilis', emoji: '🧬', bio: true },
+  { ticker: 'RXRX', name: 'Recursion', emoji: '🧬', bio: true },
+  { ticker: 'NGEN', name: 'NervGen', emoji: '🧬', bio: true },
+  { ticker: 'NAUT', name: 'Nautilus Bio', emoji: '🧬', bio: true },
+  { ticker: 'INKT', name: 'MiNK Therapeutics', emoji: '🧬', bio: true },
 ];
 
 export async function getEarnings() {

@@ -505,32 +505,40 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
                   <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{nextUp.n}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  {nextUp.eps != null && <span style={{ fontSize: 13, color: '#a78bfa', fontWeight: 600 }}>EPS est: ${nextUp.eps}</span>}
+                  {nextUp.eps != null && <span style={{ fontSize: 13, color: '#a78bfa', fontWeight: 600 }}>EPS est: ${typeof nextUp.eps === 'number' ? nextUp.eps.toFixed(2) : nextUp.eps}</span>}
                   {nextUp.time && <span style={{ fontSize: 11, color: 'var(--text-muted)', background: 'var(--surface-2)', padding: '0px 4px', borderRadius: 2 }}>{nextUp.time}</span>}
                   <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{nextUp.d} · <span style={{ color: '#a78bfa', fontWeight: 700 }}>{nextUp.days}d</span></span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: '#a78bfa', background: '#a78bfa18', padding: '1px 5px', borderRadius: 2, border: '1px solid #a78bfa30' }}>NEXT UP</span>
                 </div>
               </div>
             )}
-            {restEarn.map((e, i) => (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '7px 10px', borderBottom: i < restEarn.length - 1 ? '1px solid var(--border-subtle)' : 'none',
-              }}
-                onMouseEnter={ev => ev.currentTarget.style.background = 'var(--hover-bg)'}
-                onMouseLeave={ev => ev.currentTarget.style.background = 'transparent'}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 13 }}>{e.e}</span>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{e.t}</span>
-                  <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{e.n}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  {e.eps != null && <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>EPS est: ${e.eps}</span>}
-                  {e.time && <span style={{ fontSize: 11, color: 'var(--text-muted)', background: 'var(--surface-2)', padding: '0px 4px', borderRadius: 2 }}>{e.time}</span>}
-                  <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{e.d} · {e.days}d</span>
-                </div>
-              </div>
-            ))}
+            <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr' }}>
+              {restEarn.map((e, i) => {
+                const lastRow = mb ? i === restEarn.length - 1 : i >= restEarn.length - (restEarn.length % 2 === 0 ? 2 : 1);
+                const rightCol = !mb && i % 2 === 1;
+                return (
+                  <div key={i} style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, minWidth: 0,
+                    padding: '7px 10px',
+                    borderBottom: lastRow ? 'none' : '1px solid var(--border-subtle)',
+                    borderLeft: rightCol ? '1px solid var(--border-subtle)' : 'none',
+                  }}
+                    onMouseEnter={ev => ev.currentTarget.style.background = 'var(--hover-bg)'}
+                    onMouseLeave={ev => ev.currentTarget.style.background = 'transparent'}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                      <span style={{ fontSize: 13 }}>{e.e}</span>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{e.t}</span>
+                      <span style={{ fontSize: 13, color: 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.n}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                      {e.eps != null && <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>EPS ${typeof e.eps === 'number' ? e.eps.toFixed(2) : e.eps}</span>}
+                      {e.time && <span style={{ fontSize: 10, color: 'var(--text-muted)', background: 'var(--surface-2)', padding: '0px 4px', borderRadius: 2 }}>{e.time}</span>}
+                      <span style={{ fontSize: 13, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{e.d} · <span style={{ color: e.days <= 7 ? '#a78bfa' : 'var(--text-muted)', fontWeight: e.days <= 7 ? 700 : 400 }}>{e.days}d</span></span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
             {earnings.length === 0 && (
               <div style={{ padding: '8px', fontSize: 12, color: 'var(--text-muted)', textAlign: 'center' }}>Sin earnings próximos</div>
             )}

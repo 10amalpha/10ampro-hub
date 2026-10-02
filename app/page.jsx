@@ -294,7 +294,7 @@ export default async function HubPage() {
     .map(e => {
       const daysUntil = Math.ceil((new Date(e.date) - today) / 86400000);
       return {
-        t: e.ticker, n: e.name, e: e.emoji,
+        t: e.ticker, n: e.name, e: e.emoji, b: !!e.bio,
         d: new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
         days: daysUntil, next: false,
         eps: e.epsEstimate,

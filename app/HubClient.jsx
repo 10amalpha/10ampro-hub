@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { EDITOR_TA } from './biology-is-code/ta.editor';
 import dynamic from 'next/dynamic';
 
 const PortfolioEmbed = dynamic(() => import('./PortfolioEmbed'), { ssr: false });
@@ -128,7 +129,22 @@ function MC({ m, bd = true, mb, span = 1 }) {
   );
 }
 
-export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalInit, calToday, calTomorrow, watchlist: wlInit, earnings }) {
+// Biology Is Code basket — mirrors TICKERS_BY_MCAP in app/biology-is-code/page.jsx (sym, name, layer). Bias comes from ta.editor.js.
+const BIO_META = [
+  { t: 'TEM',  n: 'Tempus AI',          l: 'READ' },
+  { t: 'IBRX', n: 'ImmunityBio',        l: 'WRITE' },
+  { t: 'CAI',  n: 'Caris Life Sci.',    l: 'READ' },
+  { t: 'HIMS', n: 'Hims & Hers',        l: 'ORCH' },
+  { t: 'PBLS', n: 'Parabilis',          l: 'WRITE' },
+  { t: 'RXRX', n: 'Recursion',          l: 'READ' },
+  { t: 'NGEN', n: 'NervGen',            l: 'WRITE' },
+  { t: 'QSI',  n: 'Quantum-Si',         l: 'READ' },
+  { t: 'NAUT', n: 'Nautilus Bio',       l: 'READ' },
+  { t: 'INKT', n: 'MiNK Therapeutics',  l: 'WRITE' },
+];
+const LAYER_C = { READ: '#60a5fa', ORCH: '#D4A843', WRITE: '#22C55E' };
+
+export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalInit, calToday, calTomorrow, watchlist: wlInit, earnings, bio = [] }) {
   const [fl, sF] = useState('A');
   const [exp, sE] = useState(null);
   const [mb, sM] = useState(false);
@@ -512,6 +528,45 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
             <span style={{ fontSize: 12, fontWeight: 700, color: '#5b8cff', letterSpacing: '0.3px' }}>🔬 TESIS EN FORMACIÓN</span>
             <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Research en vivo · deep dives en construcción</span>
           </div>
+          {/* ACTIVE RESEARCH — one box per ticker in the Biology Is Code basket, links to its dossier */}
+          <div style={{ border: '1px solid #22C55E25', borderRadius: 6, padding: '8px 8px 6px', marginBottom: 6, background: 'linear-gradient(135deg, #22C55E05, #185FA50a)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, flexWrap: 'wrap', gap: 4 }}>
+              <a href="/biology-is-code" style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
+                <span style={{ fontSize: 15 }}>🧬</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>ACTIVE RESEARCH · BIOLOGY IS CODE</span>
+              </a>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{bio.length} tickers · precio en vivo · sesgo TA del editor</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr 1fr' : 'repeat(5, 1fr)', gap: 5 }}>
+              {BIO_META.map((m) => {
+                const q = bio.find((x) => x.t === m.t) || {};
+                const bias = EDITOR_TA[m.t]?.bias;
+                const bc = bias === 'BULL' ? '#22C55E' : bias === 'BEAR' ? '#ef4444' : 'var(--text-muted)';
+                return (
+                  <a key={m.t} href={`/biology-is-code?t=${m.t}`} style={{
+                    display: 'flex', flexDirection: 'column', padding: '7px 9px', textDecoration: 'none',
+                    background: 'var(--surface)', border: `1px solid ${LAYER_C[m.l]}30`, borderRadius: 5, transition: 'border-color 0.15s',
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = LAYER_C[m.l]}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = `${LAYER_C[m.l]}30`}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-bright)' }}>${m.t}</span>
+                      <span style={{ fontSize: 9, fontWeight: 700, color: LAYER_C[m.l], background: `${LAYER_C[m.l]}15`, padding: '1px 4px', borderRadius: 2, letterSpacing: '0.3px' }}>{m.l}</span>
+                    </div>
+                    <span style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.n}</span>
+                    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 4, marginTop: 4 }}>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-bright)' }}>{q.p != null ? fp(q.p) : '—'}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: cC(q.c) }}>{q.c != null ? fv(q.c) : ''}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: bc }}>{bias ? `TA ${bias}` : 'TA auto'}</span>
+                      <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>dossier →</span>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
           <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 6 }}>
             {/* BIOLOGY IS CODE */}
             <a href="/biology-is-code" style={{
@@ -525,7 +580,7 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
                 <span style={{ fontSize: 13, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>BIOLOGY IS CODE</span>
               </div>
               <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>The Biological OS — Read · Orchestrate · Write</span>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>$TEM · $IBRX · $HIMS · $CAI · $PBLS · $RXRX · $NGEN · $NAUT · $INKT →</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>$TEM · $IBRX · $CAI · $HIMS · $PBLS · $RXRX · $NGEN · $QSI · $NAUT · $INKT →</span>
             </a>
             {/* SOLANA */}
             <a href="/sol" style={{

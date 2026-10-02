@@ -10,6 +10,8 @@
 
 - **Root briefing: CONTEXTO 10AMPRO section removed** (Hernán: not worth the space). Deleted the Editorial Insights block from HubClient.jsx and the `getInsights()` call in page.jsx — no more Anthropic API call per render. `lib/insights.js` and `/api/insights` are still in the repo (unused by the page). `ANTHROPIC_API_KEY` can stay or go.
 - **Readability pass on Calendar / Watchlist / Earnings Radar:** body font sizes +1 (10→11, 11→12, 12→13, 13→14) and row padding widened (3–5px → 5–7px vertical, 10px horizontal). Header, macro bar, research and footer untouched.
+- **ACTIVE RESEARCH grid inside TESIS EN FORMACIÓN.** New block above the hub cards: one box per ticker of the Biology Is Code basket (10, QSI included) with live price + day change (new `fetchYahoo(BIO_SYMS)` in page.jsx → `bio` prop), layer chip (READ/ORCH/WRITE) and the editor's TA bias read from `ta.editor.js` (`EDITOR_TA[sym].bias`; no entry → "TA auto"). Each box links to `/biology-is-code?t=SYM`. `BIO_META` in HubClient.jsx mirrors `TICKERS_BY_MCAP` — **when a ticker is added to the basket, add it to BIO_META and BIO_SYMS too.** 5 columns desktop / 2 mobile.
+- **/biology-is-code deep link:** `?t=SYM` selects that dossier on load and scrolls to it.
 
 ## Recent changes (Sep 24, 2026 · b)
 

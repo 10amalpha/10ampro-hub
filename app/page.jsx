@@ -261,12 +261,15 @@ const COMMENTS = {
 // ─── MAIN PAGE ──────────────────────────────────────────────
 export default async function HubPage() {
   // Phase 1: Fetch all base data in parallel
-  const [macroQuotes, crypto, briefing, stockQuotes] = await Promise.all([
+  const BIO_SYMS = ['TEM','IBRX','CAI','HIMS','PBLS','RXRX','NGEN','QSI','NAUT','INKT'];
+  const [macroQuotes, crypto, briefing, stockQuotes, bioQuotes] = await Promise.all([
     fetchYahoo(['^GSPC', '^VIX', 'DX-Y.NYB', 'CL=F', 'JPY=X', 'COP=X', '^TNX', '^IRX', '^MOVE']),
     fetchCrypto(),
     getBriefingData(),
     fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC']),
+    fetchYahoo(BIO_SYMS),
   ]);
+  const bio = BIO_SYMS.map(t => { const x = (bioQuotes || []).find(y => y.symbol === t); return { t, p: x?.regularMarketPrice ?? null, c: x?.regularMarketChangePercent ?? null }; });
 
 
   const q = (sym) => macroQuotes.find(x => x.symbol === sym);
@@ -476,6 +479,7 @@ export default async function HubPage() {
       calTomorrow={calTomorrow}
       watchlist={wl}
       earnings={earnings}
+      bio={bio}
     />
   );
 }

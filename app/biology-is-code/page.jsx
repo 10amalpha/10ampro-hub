@@ -615,6 +615,14 @@ export default function BiologyIsCode() {
     const onR = () => setMb(window.innerWidth <= 768);
     onR();
     window.addEventListener('resize', onR);
+    // Deep link from the hub: /biology-is-code?t=SYM opens that dossier
+    try {
+      const t = (new URLSearchParams(window.location.search).get('t') || '').toUpperCase();
+      if (t && TICKERS.some((x) => x.sym === t)) {
+        setActive(t);
+        setTimeout(() => { if (dossierRef.current) window.scrollTo({ top: dossierRef.current.getBoundingClientRect().top + window.scrollY - 8, behavior: 'smooth' }); }, 350);
+      }
+    } catch {}
     return () => window.removeEventListener('resize', onR);
   }, []);
 

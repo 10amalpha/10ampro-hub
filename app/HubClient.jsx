@@ -129,22 +129,78 @@ function MC({ m, bd = true, mb, span = 1 }) {
   );
 }
 
-// Biology Is Code basket — mirrors TICKERS_BY_MCAP in app/biology-is-code/page.jsx (sym, name, layer). Bias comes from ta.editor.js.
+// ─── TESIS EN FORMACIÓN ──────────────────────────────────────
+// Two anchor theses, same visual grammar: header (anchor link) + grid of ticker boxes, each linking to its dossier / hub.
+// BIO_META mirrors TICKERS_BY_MCAP in app/biology-is-code/page.jsx; bias from ta.editor.js. SOL boxes get price + bias from page.jsx (hub configs).
 const BIO_META = [
-  { t: 'TEM',  n: 'Tempus AI',          l: 'READ' },
-  { t: 'IBRX', n: 'ImmunityBio',        l: 'WRITE' },
-  { t: 'CAI',  n: 'Caris Life Sci.',    l: 'READ' },
-  { t: 'HIMS', n: 'Hims & Hers',        l: 'ORCH' },
-  { t: 'PBLS', n: 'Parabilis',          l: 'WRITE' },
-  { t: 'RXRX', n: 'Recursion',          l: 'READ' },
-  { t: 'NGEN', n: 'NervGen',            l: 'WRITE' },
-  { t: 'QSI',  n: 'Quantum-Si',         l: 'READ' },
-  { t: 'NAUT', n: 'Nautilus Bio',       l: 'READ' },
-  { t: 'INKT', n: 'MiNK Therapeutics',  l: 'WRITE' },
+  { t: 'TEM',  n: 'Tempus AI',         l: 'READ' },
+  { t: 'IBRX', n: 'ImmunityBio',       l: 'WRITE' },
+  { t: 'CAI',  n: 'Caris Life Sci.',   l: 'READ' },
+  { t: 'HIMS', n: 'Hims & Hers',       l: 'ORCH' },
+  { t: 'PBLS', n: 'Parabilis',         l: 'WRITE' },
+  { t: 'RXRX', n: 'Recursion',         l: 'READ' },
+  { t: 'NGEN', n: 'NervGen',           l: 'WRITE' },
+  { t: 'QSI',  n: 'Quantum-Si',        l: 'READ' },
+  { t: 'NAUT', n: 'Nautilus Bio',      l: 'READ' },
+  { t: 'INKT', n: 'MiNK Therapeutics', l: 'WRITE' },
 ];
 const LAYER_C = { READ: '#60a5fa', ORCH: '#D4A843', WRITE: '#22C55E' };
+const SOL_META = {
+  SOL:  { n: 'Solana',     l: 'L1',     c: '#9945FF' },
+  JTO:  { n: 'Jito',       l: 'MEV',    c: '#22C55E' },
+  JUP:  { n: 'Jupiter',    l: 'DEX',    c: '#D4A843' },
+  MET:  { n: 'Meteora',    l: 'LIQ',    c: '#f97316' },
+  PUMP: { n: 'Pump.fun',   l: 'LAUNCH', c: '#ef4444' },
+  NOS:  { n: 'Nosana',     l: 'DePIN',  c: '#5b8cff' },
+  '2Z': { n: 'DoubleZero', l: 'INFRA',  c: '#a78bfa' },
+};
 
-export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalInit, calToday, calTomorrow, watchlist: wlInit, earnings, bio = [] }) {
+function TickerBox({ t, n, chip, color, p, c, bias, href, cta }) {
+  const bc = bias === 'BULL' ? '#22C55E' : bias === 'BEAR' ? '#ef4444' : 'var(--text-muted)';
+  return (
+    <a href={href} style={{
+      display: 'flex', flexDirection: 'column', padding: '7px 9px', textDecoration: 'none', minWidth: 0,
+      background: 'var(--surface)', border: `1px solid ${color}30`, borderRadius: 5, transition: 'border-color 0.15s',
+    }}
+      onMouseEnter={e => e.currentTarget.style.borderColor = color}
+      onMouseLeave={e => e.currentTarget.style.borderColor = `${color}30`}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
+        <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-bright)' }}>${t}</span>
+        <span style={{ fontSize: 9, fontWeight: 700, color, background: `${color}15`, padding: '1px 4px', borderRadius: 2, letterSpacing: '0.3px' }}>{chip}</span>
+      </div>
+      <span style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{n}</span>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 4, marginTop: 4 }}>
+        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-bright)' }}>{p != null ? fp(p) : '—'}</span>
+        <span style={{ fontSize: 11, fontWeight: 700, color: cC(c) }}>{c != null ? fv(c) : ''}</span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
+        <span style={{ fontSize: 10, fontWeight: 700, color: bc }}>{bias ? `TA ${bias}` : 'TA auto'}</span>
+        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{cta} →</span>
+      </div>
+    </a>
+  );
+}
+
+function ResearchBlock({ icon, title, tagline, href, meta, color, mb, children }) {
+  return (
+    <div style={{ border: `1px solid ${color}25`, borderRadius: 6, padding: '8px 8px 6px', marginBottom: 6, background: `linear-gradient(135deg, ${color}05, ${color}0d)` }}>
+      <div style={{ display: 'flex', alignItems: mb ? 'flex-start' : 'center', justifyContent: 'space-between', marginBottom: 7, flexWrap: 'wrap', gap: 4 }}>
+        <a href={href} style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', minWidth: 0 }}>
+          <span style={{ fontSize: 16 }}>{icon}</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color, letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>{title}</span>
+          <span style={{ fontSize: 9, fontWeight: 700, color, background: `${color}15`, padding: '1px 5px', borderRadius: 2, letterSpacing: '0.4px' }}>TESIS ANCLA</span>
+          <span style={{ fontSize: 12, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, whiteSpace: mb ? 'normal' : 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{tagline} →</span>
+        </a>
+        <span style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{meta}</span>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr 1fr' : 'repeat(auto-fill, minmax(148px, 1fr))', gap: 5 }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalInit, calToday, calTomorrow, watchlist: wlInit, earnings, bio = [], solBasket = [] }) {
   const [fl, sF] = useState('A');
   const [exp, sE] = useState(null);
   const [mb, sM] = useState(false);
@@ -528,159 +584,20 @@ export default function HubClient({ mkt: mktInit, liq: liqInit, signal: signalIn
             <span style={{ fontSize: 12, fontWeight: 700, color: '#5b8cff', letterSpacing: '0.3px' }}>🔬 TESIS EN FORMACIÓN</span>
             <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Research en vivo · deep dives en construcción</span>
           </div>
-          {/* ACTIVE RESEARCH — one box per ticker in the Biology Is Code basket, links to its dossier */}
-          <div style={{ border: '1px solid #22C55E25', borderRadius: 6, padding: '8px 8px 6px', marginBottom: 6, background: 'linear-gradient(135deg, #22C55E05, #185FA50a)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, flexWrap: 'wrap', gap: 4 }}>
-              <a href="/biology-is-code" style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
-                <span style={{ fontSize: 15 }}>🧬</span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>ACTIVE RESEARCH · BIOLOGY IS CODE</span>
-              </a>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{bio.length} tickers · precio en vivo · sesgo TA del editor</span>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr 1fr' : 'repeat(5, 1fr)', gap: 5 }}>
-              {BIO_META.map((m) => {
-                const q = bio.find((x) => x.t === m.t) || {};
-                const bias = EDITOR_TA[m.t]?.bias;
-                const bc = bias === 'BULL' ? '#22C55E' : bias === 'BEAR' ? '#ef4444' : 'var(--text-muted)';
-                return (
-                  <a key={m.t} href={`/biology-is-code?t=${m.t}`} style={{
-                    display: 'flex', flexDirection: 'column', padding: '7px 9px', textDecoration: 'none',
-                    background: 'var(--surface)', border: `1px solid ${LAYER_C[m.l]}30`, borderRadius: 5, transition: 'border-color 0.15s',
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = LAYER_C[m.l]}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = `${LAYER_C[m.l]}30`}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-bright)' }}>${m.t}</span>
-                      <span style={{ fontSize: 9, fontWeight: 700, color: LAYER_C[m.l], background: `${LAYER_C[m.l]}15`, padding: '1px 4px', borderRadius: 2, letterSpacing: '0.3px' }}>{m.l}</span>
-                    </div>
-                    <span style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.n}</span>
-                    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 4, marginTop: 4 }}>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-bright)' }}>{q.p != null ? fp(q.p) : '—'}</span>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: cC(q.c) }}>{q.c != null ? fv(q.c) : ''}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: bc }}>{bias ? `TA ${bias}` : 'TA auto'}</span>
-                      <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>dossier →</span>
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 6 }}>
-            {/* BIOLOGY IS CODE */}
-            <a href="/biology-is-code" style={{
-              display: 'flex', flexDirection: 'column', padding: '10px 14px',
-              background: 'linear-gradient(135deg, #22C55E08, #185FA515)',
-              border: '1px solid #22C55E30', borderRadius: 6, textDecoration: 'none',
-              transition: 'border-color 0.2s',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <span style={{ fontSize: 18 }}>🧬</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>BIOLOGY IS CODE</span>
-              </div>
-              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>The Biological OS — Read · Orchestrate · Write</span>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>$TEM · $IBRX · $CAI · $HIMS · $PBLS · $RXRX · $NGEN · $QSI · $NAUT · $INKT →</span>
-            </a>
-            {/* SOLANA */}
-            <a href="/sol" style={{
-              display: 'flex', flexDirection: 'column', padding: '10px 14px',
-              background: 'linear-gradient(135deg, #9945FF08, #14F19512)',
-              border: '1px solid #9945FF30', borderRadius: 6, textDecoration: 'none',
-              transition: 'border-color 0.2s',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <span style={{ fontSize: 18 }}>◎</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#9945FF', letterSpacing: '0.3px' }}>SOLANA</span>
-              </div>
-              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>El benchmark: fees, inflación vs burn, ETFs + $SOL</span>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Gobernanza SGP-1/2/3 · SOL/BTC · Staking · Decisión →</span>
-            </a>
-            {/* NOSANA */}
-            <a href="/nosana" style={{
-              display: 'flex', flexDirection: 'column', padding: '10px 14px',
-              background: 'linear-gradient(135deg, #5b8cff08, #5b8cff18)',
-              border: '1px solid #5b8cff30', borderRadius: 6, textDecoration: 'none',
-              transition: 'border-color 0.2s',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <span style={{ fontSize: 18 }}>🛰️</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#5b8cff', letterSpacing: '0.3px' }}>NOSANA</span>
-              </div>
-              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>GPU network telemetry + $NOS</span>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Compute hours · Hosts · On-chain · TA · Decisión →</span>
-            </a>
-            {/* JITO */}
-            <a href="/jto" style={{
-              display: 'flex', flexDirection: 'column', padding: '10px 14px',
-              background: 'linear-gradient(135deg, #22C55E08, #22C55E18)',
-              border: '1px solid #22C55E30', borderRadius: 6, textDecoration: 'none',
-              transition: 'border-color 0.2s',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <span style={{ fontSize: 18 }}>⚡</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#22C55E', letterSpacing: '0.3px' }}>JITO</span>
-              </div>
-              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>MEV tips, JitoSOL TVL, revenue + $JTO</span>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Tips vs pico · Tesorería · TA · Decisión →</span>
-            </a>
-            {/* JUPITER */}
-            <a href="/jup" style={{
-              display: 'flex', flexDirection: 'column', padding: '10px 14px',
-              background: 'linear-gradient(135deg, #D4A84308, #D4A84318)',
-              border: '1px solid #D4A84330', borderRadius: 6, textDecoration: 'none',
-              transition: 'border-color 0.2s',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <span style={{ fontSize: 18 }}>🪐</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#D4A843', letterSpacing: '0.3px' }}>JUPITER</span>
-              </div>
-              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Agregador: volumen, fees, buyback + $JUP</span>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Volumen · Revenue · Vote escrow · Decisión →</span>
-            </a>
-            {/* METEORA */}
-            <a href="/met" style={{
-              display: 'flex', flexDirection: 'column', padding: '10px 14px',
-              background: 'linear-gradient(135deg, #f9731608, #f9731618)',
-              border: '1px solid #f9731630', borderRadius: 6, textDecoration: 'none',
-              transition: 'border-color 0.2s',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <span style={{ fontSize: 18 }}>🌊</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#f97316', letterSpacing: '0.3px' }}>METEORA</span>
-              </div>
-              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Capa de liquidez: TVL, fees, unlocks + $MET</span>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Revenue · Buyback vs unlocks · TA · Decisión →</span>
-            </a>
-            {/* PUMP.FUN */}
-            <a href="/pump" style={{
-              display: 'flex', flexDirection: 'column', padding: '10px 14px',
-              background: 'linear-gradient(135deg, #ef444408, #ef444418)',
-              border: '1px solid #ef444430', borderRadius: 6, textDecoration: 'none',
-              transition: 'border-color 0.2s',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <span style={{ fontSize: 18 }}>💊</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#ef4444', letterSpacing: '0.3px' }}>PUMP.FUN</span>
-              </div>
-              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Launchpad + PumpSwap: revenue, buyback + $PUMP</span>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Revenue · Launchpad share · TA · Decisión →</span>
-            </a>
-            {/* DOUBLEZERO */}
-            <a href="/2z" style={{
-              display: 'flex', flexDirection: 'column', padding: '10px 14px',
-              background: 'linear-gradient(135deg, #a78bfa08, #a78bfa18)',
-              border: '1px solid #a78bfa30', borderRadius: 6, textDecoration: 'none',
-              transition: 'border-color 0.2s',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <span style={{ fontSize: 18 }}>🔌</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#a78bfa', letterSpacing: '0.3px' }}>DOUBLEZERO</span>
-              </div>
-              <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.4, fontWeight: 600 }}>Fibra para validadores: stake weight, burn + $2Z</span>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Stake % · TCV · Burn on-chain · Decisión →</span>
-            </a>
-          </div>
+          <ResearchBlock icon="🧬" title="BIOLOGY IS CODE" tagline="The Biological OS — Read · Orchestrate · Write" href="/biology-is-code" color="#22C55E" mb={mb}
+            meta={`${BIO_META.length} tickers · precio en vivo · sesgo TA del editor`}>
+            {BIO_META.map((m) => {
+              const q = bio.find((x) => x.t === m.t) || {};
+              return <TickerBox key={m.t} t={m.t} n={m.n} chip={m.l} color={LAYER_C[m.l]} p={q.p} c={q.c} bias={EDITOR_TA[m.t]?.bias} href={`/biology-is-code?t=${m.t}`} cta="dossier" />;
+            })}
+          </ResearchBlock>
+          <ResearchBlock icon="◎" title="SOLANA" tagline="El benchmark: fees, inflación vs burn, ETFs + los alts que viven encima" href="/sol" color="#9945FF" mb={mb}
+            meta={`${solBasket.length} tokens · precio en vivo · sesgo TA del editor`}>
+            {solBasket.map((q) => {
+              const m = SOL_META[q.t] || { n: q.t, l: '', c: '#9945FF' };
+              return <TickerBox key={q.t} t={q.t} n={m.n} chip={m.l} color={m.c} p={q.p} c={q.c} bias={q.bias} href={`/${q.hub}`} cta="hub" />;
+            })}
+          </ResearchBlock>
         </div>
 
         {/* ═══ SHARE BAR ═══ */}

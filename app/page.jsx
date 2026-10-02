@@ -88,7 +88,8 @@ async function fetchCrypto() {
       'bitcoin','solana','sui','ethereum','jupiter-exchange-solana','nosana',
       'jito-governance-token','genesysgo-shadow','helium','zcash',
       'jito-staked-sol','ripple',
-      'metaplex','jupiter-perpetuals-liquidity-provider-token'
+      'metaplex','jupiter-perpetuals-liquidity-provider-token',
+      'meteora','pump-fun'
     ].join(',');
 
     // Fetch listed tokens + 2Z by contract address in parallel
@@ -118,6 +119,7 @@ async function fetchCrypto() {
 
 // ─── Briefing data (direct import — no self-fetch) ──────────
 import { getBriefingData } from './lib/briefing';
+import { HUBS } from './lib/thesis/registry';
 
 // ─── Signal Calculation ─────────────────────────────────────
 function calcSignals(quotes) {
@@ -269,6 +271,17 @@ export default async function HubPage() {
     fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC']),
     fetchYahoo(BIO_SYMS),
   ]);
+  // Solana basket (anchor thesis /sol + alt hubs). Bias from each hub config's TOKEN.ta; Nosana has no config → bias kept in sync with app/nosana/page.jsx.
+  const SOL_BASKET = [
+    { t: 'SOL',  cg: 'solana',                    hub: 'sol',    bias: HUBS.sol?.ta?.bias },
+    { t: 'JTO',  cg: 'jito-governance-token',     hub: 'jto',    bias: HUBS.jto?.ta?.bias },
+    { t: 'JUP',  cg: 'jupiter-exchange-solana',   hub: 'jup',    bias: HUBS.jup?.ta?.bias },
+    { t: 'MET',  cg: 'meteora',                   hub: 'met',    bias: HUBS.met?.ta?.bias },
+    { t: 'PUMP', cg: 'pump-fun',                  hub: 'pump',   bias: HUBS.pump?.ta?.bias },
+    { t: 'NOS',  cg: 'nosana',                    hub: 'nosana', bias: 'BULL' },
+    { t: '2Z',   cg: '2z-protocol',               hub: '2z',     bias: HUBS['2z']?.ta?.bias },
+  ];
+  const solBasket = SOL_BASKET.map(x => { const d = crypto?.[x.cg]; return { t: x.t, hub: x.hub, bias: x.bias || null, p: d?.usd ?? null, c: d?.usd_24h_change ?? null }; });
   const bio = BIO_SYMS.map(t => { const x = (bioQuotes || []).find(y => y.symbol === t); return { t, p: x?.regularMarketPrice ?? null, c: x?.regularMarketChangePercent ?? null }; });
 
 
@@ -480,6 +493,7 @@ export default async function HubPage() {
       watchlist={wl}
       earnings={earnings}
       bio={bio}
+      solBasket={solBasket}
     />
   );
 }

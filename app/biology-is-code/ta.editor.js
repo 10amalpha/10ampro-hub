@@ -1,7 +1,7 @@
 // Editor TA per ticker. Same shape as TOKEN.ta in the Solana hub configs:
 // { updated, bias: 'BULL'|'BEAR', read, pattern, watch, decision: [], invalidation: { level, text }, path: [{ d, h, target, how }], levels: { resistance: [[px, why]], support: [[px, why]] } }
 // A ticker without an entry falls back to the live auto-forecast (lib/thesis/ta.js).
-// Review pass data: /api/equity/{SYM}?summary=1 — basis for this pass: daily closes through 23 Sep 2026.
+// Review pass data: /api/equity/{SYM}?summary=1 — basis for this pass: daily closes through 23 Sep 2026 (QSI added 2 Oct 2026, data through Oct 2).
 const U = '23 Sep 2026';
 
 export const EDITOR_TA = {
@@ -178,6 +178,28 @@ export const EDITOR_TA = {
     levels: {
       resistance: [[1.0, '$1 — Nasdaq threshold'], [1.12, 'Sep 9 high'], [1.18, 'INVALIDATION · EMA50'], [1.75, 'EMA200']],
       support: [[0.89, 'Broken ceiling line (now floor)'], [0.852, 'Aug 18 low'], [0.767, 'Bearish measure'], [0.639, '2-year low']],
+    },
+  },
+
+  QSI: {
+    updated: '2 Oct 2026', bias: 'BULL',
+    read: 'Five of seven checks green and the two missing ones are the story: RSI 88 and a 200-day slope still negative (0.98, falling). This is a vertical breakout, not a trend: 0.72 (Sep 15) → 1.43 (Oct 1) is +98% in 12 sessions, with Oct 1 printing 16.2M shares against a 20-day average of 5.9M (2.7×) on the HUPO interim data. Price cleared every EMA (20 at 0.93, 50 at 0.86, 200 at 0.98) and the Jun 4 high of 1.28 in two days. The structure the engine still draws — a descending triangle from 1.28/0.85 over a 0.70–0.73 floor — was resolved to the upside on Sep 29–30, so the auto bear path is stale; the editor path replaces it. What is missing: time. Nothing between 1.43 and 2.63 (12-month high, Nov 2025 base) has traded since the spring.',
+    pattern: '<b>Bear-triangle failure → vertical breakout.</b> Three-touch floor 0.70–0.73 (Jul 29, Aug 18, Sep 15) held, then the ceiling (1.28 → 0.85) broke on Sep 29 with the gap to 0.96 and never closed. Measured move from the floor plus the triangle height (0.60): ~1.30, already met. The next reference is the 52-week range: 2.63 high, 3.10 above it.',
+    watch: '<b>The first red week.</b> After +98% in 12 sessions the pullback is a question of when, not if. 1.28 (Jun 4 high, now support) is where the breakout gets tested; 0.98 (EMA200) is the last line. A pullback that holds 1.28 on falling volume is a buy on structure. <b>Volume:</b> it must stay above the 90-day average (4.4M) through the consolidation — if it drops back to 2–3M on the retest, the move was a data spike. <b>Catalyst:</b> HUPO follow-through and any Proteus timeline update (currently Q2 2027).',
+    decision: [
+      'Holding: <b>keep the core while it closes above 1.28</b>; with RSI at 88 this is where part of a trading tranche comes off, not where you add.',
+      'Not holding: <b>wait for the retest of 1.28–1.35</b> on falling volume; chasing 1.40+ buys the top of a 12-session spike.',
+      'Single trigger that flips the bias: <b>daily close &lt; 1.28</b> — the breakout above the June high failed and the chart returns to the EMA cluster at 0.93–0.98.',
+    ],
+    invalidation: { level: 1.28, text: 'A daily close below 1.28 (Jun 4 high, the level that was taken out on Oct 1) voids the breakout → next stop 0.98 (EMA200 / Sep 29 gap) and 0.72 (triangle floor).' },
+    path: [
+      { d: 30, h: '+1M', target: 1.75, how: 'Retest of 1.28–1.35 on low volume → consolidation above the June high → new leg. Without a retest the path is a sideways 1.20–1.45 range first.' },
+      { d: 90, h: '+3M', target: 2.30, how: 'Mid of the spring air pocket (1.43 → 2.63). Requires volume to stay above 90d average through the consolidation and no financing hitting the chart.' },
+      { d: 365, h: '+1Y', target: 3.10, how: '52-week high. Requires Proteus still on track for Q2 2027 and the HUPO data converting into a named customer or partner.' },
+    ],
+    levels: {
+      resistance: [[1.43, 'Oct 1 high — top of the breakout'], [1.75, '+1M target'], [2.63, '12-month high · Nov 2025'], [3.10, '52-week high']],
+      support: [[1.28, 'INVALIDATION · Jun 4 high, now support'], [0.98, 'EMA200 · Sep 29 gap'], [0.85, 'Aug 25 high — broken ceiling'], [0.72, 'Triangle floor, 3 touches']],
     },
   },
 

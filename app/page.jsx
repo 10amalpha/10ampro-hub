@@ -268,7 +268,7 @@ export default async function HubPage() {
     fetchYahoo(['^GSPC', '^VIX', 'DX-Y.NYB', 'CL=F', 'JPY=X', 'COP=X', '^TNX', '^IRX', '^MOVE']),
     fetchCrypto(),
     getBriefingData(),
-    fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC']),
+    fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC','TEM','IBRX','CAI','PBLS','RXRX','NGEN','NAUT','INKT']),
     fetchYahoo(BIO_SYMS),
   ]);
   // Solana basket (anchor thesis /sol + alt hubs). Bias from each hub config's TOKEN.ta; Nosana has no config → bias kept in sync with app/nosana/page.jsx.
@@ -462,7 +462,7 @@ export default async function HubPage() {
     .map(formatCalEvent);
 
   // ─── Watchlist ───
-  const STOCK_TICKERS = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC'];
+  const STOCK_TICKERS = ['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC', 'TEM','IBRX','CAI','PBLS','RXRX','NGEN','NAUT','INKT'];
   const CRYPTO_MAP = {
     BTC: 'bitcoin', SOL: 'solana', SUI: 'sui', ETH: 'ethereum',
     JUP: 'jupiter-exchange-solana', NOS: 'nosana',
@@ -470,6 +470,7 @@ export default async function HubPage() {
     '2Z': '2z-protocol', MET: 'meteora', HNT: 'helium', ZEC: 'zcash',
     JITOSOL: 'jito-staked-sol',
     XRP: 'ripple', JLP: 'jupiter-perpetuals-liquidity-provider-token',
+    PUMP: 'pump-fun',
   };
 
   const wl = [

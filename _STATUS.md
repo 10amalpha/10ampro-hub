@@ -331,3 +331,4 @@ On every standalone page, the header hub/back button **must link to `https://10a
 - Infra: QSI added to the ALLOWED sets of /api/equity/[sym] and /quarters; OG image READ ticks; layout metadata 9→10 tickers; methodology notes.
 - Pending: editor TA read for QSI (falls back to the live auto-forecast for now — write it in the next TA pass; price just broke $1 on Sep 29–Oct 1 so the live engine should be BULL-leaning). Substack permalinks for the two posts not resolved — HOLDERS/RESEARCH link to 10am.pro root; swap when known. Next QSI ER Nov 5.
 - Ledger +3.5h (fuentes 2, earnings 1.5).
+- (2) Linares X post (Oct 1, https://x.com/alc2022/status/2105635282720903637): "QSI reads the letters, NAUT keeps the whole molecule" — added as a card in RESEARCH.QSI and RESEARCH.NAUT and as a view (not position) in HOLDERS.QSI. QSI price/mcap moved to the Oct 1 close ($1.43 / ~$313M, +34% on the day). Ledger +0.5h.

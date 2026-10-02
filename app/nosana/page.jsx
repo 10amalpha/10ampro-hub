@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { taStamps } from '../lib/thesis/stamp';
 import RelativeLayer from '../lib/thesis/RelativeLayer';
 
 // ============================================================
@@ -410,6 +411,7 @@ export default function NosanaTelemetry() {
   const [trend, setTrend] = useState(null);
   const [series, setSeries] = useState(null);
   const [chain, setChain] = useState(null);
+  const stamps = useMemo(() => taStamps(series, TA.reviewed, d?.price), [series, d]);
   useEffect(() => { (async () => { try { const r = await fetch('/api/nosana/onchain', { cache: 'no-store' }); setChain(await r.json()); } catch {} })(); }, []);
   useEffect(() => {
     (async () => {
@@ -907,6 +909,12 @@ export default function NosanaTelemetry() {
                   FORECAST BULL · {inv ? 'INVALIDATED ‹' : 'INTACT ›'} ${TA.invalidation.level}
                 </div>
               </div>
+              <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', fontSize: 10.5, color: 'var(--text-muted)', marginTop: 8 }}>
+                <span>Data through <b style={{ color: 'var(--text-primary)' }}>{stamps.dataThrough}</b> close</span>
+                <span>Chart built <b style={{ color: 'var(--text-primary)' }}>{stamps.builtOn}</b></span>
+                <span>Editor read <b style={{ color: 'var(--text-primary)' }}>{TA.reviewed}</b>{stamps.daysAgo != null ? ` (${stamps.daysAgo}d ago)` : ''}</span>
+                {stamps.atRead != null && <span>Price at read <b style={{ color: 'var(--text-primary)' }}>${stamps.atRead.toFixed(4)}</b>{stamps.sinceRead != null ? <> · since read <b style={{ color: stamps.sinceRead >= 0 ? GRN : RED }}>{pc(stamps.sinceRead)}</b></> : null}</span>}
+              </div>
               {t && (
                 <div style={{ display: 'grid', gridTemplateColumns: mb ? 'repeat(2,1fr)' : 'repeat(6,1fr)', gap: 8, marginTop: 10 }}>
                   {tile('EMA stack', `${t.last > t.e20 ? '▲' : '▼'}20 ${t.last > t.e50 ? '▲' : '▼'}50 ${t.last > t.e200 ? '▲' : '▼'}200`, `${t.e20.toFixed(3)} · ${t.e50.toFixed(3)} · ${t.e200.toFixed(3)}`, t.last > t.e200 ? GRN : RED)}
@@ -930,7 +938,7 @@ export default function NosanaTelemetry() {
             <span><span style={{ color: RED }}>╌</span> lower highs</span>
             <span><span style={{ color: GRN }}>╌</span> higher lows</span>
             <span><span style={{ color: AMB }}>┆</span> apex</span>
-            <span style={{ marginLeft: 'auto' }}>365d daily closes · log scale · volume at base</span>
+            <span style={{ marginLeft: 'auto' }}>365d daily closes · log scale · volume at base · as of {stamps.dataThrough}</span>
           </div>
           <TAStructure series={series} ta={TA} mb={mb} />
         </div>
@@ -958,7 +966,7 @@ export default function NosanaTelemetry() {
             <span style={{ color: GRN, fontWeight: 800, letterSpacing: '.1em' }}>BIAS: {TA.bias}</span>
             <span><span style={{ color: GRN }}>▬</span> forecast path</span>
             <span><span style={{ color: RED }}>╌</span> invalidation</span>
-            <span style={{ marginLeft: 'auto' }}>log scale · x = √time · shade = tolerance</span>
+            <span style={{ marginLeft: 'auto' }}>path set <b style={{ color: 'var(--text-primary)' }}>{TA.reviewed}</b>{stamps.atRead != null ? ` at $${stamps.atRead.toFixed(4)}` : ''} · log scale · x = √time · shade = tolerance</span>
           </div>
           <TAFan price={d?.price} ta={TA} mb={mb} />
         </div>
@@ -993,7 +1001,7 @@ export default function NosanaTelemetry() {
             </div>
           ))}
         </div>
-        <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 12, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>Directional TA forecast with an explicit invalidation level. % shown is distance from live price. Refreshed manually on each thesis review. Not investment advice.</div>
+        <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 12, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>Editor read: {TA.reviewed}{stamps.atRead != null ? ` at $${stamps.atRead.toFixed(4)}` : ''}. Regime and structure are recalculated live. % shown is distance from the live price, not from the price on the read date. Daily series through {stamps.dataThrough}; chart built {stamps.builtOn}. Refreshed manually on each thesis review. Not investment advice.</div>
       </div>
 
       <Eyebrow>Tracked snapshots — accumulates every visit → your own history</Eyebrow>

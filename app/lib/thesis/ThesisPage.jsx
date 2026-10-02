@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 
 import { ema, computeTrend, autoStructure, buildForecast } from './ta';
 import RelativeLayer from './RelativeLayer';
+import { taStamps } from './stamp';
 import { TAStructure, TAFan } from './TACharts';
 
 const GRN = '#22c55e', BLU = '#5b8cff', AMB = '#f59e0b', RED = '#ef4444', PUR = '#8b5cf6';
@@ -95,6 +96,15 @@ export default function ThesisPage({ TOKEN }) {
   // Editor TA (optional TOKEN.ta): the manual read owns bias, path and invalidation; the auto engine still supplies the live regime + structure.
   const ed = TOKEN.ta || null;
   const fc = useMemo(() => (ed && trend ? { dir: ed.bias === 'BEAR' ? 'BEAR' : 'BULL', path: ed.path.map((q) => ({ ...q })), invalidation: ed.invalidation.level, generated: ed.updated, editorial: true } : fcAuto), [ed, trend, fcAuto]);
+  const stamps = useMemo(() => taStamps(series, ed?.updated || fc?.generated, d?.price), [series, ed, fc, d]);
+  const StampLine = () => (
+    <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO, marginTop: 8 }}>
+      <span>Data through <b style={{ color: 'var(--text-primary)' }}>{stamps.dataThrough}</b> close</span>
+      <span>Chart built <b style={{ color: 'var(--text-primary)' }}>{stamps.builtOn}</b></span>
+      <span>{ed ? <>Editor read <b style={{ color: 'var(--text-primary)' }}>{ed.updated}</b>{stamps.daysAgo != null ? ` (${stamps.daysAgo}d ago)` : ''}</> : <>Forecast: <b style={{ color: 'var(--text-primary)' }}>auto engine</b> (no editor read yet)</>}</span>
+      {ed && stamps.atRead != null && <span>Price at read <b style={{ color: 'var(--text-primary)' }}>{fmtPx(stamps.atRead)}</b>{stamps.sinceRead != null ? <> · since read <b style={{ color: stamps.sinceRead >= 0 ? GRN : RED }}>{pc(stamps.sinceRead, 0)}</b></> : null}</span>}
+    </div>
+  );
   const M = net?.metrics || {}; const cur = metric ? M[metric] : null;
   const [netRange, setNetRange] = useState('1Y');
   const netPts = useMemo(() => {
@@ -299,6 +309,7 @@ export default function ThesisPage({ TOKEN }) {
               {t && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t.score}/7 bullish checks</span>}
               {fc && <div style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 700, letterSpacing: '.08em', color: inv ? (fc.dir === 'BEAR' ? GRN : RED) : fcCol }}>FORECAST {fc.dir} · {inv ? 'INVALIDATED' : 'INTACT'} {fc.dir === 'BEAR' ? '‹' : '›'} ${fc.invalidation}</div>}
             </div>
+            <StampLine />
             {t && <div style={{ display: 'grid', gridTemplateColumns: mb ? 'repeat(2,1fr)' : 'repeat(6,1fr)', gap: 8, marginTop: 10 }}>
               {tile('EMA stack', `${t.last > t.e20 ? '▲' : '▼'}20 ${t.last > t.e50 ? '▲' : '▼'}50 ${t.last > t.e200 ? '▲' : '▼'}200`, `${fmtPx(t.e20)} · ${fmtPx(t.e50)} · ${fmtPx(t.e200)}`, t.last > t.e200 ? GRN : RED)}
               {tile('EMA200 slope', pc(t.slope200), '20d change', t.slope200 > 0 ? GRN : RED)}
@@ -314,7 +325,7 @@ export default function ThesisPage({ TOKEN }) {
           <div style={{ display: 'flex', gap: 14, fontSize: 10.5, padding: '0 10px 4px', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
             <span style={{ color: AMB, fontWeight: 800, letterSpacing: '.1em' }}>STRUCTURE · {(st?.pattern || 'detecting…').toUpperCase()}</span>
             <span><span style={{ color: RED }}>╌</span> lower highs</span><span><span style={{ color: GRN }}>╌</span> higher lows</span><span><span style={{ color: AMB }}>┆</span> apex</span>
-            <span style={{ marginLeft: 'auto' }}>320d daily closes · log · volume at base · pivots auto-detected</span>
+            <span style={{ marginLeft: 'auto' }}>320d daily closes · log · volume at base · pivots auto-detected · as of {stamps.dataThrough}</span>
           </div>
           <TAStructure series={series} st={st} fc={fc} mb={mb} />
         </div>
@@ -358,7 +369,7 @@ export default function ThesisPage({ TOKEN }) {
           <div style={{ marginTop: 14, border: '1px solid var(--border)', borderRadius: 4, padding: '8px 4px 4px' }}>
             <div style={{ display: 'flex', gap: 14, fontSize: 10.5, padding: '0 10px 4px', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
               <span style={{ color: fcCol, fontWeight: 800, letterSpacing: '.1em' }}>BIAS: {fc.dir}ISH</span><span><span style={{ color: fcCol }}>▬</span> forecast path</span><span><span style={{ color: fc.dir === 'BEAR' ? GRN : RED }}>╌</span> invalidation</span>
-              <span style={{ marginLeft: 'auto' }}>log scale · x = √time · shade = tolerance</span>
+              <span style={{ marginLeft: 'auto' }}>{ed ? <>path set <b style={{ color: 'var(--text-primary)' }}>{ed.updated}</b>{stamps.atRead != null ? ` at ${fmtPx(stamps.atRead)}` : ''} · </> : null}log scale · x = √time · shade = tolerance</span>
             </div>
             <TAFan price={d?.price} fc={fc} mb={mb} />
           </div>
@@ -379,7 +390,7 @@ export default function ThesisPage({ TOKEN }) {
               </div>)}
             </div>
           </>}
-          <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 12, fontFamily: SANS }}>{ed ? `Lectura manual del editor (${ed.updated}) con invalidación explícita; el regime y la estructura se recalculan en vivo en cada carga (EMA stack, MACD, RSI, pivots). % = distancia al precio en vivo. Se refresca en cada revisión de tesis.` : 'Forecast is generated from the live regime + auto-detected structure on every load (EMA stack, MACD, RSI, pivot trendlines, measured moves). Targets snap to real levels. Explicit invalidation.'} Not investment advice.</div>
+          <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 12, fontFamily: SANS }}>{ed ? `Lectura manual del editor (${ed.updated}${stamps.atRead != null ? `, con el precio en ${fmtPx(stamps.atRead)}` : ''}) con invalidación explícita; el regime y la estructura se recalculan en vivo en cada carga (EMA stack, MACD, RSI, pivots). % = distancia al precio en vivo, no al precio del día del read. Serie diaria hasta el ${stamps.dataThrough}; chart generado el ${stamps.builtOn}. Se refresca en cada revisión de tesis.` : 'Forecast is generated from the live regime + auto-detected structure on every load (EMA stack, MACD, RSI, pivot trendlines, measured moves). Targets snap to real levels. Explicit invalidation.'} Not investment advice.</div>
         </>}
       </div>
 

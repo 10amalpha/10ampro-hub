@@ -467,7 +467,7 @@ export default async function HubPage() {
     BTC: 'bitcoin', SOL: 'solana', SUI: 'sui', ETH: 'ethereum',
     JUP: 'jupiter-exchange-solana', NOS: 'nosana',
     JTO: 'jito-governance-token', SHDW: 'genesysgo-shadow',
-    '2Z': '2z-protocol', MET: 'metaplex', HNT: 'helium', ZEC: 'zcash',
+    '2Z': '2z-protocol', MET: 'meteora', HNT: 'helium', ZEC: 'zcash',
     JITOSOL: 'jito-staked-sol',
     XRP: 'ripple', JLP: 'jupiter-perpetuals-liquidity-provider-token',
   };

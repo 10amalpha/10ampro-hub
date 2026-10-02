@@ -56,6 +56,8 @@ export function TAModule({ sym, A, mb }) {
   const col = trend.score >= 5 ? GRN : trend.score === 4 ? AMB : RED;
   const fcCol = fc?.dir === 'BEAR' ? RED : GRN, invCol = fc?.dir === 'BEAR' ? GRN : RED;
   const bad = isInvalidated(A);
+  const t = d.series?.t || []; const lastT = t[t.length - 1]; const fmtD = (x) => { const dt = x == null ? null : new Date(typeof x === 'number' && x < 1e12 ? x * 1000 : x); return dt && !isNaN(dt) ? dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '—'; };
+  const dataThrough = fmtD(lastT), builtOn = fmtD(Date.now());
   const stat = (k, v, c) => <div style={{ minWidth: 0 }}><div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO }}>{k}</div><div style={{ fontSize: 13, fontWeight: 700, color: c || 'var(--text-primary)', fontFamily: MONO, whiteSpace: 'nowrap' }}>{v}</div></div>;
 
   return (
@@ -66,6 +68,11 @@ export function TAModule({ sym, A, mb }) {
         <span style={{ display: 'flex', gap: 3 }}>{trend.checks.map((x, i) => <span key={i} title={x[0]} style={{ width: 12, height: 6, borderRadius: 2, background: x[1] ? col : 'rgba(128,128,128,.2)' }} />)}</span>
         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{trend.score}/7 bullish checks</span>
         {fc && <span style={{ marginLeft: mb ? 0 : 'auto', fontSize: 11.5, fontWeight: 800, color: bad ? invCol : fcCol }}>{fc.dir} {bad ? '· INVALIDATED' : '· intact'} · invalidates {fc.dir === 'BEAR' ? '>' : '<'} {fmtPx(fc.invalidation)}</span>}
+      </div>
+      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', fontSize: 10.5, color: 'var(--text-muted)', fontFamily: MONO, marginBottom: 10 }}>
+        <span>Data through <b style={{ color: 'var(--text-primary)' }}>{dataThrough}</b> close</span>
+        <span>Chart built <b style={{ color: 'var(--text-primary)' }}>{builtOn}</b></span>
+        <span>{ed ? <>Editor read <b style={{ color: 'var(--text-primary)' }}>{ed.updated}</b></> : <>Forecast: <b style={{ color: 'var(--text-primary)' }}>auto engine</b> (no editor read yet)</>}</span>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: mb ? 'repeat(3,1fr)' : 'repeat(6,1fr)', gap: 10, padding: '10px 12px', background: 'var(--surface-2)', borderRadius: 6, marginBottom: 12 }}>
         {stat('EMA 20 / 50', `${fmtPx(trend.e20)} / ${fmtPx(trend.e50)}`)}
@@ -83,6 +90,7 @@ export function TAModule({ sym, A, mb }) {
         <div style={{ display: 'flex', gap: 12, fontSize: 10.5, padding: '0 10px 4px', color: 'var(--text-muted)', flexWrap: 'wrap', fontFamily: MONO }}>
           <span style={{ color: AMB, fontWeight: 700 }}>{st?.pattern || (d.bars < 90 ? 'Short history' : 'No clean structure')}</span>
           <span><span style={{ color: RED }}>╌</span> highs</span><span><span style={{ color: GRN }}>╌</span> lows</span><span><span style={{ color: fcCol }}>●</span> path 1M / 3M / 1Y</span>
+          <span style={{ marginLeft: mb ? 0 : 'auto' }}>as of {dataThrough}</span>
         </div>
         <TAStructure key={sym} series={d.series} st={st} fc={fc} mb={mb} minBars={60} />
       </div>
@@ -128,7 +136,7 @@ export function TAModule({ sym, A, mb }) {
           </div>
         </div>
       </>}
-      <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 10, fontFamily: SANS }}>{ed ? `Editor read: ${ed.updated}. Regime and structure are recalculated live.` : 'Automatic engine forecast.'} Adjusted daily prices (Yahoo). Not investment advice.</div>
+      <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 10, fontFamily: SANS }}>{ed ? `Editor read: ${ed.updated}. Regime and structure are recalculated live.` : 'Automatic engine forecast.'} Daily series through {dataThrough}; chart built {builtOn}. Adjusted daily prices (Yahoo). Not investment advice.</div>
     </div>
   );
 }

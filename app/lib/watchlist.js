@@ -3,7 +3,7 @@
 // client refresh silently overwrites the server list (that is how NAUT/PUMP went missing on Oct 2, 2026).
 
 export const STOCK_TICKERS = [
-  'PLTR', 'HOOD', 'TSLA', 'HIMS', 'QSI', 'DUOL', 'STKE', 'MP', 'OKLO', 'AMD', 'NVDA', 'MSTR', 'BE', 'IBIT', 'STRC',
+  'PLTR', 'HOOD', 'TSLA', 'HIMS', 'QSI', 'DUOL', 'STKE', 'MP', 'OKLO', 'AMD', 'NVDA', 'MSTR', 'BE', 'IBIT', 'STRC', 'IREN',
   // Biology Is Code basket (HIMS, QSI above)
   'TEM', 'IBRX', 'CAI', 'PBLS', 'RXRX', 'NGEN', 'NAUT', 'INKT',
 ];

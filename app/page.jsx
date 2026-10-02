@@ -169,8 +169,6 @@ function fmt(n, dec = 2) {
   return n.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
 }
 
-// ─── Editorial data (AI-generated via lib/insights.js) ──────
-import { getInsights } from './lib/insights';
 
 // ─── Info Diet: live from Supabase feed_items ───
 const SUPABASE_URL = 'https://bzpraigsuwgjgpnclcpd.supabase.co';
@@ -270,20 +268,8 @@ export default async function HubPage() {
     fetchYahoo(['PLTR','HOOD','TSLA','HIMS','QSI','DUOL','STKE','MP','OKLO','AMD','NVDA','MSTR','BE','IBIT','STRC']),
   ]);
 
-  // Phase 2: Build market snapshot from data we already have, pass to insights (avoids redundant Yahoo+CoinGecko fetches)
+
   const q = (sym) => macroQuotes.find(x => x.symbol === sym);
-  const insightMarket = {
-    sp500: { price: q('^GSPC')?.regularMarketPrice, change: q('^GSPC')?.regularMarketChangePercent },
-    vix: { price: q('^VIX')?.regularMarketPrice, change: q('^VIX')?.regularMarketChangePercent },
-    dxy: { price: q('DX-Y.NYB')?.regularMarketPrice, change: q('DX-Y.NYB')?.regularMarketChangePercent },
-    wti: { price: q('CL=F')?.regularMarketPrice, change: q('CL=F')?.regularMarketChangePercent },
-    us10y: { price: q('^TNX')?.regularMarketPrice },
-    usdcop: { price: q('COP=X')?.regularMarketPrice, change: q('COP=X')?.regularMarketChangePercent },
-    btc: crypto.bitcoin ? { price: crypto.bitcoin.usd, change: crypto.bitcoin.usd_24h_change } : null,
-    sol: crypto.solana ? { price: crypto.solana.usd, change: crypto.solana.usd_24h_change } : null,
-    move: { price: q('^MOVE')?.regularMarketPrice, change: q('^MOVE')?.regularMarketChangePercent },
-  };
-  const insightsData = await getInsights(insightMarket);
 
   // ─── Parse earnings from briefing ───
   const today = new Date();
@@ -490,7 +476,6 @@ export default async function HubPage() {
       calTomorrow={calTomorrow}
       watchlist={wl}
       earnings={earnings}
-      insights={insightsData}
     />
   );
 }

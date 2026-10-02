@@ -1,10 +1,15 @@
 # 10AMPRO Hub — _STATUS.md
-**Last updated:** September 23, 2026
+**Last updated:** October 2, 2026
 **Live URL:** https://10ampro-hub.vercel.app · **Prod domain:** https://mercados.10am.pro
 **Repo:** 10amalpha/10ampro-hub
 **Vercel Project ID:** prj_lKkui80lHh4x3Fietp6nC4CRfupB
 
 ---
+
+## Recent changes (Oct 2, 2026)
+
+- **Root briefing: CONTEXTO 10AMPRO section removed** (Hernán: not worth the space). Deleted the Editorial Insights block from HubClient.jsx and the `getInsights()` call in page.jsx — no more Anthropic API call per render. `lib/insights.js` and `/api/insights` are still in the repo (unused by the page). `ANTHROPIC_API_KEY` can stay or go.
+- **Readability pass on Calendar / Watchlist / Earnings Radar:** body font sizes +1 (10→11, 11→12, 12→13, 13→14) and row padding widened (3–5px → 5–7px vertical, 10px horizontal). Header, macro bar, research and footer untouched.
 
 ## Recent changes (Sep 24, 2026 · b)
 

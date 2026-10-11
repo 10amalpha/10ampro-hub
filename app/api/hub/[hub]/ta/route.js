@@ -18,7 +18,9 @@ export async function GET(req, { params }) {
       fetch(`${CG}/coins/${cgId}/market_chart?vs_currency=usd&days=365&interval=daily`, { headers: { accept: 'application/json' }, next: { revalidate: 300 } }).then((r) => r.json()),
       fetch(`${CG}/coins/${cgId}?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false`, { headers: { accept: 'application/json' }, next: { revalidate: 300 } }).then((r) => r.json()),
     ]);
-    const t = (h.prices || []).map((p) => p[0]), c = (h.prices || []).map((p) => p[1]), v = (h.total_volumes || []).map((p) => p[1]);
+    if (h?.status?.error_code || m?.status?.error_code) return json({ ok: false, error: `coingecko ${h?.status?.error_code || m?.status?.error_code}: ${h?.status?.error_message || m?.status?.error_message || 'rate limited'}` }, 0);
+    if (!Array.isArray(h?.prices) || h.prices.length < 60) return json({ ok: false, error: `coingecko returned ${h?.prices?.length || 0} daily points for ${cgId}` }, 0);
+    const t = h.prices.map((p) => p[0]), c = h.prices.map((p) => p[1]), v = (h.total_volumes || []).map((p) => p[1]);
     const series = { t, c, v };
     const trend = computeTrend(c, v);
     const st = autoStructure(series);

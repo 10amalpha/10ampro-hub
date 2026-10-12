@@ -5,7 +5,7 @@ export const TOKEN = {
   sector: 'Solana memecoin launchpad & AMM',
   tagline: 'Revenue de launches + PumpSwap, buyback agresivo — el token más ligado al ciclo de memes.',
   description: 'Pump.fun ($PUMP) en vivo: fees y revenue del launchpad y PumpSwap, buyback, supply overhang on-chain (tesorería, ICO, exchanges), TA con forecast y tripwires. 10AMPRO.',
-  stance: 'trade-the-cycle', reviewed: '22 Sep 2026',
+  stance: 'trade-the-cycle', reviewed: '11 Oct 2026',
   ta: {
     updated: '11 Oct 2026', bias: 'BULL',
     read: '+46% en el mes y −10% en la semana: eso es lo que parece un pullback en tendencia, no un techo. El 5 Oct hizo 0.00652 — el máximo del año, por encima del techo de Oct-25 (0.0071 quedó como el siguiente, no como el anterior) — y devolvió a 0.0055 en cuatro sesiones, parándose en la EMA20 (0.00543) con RSI 56. Seis de siete; lo único rojo es el MACD, que gira negativo cuando el precio deja de subir y no dice más que eso. La EMA200 sube 19% en 20 días: es el chart con más pendiente de la página. El +1M de 0.0052 del 22 Sep se cumplió y se pasó; el +3M de 0.0071 quedó a 8%. Volumen 165% del 90d en el promedio, pero $146M hoy es el día más bajo del mes contra $579M el máximo: la corrección se está secando, que es lo que uno quiere ver. Lo que no dice el chart: revenue. Si la actividad de memes bajó con el mercado esta semana, el buyback diario pone menos piso del que el chart sugiere — la capa de network lo dice antes que el precio.',

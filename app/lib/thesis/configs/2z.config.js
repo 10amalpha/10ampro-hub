@@ -8,7 +8,7 @@ export const TOKEN = {
   sector: 'DePIN · fiber network for validators',
   tagline: 'Stake de Solana sobre fibra dedicada, seat fees en 2Z y burn — la red que Solana ya usa, con un token que todavía no lo refleja.',
   description: 'DoubleZero ($2Z) en vivo: % del stake de Solana conectado, validadores, TCV, burn de seat fees, unlocks, supply overhang on-chain, TA con forecast y tripwires. 10AMPRO.',
-  stance: 'accumulate-slowly-below-unlocks', reviewed: '22 Sep 2026',
+  stance: 'reduce-on-bounce', reviewed: '11 Oct 2026',
   ta: {
     updated: '11 Oct 2026', bias: 'BEAR',
     read: 'El unlock no se absorbió, y el chart lo dijo rápido: 0.0598 el 1 Oct, −19% el 3 Oct, y seis sesiones más abajo hasta 0.0358 el 9 Oct — nuevo mínimo histórico (0.0343 intradía el 8 Oct), −40% en una semana. Los tres objetivos del path bajista del 22 Sep (0.046 / 0.041 / 0.035) se cumplieron en once días; el +1Y bajista llegó en dos semanas. Cero de siete. RSI 5 — no había visto una lectura así en ningún chart de la página; no es señal de compra, es señal de que esta semana no quedó nadie por vender. Volumen 252% del 90d en el promedio de 20 días, pero $6M hoy contra $101M el día del unlock: el flujo de venta se agotó, y lo que sigue es un rebote técnico hacia la EMA20 (0.046) que no cambia nada estructural. Lo único que lo cambia: cierre semanal sobre 0.047 con volumen. Hasta ahí, un rebote es para vender lo que no quieras tener, no para sumar.',

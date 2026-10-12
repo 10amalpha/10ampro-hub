@@ -23,7 +23,7 @@ const RED = '#ef4444';
 const SEED = {
   completed: 4115790, jobHours: 4125332, hosts: 826, running: 826, queued: 34,
   price: 0.2823, mcap: 28233000, ath: 7.83, peakHours: 220000,
-  hostsBaseline: 965, reviewed: '22 Sep 2026',
+  hostsBaseline: 965, reviewed: '11 Oct 2026',
 };
 
 

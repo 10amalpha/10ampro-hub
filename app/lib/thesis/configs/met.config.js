@@ -5,7 +5,7 @@ export const TOKEN = {
   sector: 'Solana liquidity layer (DLMM / DAMM)',
   tagline: 'TVL, volumen y fees de la capa de liquidez — con buyback y 52% del supply todavía por emitir.',
   description: 'Meteora ($MET) en vivo: TVL, volumen DLMM/DAMM, fees y revenue, unlocks y buyback, supply overhang on-chain, TA con forecast y tripwires. 10AMPRO.',
-  stance: 'wait-for-unlock-absorption', reviewed: '22 Sep 2026',
+  stance: 'hold-trim-at-0.50', reviewed: '11 Oct 2026',
   ta: {
     updated: '11 Oct 2026', bias: 'BULL',
     read: 'El unlock del 23 Sep se absorbió como pedía la regla — ni un cierre bajo 0.256, mínimo 0.2942 el 3 Oct — y el mercado lo pagó con un +36% en una sesión el 8 Oct (0.3278 → 0.4447) con el mayor volumen de los últimos 30 días ($243M). Desde ahí, consolidación 0.41–0.44, sin devolver nada. Siete de siete, EMA200 subiendo 14% en 20 días, RSI 57 después de un +42% semanal: el movimiento arrancó con el RSI descargado por la semana del unlock, por eso no está sobrecomprado hoy. Volumen 255% del 90d en el promedio — el más expandido de la página. El +1M de 0.32 del 22 Sep se cumplió el 8 Oct; el +3M de 0.40 también; el +1Y de 0.50 está a 18%. Lo que no sé desde el chart es qué pasó el 8 Oct: si fue el buyback trimestral o un listing, es tesis; si fue un rumor, es un gap que se llena. Buscá la noticia antes de asumir. Lo que sí dice el chart: la semana fue +42% con SOL −8% — el movimiento más propio de la página, no beta.',

@@ -8,7 +8,7 @@ export const TOKEN = {
   sector: 'Layer 1 · el benchmark del ecosistema',
   tagline: 'Fees de red, economía de apps, inflación vs burn, SOL/BTC y flujo ETF — el activo contra el que se mide todo lo demás en esta página.',
   description: 'Solana ($SOL) en vivo: fees de la red y de las apps, volumen DEX, TVL, inflación y staking on-chain, ratios SOL/BTC y SOL/ETH, posicionamiento en futuros, TA con forecast y tripwires de la tesis. 10AMPRO.',
-  stance: 'core-accumulate', reviewed: '22 Sep 2026',
+  stance: 'core-accumulate', reviewed: '11 Oct 2026',
   catalyst: {
     title: 'Gobernanza SGP-1/2/3 — RESULTADO',
     date: 'cerro 28 Ago 2026 (epoch 1024) · SGP-1 ✓ 86% · SGP-2 ✓ 67.0% · SGP-3 ✗ 53.9%',

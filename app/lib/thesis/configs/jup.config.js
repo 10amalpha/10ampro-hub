@@ -5,7 +5,7 @@ export const TOKEN = {
   sector: 'Solana DEX aggregation & perps',
   tagline: 'Volumen, fees y buyback — el agregador que procesa la mayoría de los swaps de Solana.',
   description: 'Jupiter ($JUP) en vivo: volumen del agregador, fees, revenue y buyback, supply overhang on-chain (vote escrow, tesorería, exchanges), TA con forecast y tripwires. 10AMPRO.',
-  stance: 'hold-and-add-on-fee-growth', reviewed: '22 Sep 2026',
+  stance: 'hold-and-add-on-fee-growth', reviewed: '11 Oct 2026',
   ta: {
     updated: '11 Oct 2026', bias: 'BULL',
     read: 'El único chart de la página que subió en una semana en la que SOL cayó 8%: +10.8%, nuevo máximo de 12 meses en 0.3747 el 10 Oct, y el mínimo del 3 Oct (0.3153) más alto que todo lo anterior. El +1M de 0.33 del 22 Sep se cumplió en seis días; el +3M de 0.40 está a 8%. Cinco de siete, EMA200 subiendo 10.8% en 20 días — la más empinada de la página después de PUMP — y el dato que más pesa: RSI 49 con el precio a 2% del máximo. Subió 52% en el mes sin sobrecomprarse porque consolidó dos semanas en 0.315–0.36 antes del último tramo. El MACD en cero es consecuencia de esa consolidación, no una señal. Volumen 178% del 90d, $85M hoy — no es un pico, es un piso más alto de actividad. Beta negativa en la semana: eso es demanda propia, y en un alt solo pasa cuando hay un comprador que no es el mercado (el buyback, o alguien grande). Lo que falta: la capa de network — si el volumen del agregador no acompaña, el precio va adelantado.',

@@ -35,6 +35,7 @@ export const LOG = [
   { d: '2026-10-02', cat: 'fuentes', h: 2, note: 'QSI onboarded as the 10th ticker (READ): synthesized Hernán\u2019s "AI + Biología = Quantum-Si" (Nov 2025) and "La Cadena" (May 2026) → Research module, holders, chain position' },
   { d: '2026-10-02', cat: 'earnings', h: 1.5, note: 'QSI: FY22–FY25 income statements, Q1\u201925–Q2\u201926 P&L and FCF from 8-K/10-Q, cash on hand, Proteus delay / RIF / 18-AA / HUPO data' },
   { d: '2026-10-11', cat: 'charting', h: 3, note: 'Full TA pass on all 10 tickers with closes through Oct 9: editor reads, invalidations, paths and levels rewritten; board prices/mcaps refreshed; NAUT +136% and QSI +25%-day read, TEM failed breakout, HIMS triangle break, PBLS/INKT breakdowns' },
+  { d: '2026-10-12', cat: 'charting', h: 0.5, note: 'Daily TA refresh (closes through Oct 12): TEM rewritten (higher-lows trendline lost, close 67.99 on the EMA50, inv 67.8 intact), PBLS (oversold bounce reclaimed 28.6, inv to EMA20 31.9), NGEN (RSI through 30 at 24), QSI (−11% after the record bar, RSI back under 70); IBRX, CAI, HIMS, RXRX, NAUT, INKT no material change. Board prices/mcaps at Oct 12 close' },
   { d: '2026-10-02', cat: 'fuentes', h: 0.5, note: 'Linares X post: QSI reads the letters, NAUT keeps the whole molecule — complementary READ pair → cards in both dossiers, QSI price to Oct 1 close' },
   { d: '2026-09-23', cat: 'noticias', h: 9, est: true, note: 'Continuous tracking Jun–Sep (~40 min / week × 14 weeks): podcasts, news, threads' },
 ];

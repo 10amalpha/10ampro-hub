@@ -23,34 +23,34 @@ const RED = '#ef4444';
 const SEED = {
   completed: 4115790, jobHours: 4125332, hosts: 826, running: 826, queued: 34,
   price: 0.2823, mcap: 28233000, ath: 7.83, peakHours: 220000,
-  hostsBaseline: 965, reviewed: '11 Oct 2026',
+  hostsBaseline: 965, reviewed: '13 Oct 2026',
 };
 
 
 // ---- Technical analysis (manual read, refreshed on each review) ----
-// Chart basis: NOS/USD 1D (CoinGecko) · 11 Oct 2026 · C 0.6034 · EMA20 0.535 · EMA50 0.432 · EMA100 0.369 · EMA200 0.332 (+16%/20d) · RSI 61 · MACD histo −0.0046 · vol 20d/90d 235%, hoy $0.5M vs $2.5M máx-30d
+// Chart basis: NOS/USD 1D (CoinGecko) · 13 Oct 2026 · C 0.5554 (13 Oct) / 0.5442 hoy · EMA20 0.5375 · EMA50 0.4411 · EMA100 0.3757 · EMA200 0.3389 (+16%/20d) · RSI 57 · MACD histo −0.013 · vol 20d/90d 230%, hoy $1.3M vs $2.5M máx-30d
 const TA = {
-  reviewed: '11 Oct 2026',
+  reviewed: '13 Oct 2026',
   bias: 'BULLISH',
-  read: 'Las tres metas del 22 Sep (0.44 / 0.49 / 0.60) cayeron en trece días y el precio siguió hasta 0.7365 el 5 Oct — +175% desde el mínimo del 16 Sep. Desde ahí, −24% hasta 0.5607 (9 Oct) y rebote a 0.60: la primera corrección real del tramo, y la aguantó la EMA20 (0.535), no la EMA200 (0.332) como en agosto. Seis de siete; solo el MACD está en rojo y es por la velocidad del pullback, no por la tendencia. RSI 61 después de haber tocado 88 el 2 Oct: se descargó con el precio de lado, que es lo que distingue una consolidación de un techo. Lo que sí cambió: el volumen. 235% del promedio de 90 días en el de 20, pero el de hoy ($0.5M) es un quinto del máximo del mes ($2.5M) — la corrección se seca, y el rebote no trae compradores nuevos. Y la semana fue −15.5% con SOL −8%: la beta 2× sigue funcionando para los dos lados. Red: nada nuevo — compute hours bajo 150k, revenue pagado sin publicar. El chart está a 2× de donde estaba el 22 Sep; la tesis está exactamente donde estaba.',
+  read: 'La bandera se rompió por abajo. 0.6016 el 12 Oct — a 0.08 del techo del pullback (0.6836) — y −7.7% el 13 Oct a 0.5554, debajo del piso de la bandera (0.5607, mínimo del 9 Oct); hoy 0.5442, probando la EMA20 (0.5375) por 1%. Es la primera vez desde el breakout del 21 Sep que el precio cierra debajo de un mínimo previo del tramo. Seis de siete todavía (solo el MACD en rojo, y ahora con razón), RSI 57 después de 88 el 2 Oct, EMA200 subiendo 16% en 20 días. Lo que cambió es la secuencia: el plan del 11 Oct decía que la bandera resolvía arriba sobre 0.6836 o abajo bajo 0.5607 — resolvió abajo, y la zona de entrada (0.54–0.56, la EMA20) que escribí para cuando llegara, llegó hoy. Volumen $1.3M, sobre el promedio de 20 días ($1.2M) pero la mitad del máximo del mes ($2.5M): la caída trajo algo de venta, no capitulación. Relativo: −15.1% en siete días contra SOL −11.7% — beta 1.3×, menos que el 2× del tramo de subida; cae con el mercado, no más que él. La invalidación de 0.49 queda 10% abajo. Red: nada nuevo — compute hours bajo 150k, revenue pagado sin publicar. El chart devolvió el 26% desde 0.7365; la tesis no se movió.',
   // Chart structure (anchor points are [timestamp, price]) — drawn on the live series
   structure: {
-    resistance: { a: [1791158400000, 0.7365], b: [1791331200000, 0.7365], label: 'Techo 0.7365 · máximo 5 Oct · bandera 0.56–0.68 debajo' },
+    resistance: { a: [1791158400000, 0.7365], b: [1791331200000, 0.7365], label: 'Techo 0.7365 · máximo 5 Oct · bandera 0.56–0.68 rota por abajo el 13 Oct' },
     support: { a: [1770768000000, 0.1784], b: [1785369600000, 0.2431], label: 'Rail 2026 · Feb-11 → Jul-28 → Sep-16 · debajo termina la tesis' },
-    touches: [[1791158400000, 0.7365, 'H1'], [1791331200000, 0.6836, 'H2'], [1770768000000, 0.1784, 'L1'], [1775347200000, 0.1996, 'L2'], [1785369600000, 0.2431, 'L3'], [1789516800000, 0.2675, 'L4'], [1791504000000, 0.5607, 'L5']],
-    pattern: 'Impulso vertical + bandera (5–11 Oct)',
+    touches: [[1791158400000, 0.7365, 'H1'], [1791331200000, 0.6836, 'H2'], [1791763200000, 0.6016, 'H3'], [1770768000000, 0.1784, 'L1'], [1775347200000, 0.1996, 'L2'], [1785369600000, 0.2431, 'L3'], [1789516800000, 0.2675, 'L4'], [1791504000000, 0.5607, 'L5'], [1791849600000, 0.5554, 'L6']],
+    pattern: 'Impulso vertical + bandera rota por abajo (13 Oct)',
     height: 0.469,
     measured: { up: 0.85, down: 0.49 },
   },
-  invalidation: { level: 0.49, text: 'Cierre diario bajo 0.49 (cierre del 1 Oct, la base del tramo vertical, y el spike de junio) = el impulso devolvió el 50% y el tramo fue rotación de sector, no revalorización → 0.432 (EMA50) y 0.3947 (máximo del 2 Jun).' },
+  invalidation: { level: 0.49, text: 'Cierre diario bajo 0.49 (cierre del 1 Oct, la base del tramo vertical, y el spike de junio) = el impulso devolvió el 50% y el tramo fue rotación de sector, no revalorización → 0.441 (EMA50) y 0.3947 (máximo del 2 Jun).' },
   path: [
-    { d: 30, h: '+1M', target: 0.74, how: 'Bandera que resuelve arriba: cierre sobre 0.6836 (7 Oct) con 2× volumen → retest de 0.7365. Sin volumen en la salida, el +1M es el rango 0.56–0.68.' },
-    { d: 90, h: '+3M', target: 0.85, how: 'Medida de la bandera al 61.8% (0.5607 + 0.29). Para un alt de $60M con $0.5M de volumen diario, la medida completa (1.03) no es un objetivo honesto. Sin revenue publicado, en 0.85 se vende.' },
-    { d: 365, h: '+1Y', target: 1.01, how: 'Retest del blow-off de Sep-25. Solo con revenue pagado publicado y compute hours sobre 150k/mes. Sin eso, el chart devuelve el impulso y esto fue el trade de sector más grande del año, no una inversión.' },
+    { d: 30, h: '+1M', target: 0.6836, how: 'Retest de la EMA20 (0.5375) que aguanta → recuperar 0.5607 → 0.6836, el cierre del 7 Oct y techo del pullback. Sin la EMA20 al cierre, el +1M es 0.49–0.56.' },
+    { d: 90, h: '+3M', target: 0.7365, how: 'Retest del máximo del 5 Oct. Requiere la bandera reconstruida sobre 0.5607 y el cierre sobre 0.6836 con 2× volumen; sin revenue publicado, en 0.7365 se vende parte.' },
+    { d: 365, h: '+1Y', target: 0.85, how: 'Medida de la bandera al 61.8% (0.5607 + 0.29) — vale solo si el precio vuelve sobre 0.5607 y la reconstruye. Para un alt de $54M con $1M de volumen diario, la medida completa (1.03) no es un objetivo honesto; el blow-off de Sep-25 (1.01) requiere revenue pagado publicado y compute hours sobre 150k/mes.' },
   ],
   levels: {
-    resistance: [[0.6836, 'Cierre 7 Oct · techo del pullback · el trigger'], [0.7365, 'Máximo 5 Oct'], [0.85, 'Medida de la bandera (61.8%)'], [1.01, 'Blow-off Sep-25 · requiere revenue publicado']],
-    support: [[0.5607, 'Mínimo 9 Oct · piso de la bandera'], [0.535, 'EMA20 · zona de entrada'], [0.49, 'INVALIDACIÓN · cierre 1 Oct · spike de junio'], [0.432, 'EMA50'], [0.3947, 'Máximo 2 Jun · el breakout viejo'], [0.332, 'EMA200 — subiendo 16%/20d'], [0.3125, 'Nivel del breakout del 21 Sep']],
+    resistance: [[0.5607, 'Mínimo 9 Oct · piso de la bandera, perdido el 13 Oct — a recuperar'], [0.6016, 'Cierre 12 Oct'], [0.6836, 'Cierre 7 Oct · techo del pullback · el trigger'], [0.7365, 'Máximo 5 Oct'], [0.85, 'Medida de la bandera (61.8%)'], [1.01, 'Blow-off Sep-25 · requiere revenue publicado']],
+    support: [[0.5554, 'Cierre 13 Oct'], [0.5375, 'EMA20 · zona de entrada'], [0.49, 'INVALIDACIÓN · cierre 1 Oct · spike de junio'], [0.441, 'EMA50'], [0.3947, 'Máximo 2 Jun · el breakout viejo'], [0.339, 'EMA200 — subiendo 16%/20d'], [0.3125, 'Nivel del breakout del 21 Sep']],
   },
 };
 
@@ -651,9 +651,9 @@ export default function NosanaTelemetry() {
         const Z = {
           target: ['EN LA MEDIDA DE LA BANDERA — zona de tomar parcial', GRN, 'Sobre 0.85. La medida al 61.8% del impulso está acá. Sin revenue pagado publicado, este es el lugar de vender otra parte, no de sumar.'],
           extended: ['NUEVOS MÁXIMOS — bandera resuelta arriba', GRN, 'Sobre 0.7365 (máximo del 5 Oct). El path alcista está intacto y acelerando; no es zona de entrar: el próximo nivel para sumar es el retest de 0.68–0.74 que aguante.'],
-          breakout: ['BANDERA — consolidación 0.56–0.68 después del impulso', GRN, 'Entre 0.49 y 0.7365. Acá se define si el +175% se consolida o se devuelve: entrada en 0.54–0.56 (EMA20 + piso del 9 Oct) que aguante = 25%; cierre sobre 0.6836 con volumen = segundo tramo.'],
-          failed: ['IMPULSO DEVUELTO AL 50% — bandera fallida', AMB, `Bajo 0.49 y sobre 0.3947. El path alcista queda anulado; el tramo fue rotación de sector. EMA50 (0.432) es el piso antes del máximo de junio (0.3947); el rail del año está en ~${supLine.toFixed(3)}. Las alzas a 0.53–0.56 vuelven a ser para reducir.`],
-          broken: ['MÁXIMO DE JUNIO PERDIDO — de vuelta al triángulo', RED, 'Bajo 0.3947. Un impulso que se devuelve entero suele llegar al nivel del breakout: 0.3125 → EMA200 (0.332) → 0.2675. No promediar a la baja sin volumen de capitulación.'],
+          breakout: ['BANDERA ROTA POR ABAJO — retest de la EMA20', GRN, 'Entre 0.49 y 0.7365. El piso de la bandera (0.5607) se perdió el 13 Oct y el precio está en la zona de entrada del plan, 0.54–0.56 (EMA20): 25% solo con dos cierres sobre 0.5375 y volumen seco; cierre sobre 0.6836 con volumen = segundo tramo. Bajo 0.49 el impulso devolvió la mitad.'],
+          failed: ['IMPULSO DEVUELTO AL 50% — bandera fallida', AMB, `Bajo 0.49 y sobre 0.3947. El path alcista queda anulado; el tramo fue rotación de sector. EMA50 (0.441) es el piso antes del máximo de junio (0.3947); el rail del año está en ~${supLine.toFixed(3)}. Las alzas a 0.53–0.56 vuelven a ser para reducir.`],
+          broken: ['MÁXIMO DE JUNIO PERDIDO — de vuelta al triángulo', RED, 'Bajo 0.3947. Un impulso que se devuelve entero suele llegar al nivel del breakout: 0.3125 → EMA200 (0.339) → 0.2675. No promediar a la baja sin volumen de capitulación.'],
         };
         const z = zone ? Z[zone] : ['CARGANDO', 'var(--text-muted)', ''];
         const B = ({ c, children }) => <div style={{ display: 'flex', gap: 8, fontSize: 11.5, lineHeight: 1.5, marginTop: 4 }}><span style={{ color: c, fontWeight: 800 }}>›</span><span>{children}</span></div>;
@@ -671,16 +671,16 @@ export default function NosanaTelemetry() {
               <div>
                 <H c={RED}>Si ya tenés NOS</H>
                 <B c={RED}>Mantené mientras cierre sobre <b>0.49</b>. El parcial de 0.47–0.49 del plan del 22 Sep ya se dio; el siguiente es <b>0.7365</b> si llega sin revenue publicado, y otro en 0.85.</B>
-                <B c={RED}>No sumes en 0.60 adentro de la bandera. Si querés más, es en <b>0.54–0.56</b> (EMA20 + piso del 9 Oct) o en el cierre sobre 0.6836 con 2× volumen.</B>
-                <B c={RED}>Stop mental: cierre diario bajo <b>0.49</b> = el impulso devolvió la mitad y fue rotación de sector. Ahí se reduce en los rebotes a 0.53–0.56, piso en 0.432 y el rail en {supLine.toFixed(3)}.</B>
+                <B c={RED}>La bandera se rompió por abajo (0.5554 el 13 Oct, bajo 0.5607) y el precio está en <b>0.54–0.56</b>, la EMA20. Sumar acá solo con dos cierres sobre 0.5375 y volumen seco; si la EMA20 cede, el siguiente nivel para sumar es 0.49, no antes.</B>
+                <B c={RED}>Stop mental: cierre diario bajo <b>0.49</b> = el impulso devolvió la mitad y fue rotación de sector. Ahí se reduce en los rebotes a 0.53–0.56, piso en 0.441 y el rail en {supLine.toFixed(3)}.</B>
                 <B c={RED}>Si estás staked 181–365d: ya pagaste el costo. No rompas el lock por el chart, ni para arriba ni para abajo.</B>
               </div>
               <div>
                 <H c={GRN}>Si querés entrar</H>
-                <B c={GRN}>No a 0.60 en medio de la bandera, después de +175% en tres semanas. El precio está a 2× del 22 Sep y la red está igual: comprás el sector, no el activo.</B>
-                <B c={GRN}>La entrada es <b>0.54–0.56</b> (EMA20 + mínimo del 9 Oct) que aguante al cierre con volumen seco. Primer tramo: 25% de la posición objetivo.</B>
-                <B c={GRN}>Segundo tramo: cierre diario &gt; <b>0.6836</b> con 2× volumen (techo del pullback roto). Entrás más caro, pero con la bandera resuelta.</B>
-                <B c={GRN}>Nunca full size en un alt de $60M con $0.5M de volumen diario: tu orden es el libro.</B>
+                <B c={GRN}>No persigas el rebote: después de +175% en tres semanas la bandera se rompió por abajo, y la red está igual — comprás el sector, no el activo.</B>
+                <B c={GRN}>La entrada del plan está en precio: <b>0.54–0.56</b> (EMA20 en 0.5375). Primer tramo, 25% de la posición objetivo, solo después de dos cierres sobre la EMA20 con volumen seco; un cierre debajo y se espera 0.49.</B>
+                <B c={GRN}>Segundo tramo: cierre diario &gt; <b>0.5607</b> (el piso perdido, recuperado) y después &gt; 0.6836 con 2× volumen. Entrás más caro, pero con la bandera reconstruida.</B>
+                <B c={GRN}>Nunca full size en un alt de $54M con $1.3M de volumen diario: tu orden es el libro.</B>
               </div>
               <div>
                 <H c={AMB}>Lo que cambia la tesis</H>
@@ -945,18 +945,18 @@ export default function NosanaTelemetry() {
         <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 10, fontSize: 11.5, lineHeight: 1.55, color: 'var(--text-secondary)', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>
           <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
             <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, marginBottom: 6, fontFamily: "'JetBrains Mono',monospace" }}>Pattern read</div>
-            <b>Impulso vertical y bandera.</b> Breakout del triángulo el 21 Sep (0.3125) → 0.49 el 1 Oct → 0.7365 el 5 Oct, sin un solo cierre debajo de la EMA20 en el camino: la medida del triángulo (0.47) se pasó en un 57%. Desde el 5 Oct: máximos decrecientes 0.7365 → 0.6836 y un piso en 0.5607 (9 Oct). Eso es una bandera, el patrón de continuación más común después de un tramo parabólico — y también el que más seguido falla cuando el volumen no vuelve en la salida. Altura del impulso 0.469; la medida completa (1.03) no se usa — para un alt de $60M, el 61.8% (0.85) ya es un objetivo honesto.
-            <div style={{ marginTop: 6 }}><b>El riesgo de la bandera está en 0.50.</b> La mitad del impulso es 0.502 y el cierre del 1 Oct, 0.49: un cierre debajo no es "retest", es la devolución del 50% y el mercado diciendo que el tramo fue rotación de sector (AI +42% la semana del 22 Sep), no revalorización. A favor: EMA50 sobre EMA200 por primera vez desde el blow-off, la 200 subiendo 16% en 20 días, RSI 61 ya descargado. En contra: el volumen de hoy es un quinto del máximo del mes y la red no cambió — compute hours bajo 150k, revenue pagado sin publicar.</div>
+            <b>Impulso vertical y bandera rota por abajo.</b> Breakout del triángulo el 21 Sep (0.3125) → 0.49 el 1 Oct → 0.7365 el 5 Oct, sin un solo cierre debajo de la EMA20 en el camino: la medida del triángulo (0.47) se pasó en un 57%. Desde el 5 Oct: máximos decrecientes 0.7365 → 0.6836 → 0.6016 y un piso en 0.5607 (9 Oct) que el 13 Oct se perdió al cierre (0.5554). Una bandera que resuelve abajo no es un techo todavía — es el impulso devolviendo más de lo que una continuación limpia devuelve (26% desde el máximo, 38% del tramo). Altura del impulso 0.469; la medida al 61.8% (0.85) vuelve a valer solo si el precio reconstruye la bandera sobre 0.5607 — la completa (1.03) no se usa para un alt de $54M.
+            <div style={{ marginTop: 6 }}><b>El riesgo sigue en 0.50.</b> La mitad del impulso es 0.502 y el cierre del 1 Oct, 0.49: un cierre debajo no es "retest", es la devolución del 50% y el mercado diciendo que el tramo fue rotación de sector (AI +42% la semana del 22 Sep), no revalorización. A favor: EMA50 (0.441) sobre EMA200 (0.339) por primera vez desde el blow-off, la 200 subiendo 16% en 20 días, RSI 57 descargado, y la EMA20 (0.5375) todavía debajo del precio. En contra: la bandera resolvió abajo, la semana cayó con el mercado (−15% vs SOL −12%) y la red no cambió — compute hours bajo 150k, revenue pagado sin publicar.</div>
           </div>
           <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
             <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, marginBottom: 6, fontFamily: "'JetBrains Mono',monospace" }}>What to watch this week</div>
             <b>Volumen.</b> {trend?.volRatio != null ? `El promedio de 20 días está en ${Math.round(trend.volRatio * 100)}% del de 90 días — ${trend.volRatio < 0.85 ? 'se está secando: el breakout se queda sin combustible' : trend.volRatio > 1.2 ? 'expandido: el movimiento tiene combustible' : 'plano'}.` : 'Cargando…'} El retest sano viene con volumen cayendo; un retest con volumen creciente es distribución.
-            <div style={{ marginTop: 6 }}><b>Secuencia que confirma el path alcista:</b> bandera que aguanta 0.54–0.56 con volumen seco → cierre sobre <b>0.6836</b> (techo del pullback) con 2× volumen → retest de 0.7365 → 0.85. Cada escalón es un punto para sumar el 25% de la posición objetivo, no antes; en 0.7365 y 0.85 sin revenue publicado, se vende parte.</div>
-            <div style={{ marginTop: 6 }}><b>Secuencia que lo rompe:</b> cierre diario bajo 0.5607 (piso de la bandera) → EMA20 (0.535) → cierre bajo <b>0.49</b> = invalidación. Un impulso parabólico que devuelve el 50% suele devolverlo entero: ahí el sesgo vuelve a lateral-bajista, 0.432 (EMA50) y 0.3947 son los siguientes niveles, y las alzas a 0.53–0.56 son para reducir.</div>
+            <div style={{ marginTop: 6 }}><b>Secuencia que confirma el path alcista:</b> EMA20 (0.5375) que aguanta dos cierres con volumen seco → recuperar <b>0.5607</b> → cierre sobre <b>0.6836</b> (techo del pullback) con 2× volumen → retest de 0.7365 → 0.85. Cada escalón es un punto para sumar el 25% de la posición objetivo, no antes; en 0.7365 y 0.85 sin revenue publicado, se vende parte.</div>
+            <div style={{ marginTop: 6 }}><b>Secuencia que lo rompe:</b> el piso de la bandera (0.5607) ya se perdió el 13 Oct; lo que sigue es cierre diario bajo la EMA20 (0.5375) → cierre bajo <b>0.49</b> = invalidación. Un impulso parabólico que devuelve el 50% suele devolverlo entero: ahí el sesgo vuelve a lateral-bajista, 0.441 (EMA50) y 0.3947 son los siguientes niveles, y las alzas a 0.53–0.56 son para reducir.</div>
             <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(245,158,11,.25)' }}>
               <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, fontFamily: "'JetBrains Mono',monospace", marginBottom: 3 }}>Decisión</div>
               <div>› Con posición: <b>mantener mientras cierre sobre 0.49</b>. El parcial de 0.47–0.49 ya se dio; el siguiente es 0.7365 si llega sin revenue publicado, y otro en 0.85.</div>
-              <div>› Sin posición: <b>no a 0.60 adentro de la bandera</b>. La entrada es 0.54–0.56 (EMA20 + piso del 9 Oct) que aguante, 25% del tamaño objetivo; o el cierre sobre 0.6836 con 2× volumen. Perseguir después de +175% es pagar por el sector.</div>
+              <div>› Sin posición: <b>la entrada del plan — 0.54–0.56, la EMA20 — está en precio desde el 13 Oct</b>. 25% del tamaño objetivo con dos cierres sobre 0.5375 y volumen seco; o el cierre sobre 0.6836 con 2× volumen. Perseguir el rebote es pagar por el sector.</div>
               <div>› Trigger único que anula el sesgo: <b>cierre diario &lt; 0.49</b>. Si pasa, el impulso devolvió la mitad y fue rotación de sector, no tesis.</div>
             </div>
           </div>

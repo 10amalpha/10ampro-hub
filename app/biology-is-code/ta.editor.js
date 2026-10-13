@@ -1,8 +1,8 @@
 // Editor TA per ticker. Same shape as TOKEN.ta in the Solana hub configs:
 // { updated, bias: 'BULL'|'BEAR', read, pattern, watch, decision: [], invalidation: { level, text }, path: [{ d, h, target, how }], levels: { resistance: [[px, why]], support: [[px, why]] } }
 // A ticker without an entry falls back to the live auto-forecast (lib/thesis/ta.js).
-// Review pass data: /api/equity/{SYM}?summary=1 — basis for this pass: daily closes through 12 Oct 2026 (Monday). Previous pass: 9 Oct 2026. Daily refresh: only reads with a material change are rewritten (12 Oct: TEM, PBLS, NGEN, QSI).
-const U = '12 Oct 2026';
+// Review pass data: /api/equity/{SYM}?summary=1 — basis for this pass: daily closes through 13 Oct 2026 (Tuesday). Previous pass: 12 Oct 2026. Daily refresh: only reads with a material change are rewritten (13 Oct: HIMS, PBLS, RXRX, INKT; 12 Oct: TEM, PBLS, NGEN, QSI).
+const U = '13 Oct 2026';
 
 export const EDITOR_TA = {
   TEM: {
@@ -73,67 +73,67 @@ export const EDITOR_TA = {
 
   HIMS: {
     updated: U, bias: 'BULL',
-    read: 'Five of seven, and the Oct 9 session changed the picture: +10% to 30.92 on 494M, the biggest bar in a month, closing above EMA20 (29.23), EMA50 (29.43) and EMA200 (30.48) in one move. For four weeks HIMS had been pinned in a 27.4–30.4 contraction — 15 closes between 28 and 30 — and the triangle apex was days away. The break is up. What is still missing: EMA50 below EMA200 (the 200 is still falling, slope −1%) and 20-day volume at 71% of 90d. The Oct 9 bar is one day; it needs a follow-through above 30.4 to count.',
-    pattern: '<b>Symmetrical triangle — upside break on Oct 9.</b> Ceiling 38.28 (Jul 6) → 30.43 (Sep 22), 3 touches, today ~28.7. Floor 14.52 (Feb 27) → 27.44 (Sep 10), 3 touches, today ~29.4. Price closed above both lines. Height ~11 → measure 38–40 (coincides with the Jul 6 high). The Sep 22 high (30.43) is the retest level.',
-    watch: '<b>30.4 holds or it does not.</b> A close back under 30.4 within the week makes Oct 9 a false break and the chart returns to the 28–30 box. Above 32.2 (+1M) the next shelf is 33.8 and then 38.3. <b>Volume:</b> the Oct 9 bar must be followed by at least average volume on the next up day. <b>Q3 earnings Nov 9:</b> the triangle break lines up with the run into the print.',
+    read: 'Four of seven and the Oct 9 break is void: two closes later HIMS is back at 29.71 (−3.0% on Oct 13, 290M shares, in line with the 20-day average), under the 30.43 ceiling it had cleared and under the EMA200 (30.49) again. The watch of the last pass was explicit — a close back under 30.4 within the week makes Oct 9 a false break — and that is what printed. What is left: price above the EMA20 (29.40) and EMA50 (29.49) by a hair, MACD still positive, RSI 56. The contraction is intact (27.44 floor, 30.43 ceiling) and the chart has not chosen. The engine flipped its forecast to BEAR (invalidation 30.5) on the failed break; the editor keeps BULL only because the floor has not been touched and the Nov 9 print is inside the window.',
+    pattern: '<b>Symmetrical triangle — upside break on Oct 9 failed by Oct 13.</b> Ceiling 38.28 (Jul 6) → 30.43 (Sep 22), 3 touches; price is above the descending line, so the horizontal 30.43 is what matters now. Floor 14.52 (Feb 27) → 27.44 (Sep 10), 3 touches, today ~29.6 — price closed 0.08 above it. Height ~11 → measure 38–40 up / 14–17 down, both far. The practical frame is the 27.44–30.92 box.',
+    watch: '<b>29.6 and 30.9.</b> The rising floor line of the triangle passes ~29.6 today and price closed 0.08 above it — a close under it on volume is the first warning, before 27.44. Above, 30.43–30.92 (ceiling / Oct 9 high) has to be reclaimed and held two sessions for the break to count again. <b>Volume:</b> 20-day at 72% of 90-day; the Oct 9 bar was the only above-average up day in a month. <b>Q3 earnings Nov 9:</b> the triangle will most likely resolve on the print, not before.',
     decision: [
-      'Holding: <b>keep it while it closes above 27.44</b> (triangle floor, Sep 10 low). Add on a hold of 30.4 after the break, not on the +10% day.',
-      'Not holding: <b>first tranche at 29.5–30.4</b> (retest of the ceiling); second on a close &gt; 32.2 with volume.',
+      'Holding: <b>keep it while it closes above 27.44</b> (triangle floor, Sep 10 low). No add on the failed break; the add was the hold of 30.4 and it did not come.',
+      'Not holding: <b>wait</b>. Either 28–28.5 (floor retest, with 27.44 as the stop) or a close back above 30.9 with volume — not 29.7 in the middle of the box.',
       'Single trigger that flips the bias: <b>daily close &lt; 27.44</b> — the floor goes and the triangle resolves down.',
     ],
     invalidation: { level: 27.44, text: 'A daily close below 27.44 (Sep 10 low, triangle floor) resolves the contraction to the downside → next stop 25.0 (Jul low) and 22.' },
     path: [
-      { d: 30, h: '+1M', target: 33.8, how: 'Follow-through on the triangle break → 32.2 → the Aug 17 gap at 33.8. Into the Nov 9 print.' },
-      { d: 90, h: '+3M', target: 38.3, how: 'Triangle measure and the Jul 6 high. Requires a clean Q3 (guided +47–50%) and no new FTC headline.' },
+      { d: 30, h: '+1M', target: 30.9, how: 'Back to the Oct 9 high; the 28–31 box holds into the Nov 9 print.' },
+      { d: 90, h: '+3M', target: 33.8, how: 'Aug 17 gap, after a clean Q3 (guided +47–50%) and a second, held break of 30.4. The 38.3 measure is not a 3-month call after a failed break.' },
       { d: 365, h: '+1Y', target: 48, how: 'Half the way back to the 65.3 high. Requires the peptide channel (post-PCAC) to show in subscriber growth.' },
     ],
     levels: {
-      resistance: [[32.2, '+1M target'], [33.8, 'Aug 17 gap'], [38.28, 'Jul 6 high · triangle measure'], [48, '+1Y target']],
-      support: [[30.43, 'Sep 22 high · broken ceiling'], [29.4, 'EMA50 / triangle floor line'], [27.44, 'INVALIDATION · Sep 10 low'], [25.0, 'Jul low']],
+      resistance: [[30.43, 'Sep 22 high · triangle ceiling — reclaimed Oct 9, lost Oct 13'], [30.92, 'Oct 9 high'], [33.8, 'Aug 17 gap'], [38.28, 'Jul 6 high · triangle measure'], [48, '+1Y target']],
+      support: [[29.71, 'Oct 13 close — today'], [29.6, 'Rising floor line · EMA20 29.4 / EMA50 29.5'], [27.44, 'INVALIDATION · Sep 10 low'], [25.0, 'Jul low']],
     },
   },
 
   PBLS: {
     updated: U, bias: 'BEAR',
-    read: 'The oversold bounce arrived on schedule: +5.3% on Oct 12 to 28.95, the first up day in five and the first close back above the 78.6% level (28.6) since it broke on Oct 8. One day, 34.8M shares — 72% of the 20-day average, i.e. short covering, not buying. Score 1/7, RSI 21 (from 19). Price is still 9% below EMA20 (31.9) and 14% below EMA50 (33.7); the 30-day change is −26%. From the 41.73 climax (Sep 18) the drawdown is −31% at the close. The post-IPO low of 25.01 is 14% away after the bounce.',
-    pattern: '<b>Post-IPO range 25–42, retracement paused at the 78.6% level.</b> No pivot trendlines possible yet (86 sessions). 28.6 was lost on Oct 8 and reclaimed on Oct 12; it has to hold two more closes to count. Above it, 31.4 (61.8%) and 31.9 (EMA20) are the bounce ceiling. Below, 27.48 (Oct 9 low) then 25.01 (range floor) and 24.51 (52-week low). RSI near 20 has marked short-term bottoms in every IPO this size — a bounce signal, not a reversal signal, and Oct 12 was the bounce.',
-    watch: '<b>28.6 for two more closes, then 31.9.</b> If 28.6 holds through Oct 14 the bounce has room to 30–31.4; a close back under 27.48 ends it and 25.0 is next. <b>Reversal needs</b> 31.9 (EMA20) on volume above the 20-day average — until then every bounce is a sell. <b>Lockup:</b> IPO was June → 180-day expiry mid-December is the supply event in sight.',
+    read: 'The bounce lasted one session. Oct 13 printed −7.3% to 26.85 on 31.9M shares — a new 30-day closing low, under the Oct 9 low (27.48) and back under the 78.6% level (28.6) that had been reclaimed the day before. Score 1/7, RSI 25, STRONG BEAR. Price is 14% below the EMA20 (31.4) and 20% below the EMA50 (33.5); the 30-day change is −31% and the drawdown from the 41.73 climax (Sep 18) is −36% at the close. Volume on the down day was 65% of the 20-day average — the selling is steady, not climactic, which is the worse version for a bottom. The post-IPO low of 25.01 is 7% away.',
+    pattern: '<b>Post-IPO range 25–42, retracement through the 78.6% level, now heading for the floor.</b> No pivot trendlines possible yet (87 sessions). 28.6 (78.6%) was lost Oct 8, reclaimed Oct 12 for one close, lost again Oct 13 — a failed reclaim is a continuation signal. Below: 25.01 (range floor) and 24.51 (52-week low); then nothing but round numbers. Above: 27.48–28.6 is now resistance, 31.4 (EMA20) the bounce ceiling. RSI at 20–25 for six sessions without a reversal bar means the oversold condition is being worked off in price, not time.',
+    watch: '<b>25.0.</b> The post-IPO low is the test; a close under it has no reference until 22 (the +3M target), with the mid-December lockup supply on top. A hold at 25–26 with a volume spike (above 50M) is the first place a bounce is worth trading. <b>Reversal needs</b> 28.6 reclaimed and held two closes, then 31.4 (EMA20) on volume above the 20-day average — until then every bounce is a sell. <b>Lockup:</b> IPO was June → 180-day expiry mid-December is the supply event in sight.',
     decision: [
-      'Holding: <b>reduce into 30–31.4</b> unless 31.9 is reclaimed and held; buy back near the lockup.',
-      'Not holding: <b>wait</b>. The zone of interest is 22–25, ideally into the December lockup expiry. A one-day reclaim of 28.6 on light volume is not an entry.',
-      'Single trigger that flips the bias: <b>daily close &gt; 31.9</b> (EMA20) with volume.',
+      'Holding: <b>reduce on any bounce to 28–28.6</b>; the Oct 12 bounce was the chance and it closed. Buy back near the lockup.',
+      'Not holding: <b>wait</b>. The zone of interest is 22–25, ideally into the December lockup expiry; a failed reclaim of 28.6 is not an entry.',
+      'Single trigger that flips the bias: <b>daily close &gt; 31.4</b> (EMA20) with volume.',
     ],
-    invalidation: { level: 31.9, text: 'A daily close above 31.9 (EMA20) reclaims the middle of the range and voids the bias → next stop 33.7 (EMA50) and 36.' },
+    invalidation: { level: 31.4, text: 'A daily close above 31.4 (EMA20) reclaims the middle of the range and voids the bias → next stop 33.5 (EMA50) and 36.' },
     path: [
-      { d: 30, h: '+1M', target: 25.0, how: 'Retest of the post-IPO low after the bounce to 30–31.4 fails.' },
+      { d: 30, h: '+1M', target: 25.0, how: 'Retest of the post-IPO low; the Oct 12 bounce already failed.' },
       { d: 90, h: '+3M', target: 22, how: 'Break of 25 into the mid-December lockup expiry; new post-IPO low.' },
       { d: 365, h: '+1Y', target: 25, how: 'Flat from here on a 12-month view: the lockup supply gets absorbed in H1 2027 and the first Helicon clinical data decides the direction.' },
     ],
     levels: {
-      resistance: [[30.28, 'Oct 2 close · bounce zone'], [31.4, '61.8% of the range'], [31.9, 'INVALIDATION · EMA20'], [33.7, 'EMA50']],
-      support: [[28.59, '78.6% of the range — reclaimed Oct 12'], [27.48, 'Oct 9 low'], [25.01, 'Post-IPO low'], [24.51, '52-week low'], [22, '+3M target']],
+      resistance: [[27.48, 'Oct 9 low — lost Oct 13'], [28.59, '78.6% of the range — reclaimed Oct 12, lost Oct 13'], [31.4, 'INVALIDATION · EMA20'], [33.5, 'EMA50']],
+      support: [[26.85, 'Oct 13 close — today · 30-day low'], [25.01, 'Post-IPO low'], [24.51, '52-week low'], [22, '+3M target']],
     },
   },
 
   RXRX: {
     updated: U, bias: 'BULL',
-    read: 'Six of seven. The descending triangle (3.96 → 3.63 ceiling) that was the frame in September is gone: price broke out on Sep 29 (4.03), ran to 4.78 (Oct 5, +16% on the day), gave back to 3.95 (Oct 8) and bounced +10% to 4.36 (Oct 9) on 1.3× average volume. Higher lows 2.84 → 2.89 → 3.16 (Sep 10) → 3.70 (Sep 28). EMA20 3.99, EMA50 3.69, EMA200 3.76 — price above all three, and the 50 is about to cross the 200 (the one check still missing). RSI 56 after the shakeout.',
-    pattern: '<b>Descending-triangle breakout, retested at the EMA20.</b> Old ceiling 3.96 (Jul 6) → 3.63 (Sep 4), 3 touches, now ~3.44 — well below price. Floor 2.84 (Mar 30) → 2.89 (Jul 20), 3 touches. Height ~1.1 → measure from the breakout at 3.65: ~4.75, met on Oct 5. The Oct 8 low (3.95) is the retest of the EMA20 and the new structural level.',
-    watch: '<b>3.95.</b> The Oct 8 retest low has to hold; under it, 3.69 (EMA50) is the last line of the breakout. <b>4.78</b> is the near ceiling — a close above it on volume is the signal for the next leg (5.5, then 7.18 52-week high). <b>EMA50 × EMA200 cross</b> within days would make it 7/7.',
+    read: 'Four of seven. The Oct 8 retest low (3.95) did not hold: three closes after the +10% bounce to 4.36, RXRX printed 3.835 on Oct 13 (−4.4%, 75.6M shares, 60% of the 20-day average), under the EMA20 (3.98) and under the 3.95 level that was the structural reference of the last pass. From the 4.78 high (Oct 5) the pullback is −20% in six sessions. What still holds: EMA50 (3.71) and EMA200 (3.77) are both below price, the 200 is rising, RSI 52 — the breakout is bent, not broken. MACD turned negative; the 50/200 cross that was days away has stalled with the 50 still 0.05 under the 200. Regime NEUTRAL.',
+    pattern: '<b>Descending-triangle breakout — retest failed at the EMA20, now testing the EMA50.</b> Old ceiling 3.96 (Jul 6) → 3.63 (Sep 4), 3 touches, now ~3.42 — still below price. Floor 2.84 (Mar 30) → 2.89 (Jul 20), 3 touches. Measure (~4.75) was met Oct 5; the give-back is a normal post-measure retrace until it is not. The frame now is the 3.70–3.77 EMA50/EMA200 cluster: a hold there keeps the breakout; a close under it returns price to the old triangle and the move was a one-week spike.',
+    watch: '<b>3.70.</b> EMA50 and the invalidation; price is 3.5% above it. A close under it on volume above the 20-day average (126M) voids the breakout. <b>Reclaim:</b> a close back above 3.98 (EMA20) within the week makes Oct 13 an undercut of the retest low and the 4.36–4.78 zone reopens. <b>Volume:</b> the pullback is on light bars (60% of average) while the up days of late September and Oct 5/9 were on 1.3–2.6× — the one argument the bulls still have.',
     decision: [
-      'Holding: <b>keep it while it closes above 3.69</b> (EMA50). Add on a hold of 3.95–4.1, not above 4.6.',
-      'Not holding: <b>first tranche at 3.95–4.1</b>; second on a close &gt; 4.78.',
-      'Single trigger that flips the bias: <b>daily close &lt; 3.69</b> — breakout and retest both fail, back into the triangle.',
+      'Holding: <b>keep it while it closes above 3.70</b> (EMA50). No add on the way down; the add is a close back above 3.98.',
+      'Not holding: <b>first tranche at 3.70–3.80</b> only if the EMA50 holds on the first touch; second on a close &gt; 4.36.',
+      'Single trigger that flips the bias: <b>daily close &lt; 3.70</b> — breakout, retest and the EMA50 all fail, back into the triangle.',
     ],
-    invalidation: { level: 3.69, text: 'A daily close below 3.69 (EMA50) puts price back inside the old triangle → next stop 3.44 (old ceiling) and 3.16 (Sep 10 low).' },
+    invalidation: { level: 3.7, text: 'A daily close below 3.70 (EMA50; the Oct 8 retest low at 3.95 is already lost) puts price back inside the old triangle → next stop 3.42 (old ceiling) and 3.16 (Sep 10 low).' },
     path: [
-      { d: 30, h: '+1M', target: 4.8, how: 'Retest of the Oct 5 high after the EMA20 held.' },
-      { d: 90, h: '+3M', target: 5.5, how: 'Break of 4.78 → the Feb–Mar shelf at 5.5. Requires the Q3 print (Nov) to show the opex cut holding and another partner milestone.' },
+      { d: 30, h: '+1M', target: 4.36, how: 'Reclaim of the EMA20 (3.98) and the Oct 9 close. 4.78 is not a one-month call after the retest failed.' },
+      { d: 90, h: '+3M', target: 4.8, how: 'Retest of the Oct 5 high / triangle measure. Requires the EMA50 to hold now and the Q3 print (Nov) to show the opex cut holding.' },
       { d: 365, h: '+1Y', target: 7.2, how: '52-week high. Needs a clinical readout from the AI-designed pipeline, not just cost control.' },
     ],
     levels: {
-      resistance: [[4.78, 'Oct 5 high · triangle measure'], [5.5, 'Feb–Mar shelf'], [7.18, '52-week high'], [10.9, 'Engine +1Y (ATH-based)']],
-      support: [[3.99, 'EMA20'], [3.95, 'Oct 8 retest low'], [3.69, 'INVALIDATION · EMA50'], [3.16, 'Sep 10 low']],
+      resistance: [[3.98, 'EMA20 — first reclaim'], [4.36, 'Oct 9 close'], [4.78, 'Oct 5 high · triangle measure'], [5.5, 'Feb–Mar shelf'], [7.18, '52-week high']],
+      support: [[3.835, 'Oct 13 close — today'], [3.77, 'EMA200'], [3.7, 'INVALIDATION · EMA50'], [3.42, 'Old triangle ceiling'], [3.16, 'Sep 10 low']],
     },
   },
 
@@ -205,23 +205,23 @@ export const EDITOR_TA = {
 
   INKT: {
     updated: U, bias: 'BEAR',
-    read: 'Score 2/7, RSI 26. The triangle resolved down: from 12.73 (Oct 1, the 30-day high) INKT fell six straight sessions to 10.72 (Oct 9), −16%, through the EMA20 (11.79), EMA50 (11.68) and EMA200 (11.55) in one week and through the 10.95 (Sep 1) higher low that was the structural level of the last pass. Volume on the slide at 1.3× the 90-day average — distribution on a $53M market cap. The next references are 10.24 (90-day low) and 8.48–8.56 (52-week low / Mar 24 low).',
-    pattern: '<b>Symmetrical triangle — resolved down (Oct 6–9).</b> Ceiling 14.21 (Apr 17) → 12.20 (Aug 21), 2 touches, today ~11.4. Floor 8.56 (Mar 24) → 10.95 (Sep 1), 3 touches, today ~11.5 — price closed below it on Oct 7. Height ~5.6 at the April end; a conservative measure from the break at 11.5 is ~8.5, which coincides with the 52-week low.',
-    watch: '<b>10.24.</b> The 90-day low is the last horizontal reference before the 8.5 zone. <b>Reversal needs</b> a close back above 11.55 (EMA200, inside the triangle) and then 12.2 (Aug 21 high). <b>RSI 26:</b> a 2–3 session bounce is likely; it is a sell unless 11.55 is reclaimed. <b>Cash $8.8M:</b> a raise is the overhang; the ARDS Ph2 readout is the only thing that changes this chart.',
+    read: 'Score 2/7, RSI 18. Eight straight down closes from 12.73 (Oct 1) to 10.23 (Oct 13, −2.8%), −20% in eight sessions, and the 90-day low (10.24, Jul 22) is gone by a cent. The Oct 13 bar was 71K shares — under a third of the 20-day average — so the last leg is a drift lower on no bids, not distribution; the heavy bars were Oct 6–9. The three EMAs are bunched at 11.53–11.58, 13% above price. Below 10.23 there is no horizontal reference before 8.48–8.56 (52-week low / Mar 24 low). Market cap is ~$51M against $8.8M of cash.',
+    pattern: '<b>Symmetrical triangle — resolved down (Oct 6–9), 90-day low lost (Oct 13).</b> Ceiling 14.21 (Apr 17) → 12.73 (Oct 1), today ~12.6. Floor 8.56 (Mar 24) → 10.95 (Sep 1), 3 touches, today ~11.6 — price is 12% below it. Height ~5.3; the measure from the break at 11.5 is ~8.5, which coincides with the 52-week low. The 10.24 shelf was the one stop between the break and the measure and it did not hold.',
+    watch: '<b>8.5.</b> With 10.24 gone the next reference is the 52-week low zone; the measure, the Mar 24 low and the 52-week low all sit at 8.48–8.56, so that is where the chart becomes interesting. <b>RSI 18:</b> the most oversold reading in the basket; a 2–3 session bounce toward 10.7–11.0 is likely and is a sell unless 11.55 (EMA cluster) is reclaimed. <b>Reversal needs</b> a close back above 11.6 and then 12.2 (Aug 21 high). <b>Cash $8.8M:</b> a raise is the overhang and the lower the stock, the more dilutive it gets; the ARDS Ph2 readout is the only thing that changes this chart.',
     decision: [
-      'Holding: <b>reduce on a bounce to 11.3–11.5</b> unless the EMA200 is reclaimed and held.',
-      'Not holding: <b>wait</b>. The zone of interest is 8.5–9.5, with the raise terms known.',
+      'Holding: <b>reduce on a bounce to 10.7–11.0</b> unless the EMA cluster (11.55) is reclaimed and held.',
+      'Not holding: <b>wait</b>. The zone of interest is 8.5–9.5, with the raise terms known; 10.2 after eight red closes is not it.',
       'Single trigger that flips the bias: <b>daily close &gt; 12.2</b> (Aug 21 high, back inside the upper triangle) with volume.',
     ],
     invalidation: { level: 12.2, text: 'A daily close above 12.2 (Aug 21 high) puts price back in the upper half of the triangle and voids the breakdown → next stop 12.73 (Oct 1 high) and 14.2.' },
     path: [
-      { d: 30, h: '+1M', target: 10.2, how: 'Retest of the 90-day low after an oversold bounce to 11.3 fails.' },
+      { d: 30, h: '+1M', target: 9.5, how: 'Between the lost 90-day low and the 8.5 zone, on the current drift; an oversold bounce to 10.7–11.0 first.' },
       { d: 90, h: '+3M', target: 8.6, how: 'Triangle measure and the Mar 24 / 52-week low. The raise lands in this window.' },
       { d: 365, h: '+1Y', target: 10, how: 'Flat-to-down on a 12-month view until the ARDS Ph2 reads out; the option is the readout, not the chart.' },
     ],
     levels: {
-      resistance: [[11.55, 'EMA200 — first reclaim'], [11.79, 'EMA20'], [12.2, 'INVALIDATION · Aug 21 high'], [12.73, 'Oct 1 high']],
-      support: [[10.72, 'Oct 9 close — today'], [10.24, '90-day low'], [8.56, 'Mar 24 low · triangle origin'], [8.48, '52-week low']],
+      resistance: [[10.72, 'Oct 9 close · bounce target'], [11.55, 'EMA20/50/200 cluster — first reclaim'], [12.2, 'INVALIDATION · Aug 21 high'], [12.73, 'Oct 1 high']],
+      support: [[10.23, 'Oct 13 close — today · under the 90-day low (10.24)'], [9.5, '+1M target'], [8.56, 'Mar 24 low · triangle origin'], [8.48, '52-week low']],
     },
   },
 };

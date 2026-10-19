@@ -23,36 +23,38 @@ const RED = '#ef4444';
 const SEED = {
   completed: 4115790, jobHours: 4125332, hosts: 826, running: 826, queued: 34,
   price: 0.2823, mcap: 28233000, ath: 7.83, peakHours: 220000,
-  hostsBaseline: 965, reviewed: '18 Oct 2026',
+  hostsBaseline: 965, reviewed: '19 Oct 2026',
 };
 
 
 // ---- Technical analysis (manual read, refreshed on each review) ----
-// Chart basis: NOS/USD 1D (CoinGecko) · 18 Oct 2026 · C 0.5087 (18 Oct) / 0.474 hoy (bajo 0.49 intradía) · EMA20 0.527 · EMA50 0.4542 · EMA100 0.3889 · EMA200 0.3457 (+17%/20d) · RSI 19 · MACD histo −0.023 · vol 20d/90d 216%, hoy $0.49M vs $2.5M máx-30d
+// Chart basis: NOS/USD 1D (CoinGecko) · 19 Oct 2026 · C 0.4826 (19 Oct, bajo 0.49 — invalidación cumplida) / 0.529 hoy (+9.6%, pegado a la EMA20 intradía) · EMA20 0.5279 · EMA50 0.4574 · EMA100 0.3918 · EMA200 0.3485 (+16.5%/20d) · RSI 33 · MACD histo −0.020 (achicándose) · vol 20d/90d 211%, hoy $0.57M vs $2.5M máx-30d
 const TA = {
-  reviewed: '18 Oct 2026',
-  bias: 'BULLISH',
-  read: 'El 0.49 se tocó hoy. Después del primer cierre bajo la EMA20 (0.5084 el 16 Oct) vinieron dos sesiones planas — 0.5174 (17 Oct) y 0.5087 (18 Oct), las dos debajo de la media y sobre la mitad del impulso (0.502) — y hoy −8.6% a 0.474: debajo de la mitad del impulso y debajo de la invalidación (0.49) intradía. Al cierre no se cumplió: la regla es cierre diario bajo 0.49 y el último cierre es 0.5087, 3.8% arriba. Pero la lección de las últimas tres revisiones es que el nivel que se toca así se cierra en la siguiente sesión — SOL con 105, JUP con 0.31, 2Z con 0.0315 — así que la decisión se escribe como si ya hubiera pasado y el sesgo queda alcista solo porque la regla no se cumplió. El impulso 0.2675 → 0.7365 devolvió el 56% hoy; un impulso parabólico que devuelve más de la mitad suele devolverlo entero, y el siguiente nivel es la EMA50 (0.4542), a 4%. Cuatro de siete sin cambios — la EMA50 sobre la EMA200 (0.3457), la 200 subiendo 17% en 20 días y el precio sobre las dos — pero el RSI en 19 es nuevo: cruzó bajo 30 hoy, la primera sobreventa desde el breakout del 21 Sep, y llega con el precio en el nivel que anula la tesis, no en un piso. El MACD negativo y ampliándose. Volumen $0.49M, 43% del promedio de 20 días ($1.15M) y un quinto del máximo del mes ($2.5M): la invalidación se tocó con el volumen más bajo desde septiembre — no hay vendedores; no hay nadie. Para un alt de $47M eso es el riesgo entero. Relativo: −16.8% en siete días con SOL −6.7%, 2.5× el mercado — el menos propio de los alts de la página esta semana (JTO, JUP, MET y PUMP cayeron 3–4× SOL), pero propio igual: la rotación de sector que lo subió en septiembre se sigue yendo. Red: nada nuevo — compute hours bajo 150k, revenue pagado sin publicar. El chart devolvió el 36% desde 0.7365; la tesis no se movió, pero el precio ya está diciendo que el tramo fue del sector, y el cierre bajo 0.49 es donde lo firma.',
+  reviewed: '19 Oct 2026',
+  bias: 'BEARISH',
+  read: 'La invalidación se cumplió. El 19 Oct cerró 0.4826 — bajo 0.49, el cierre del 1 Oct y la base del tramo vertical — y el sesgo pasa a bajista: el impulso 0.2675 → 0.7365 devolvió el 54% al cierre, y un impulso parabólico que devuelve más de la mitad suele devolverlo entero. Hoy +9.6% a 0.529, de vuelta sobre 0.49, sobre la mitad del impulso (0.502) y pegado a la EMA20 (0.5279) intradía: el rebote que la lectura del 18 Oct pedía para reducir en 0.50–0.527 llegó en la misma sesión, y llegó con $0.57M, la mitad del promedio de 20 días ($1.13M) — un rebote de medio volumen desde el nivel que anula la tesis es cobertura de cortos, no demanda. La regla es la regla en los dos sentidos: para deshacer el cierre bajo 0.49 hace falta un cierre sobre el piso perdido de la bandera (0.5607), no un día verde. Cinco de siete en vivo — el precio sobre las tres medias con el rebote de hoy, la EMA50 (0.4574) sobre la EMA200 (0.3485) y la 200 subiendo 16% en 20 días —, cuatro al cierre de ayer; el MACD negativo, achicándose por primera vez. RSI 33 hoy desde 19 ayer: la sobreventa duró una sesión y se gastó en el rebote. Relativo: −15.6% en siete días con SOL −6.1%, 2.6× el mercado — otra vez el menos propio de los alts de la página (JTO, JUP, MET y PUMP cayeron 3–3.5× SOL), y propio igual: la rotación de sector que lo subió en septiembre se sigue yendo, y el rebote de hoy no la trae de vuelta mientras el volumen no vuelva. Red: nada nuevo — compute hours bajo 150k, revenue pagado sin publicar. Lo que queda debajo es la EMA50 (0.4574), que coincide con el 61.8% del impulso (0.4466), y el máximo del 2 Jun (0.3947), el breakout viejo; arriba, 0.5607 es lo único que reabre el caso. Para un alt de $53M con $0.6M de volumen diario, el cierre bajo 0.49 dice que el tramo fue del sector; el chart lo firmó, y la tesis sigue esperando el dato de la red que todavía no existe.',
   // Chart structure (anchor points are [timestamp, price]) — drawn on the live series
   structure: {
-    resistance: { a: [1791158400000, 0.7365], b: [1791331200000, 0.7365], label: 'Techo 0.7365 · máximo 5 Oct · bandera 0.56–0.68 rota por abajo el 13 Oct · EMA20 perdida el 16 Oct · 0.49 tocado el 18 Oct' },
+    resistance: { a: [1791158400000, 0.7365], b: [1791331200000, 0.7365], label: 'Techo 0.7365 · máximo 5 Oct · bandera 0.56–0.68 rota por abajo el 13 Oct · EMA20 perdida el 16 Oct · 0.49 cerrado el 19 Oct' },
     support: { a: [1770768000000, 0.1784], b: [1785369600000, 0.2431], label: 'Rail 2026 · Feb-11 → Jul-28 → Sep-16 · debajo termina la tesis' },
-    touches: [[1791158400000, 0.7365, 'H1'], [1791331200000, 0.6836, 'H2'], [1791763200000, 0.6016, 'H3'], [1770768000000, 0.1784, 'L1'], [1775347200000, 0.1996, 'L2'], [1785369600000, 0.2431, 'L3'], [1789516800000, 0.2675, 'L4'], [1791504000000, 0.5607, 'L5'], [1791849600000, 0.5554, 'L6'], [1792108800000, 0.5084, 'L7']],
-    pattern: 'Impulso vertical + bandera rota por abajo (13 Oct) + EMA20 perdida (16 Oct) + 0.49 tocado intradía (18 Oct)',
+    touches: [[1791158400000, 0.7365, 'H1'], [1791331200000, 0.6836, 'H2'], [1791763200000, 0.6016, 'H3'], [1770768000000, 0.1784, 'L1'], [1775347200000, 0.1996, 'L2'], [1785369600000, 0.2431, 'L3'], [1789516800000, 0.2675, 'L4'], [1791504000000, 0.5607, 'L5'], [1791849600000, 0.5554, 'L6'], [1792108800000, 0.5084, 'L7'], [1792368000000, 0.4826, 'L8']],
+    pattern: 'Impulso vertical + bandera rota por abajo (13 Oct) + EMA20 perdida (16 Oct) + 0.49 cerrado (19 Oct)',
     height: 0.469,
-    measured: { up: 0.85, down: 0.49 },
+    measured: { up: 0.85, down: 0.4466 },
   },
-  invalidation: { level: 0.49, text: 'Cierre diario bajo 0.49 (cierre del 1 Oct, la base del tramo vertical, y el spike de junio; la mitad del impulso, 0.502, ya se perdió intradía el 18 Oct) = el impulso devolvió el 50% y el tramo fue rotación de sector, no revalorización → 0.4542 (EMA50) y 0.3947 (máximo del 2 Jun).' },
+  invalidation: { level: 0.5607, text: 'Cierre diario sobre 0.5607 (mínimo del 9 Oct, el piso de la bandera perdido el 13 Oct; en el camino recupera 0.49, 0.502 y la EMA20, 0.5279) anula el path bajista: el cierre del 19 Oct bajo 0.49 queda como un barrido y la bandera se reconstruye → 0.6836 (cierre del 7 Oct) y 0.7365 (máximo del 5 Oct).' },
   path: [
-    { d: 30, h: '+1M', target: 0.527, how: 'Rebote desde la EMA50 (0.4542) que recupera 0.49 y 0.502 → retest de la EMA20 desde abajo, donde se reduce si no viene con 2× volumen. Sin 0.49 de vuelta al cierre, el +1M es 0.4542–0.49 y el sesgo pasa a lateral-bajista.' },
-    { d: 90, h: '+3M', target: 0.5607, how: 'El piso perdido de la bandera (mínimo del 9 Oct). Requiere la EMA20 recuperada al cierre con volumen sobre $1.2M y el relativo contra SOL de vuelta positivo; sin eso, 0.527 es el techo del trimestre.' },
-    { d: 365, h: '+1Y', target: 0.6836, how: 'Cierre del 7 Oct y techo del pullback. Para un alt de $47M con $0.5M de volumen diario, el retest de 0.7365 y la medida de la bandera al 61.8% (0.85) vuelven a valer solo con la bandera reconstruida sobre 0.5607 y la red publicando revenue pagado; la medida completa (1.03) no es un objetivo honesto.' },
+    { d: 30, h: '+1M', target: 0.4574, how: 'Rebote a 0.527–0.5607 (EMA20 y piso de la bandera) que falla sin volumen → cierre bajo 0.49 de vuelta → EMA50, que hoy coincide con el 61.8% del impulso (0.4466). Si el rebote cierra sobre 0.5607 con 2× volumen, el +1M es lateral 0.49–0.5607 hasta que la bandera decida.' },
+    { d: 90, h: '+3M', target: 0.3947, how: 'Máximo del 2 Jun, el breakout viejo, con la EMA100 (0.3918) pegada debajo: el impulso devuelto al 73%. Es el escenario de la red sin revenue publicado y el sector AI de Solana rotando afuera; con compute hours de vuelta sobre 150k antes, el +3M vuelve a la EMA20.' },
+    { d: 365, h: '+1Y', target: 0.5607, how: 'Retest del piso de la bandera desde abajo, con la EMA200 todavía subiendo. A un año el cierre bajo 0.49 es un impulso de sector devuelto, no el fin de la tendencia de 2026; para 0.6836 y 0.7365 hacen falta la bandera reconstruida y revenue pagado publicado, y hoy no está ninguna de las dos. La medida completa (1.03) no es un objetivo honesto.' },
   ],
   levels: {
-    resistance: [[0.49, 'INVALIDACIÓN · cierre 1 Oct · spike de junio — tocada intradía el 18 Oct'], [0.502, 'Mitad del impulso 0.2675 → 0.7365 — perdida intradía'], [0.5087, 'Cierre 18 Oct'], [0.527, 'EMA20 — perdida el 16 Oct · +1M'], [0.5607, 'Mínimo 9 Oct · piso de la bandera, perdido el 13 Oct · +3M'], [0.6016, 'Cierre 12 Oct'], [0.6836, 'Cierre 7 Oct · techo del pullback · +1Y'], [0.7365, 'Máximo 5 Oct'], [0.85, 'Medida de la bandera (61.8%) · solo con la bandera reconstruida'], [1.01, 'Blow-off Sep-25 · requiere revenue publicado']],
-    support: [[0.4542, 'EMA50 · a 4%'], [0.3947, 'Máximo 2 Jun · el breakout viejo'], [0.3889, 'EMA100'], [0.3457, 'EMA200 — subiendo 17%/20d'], [0.3125, 'Nivel del breakout del 21 Sep']],
+    resistance: [[0.49, 'Invalidación vieja · cierre 1 Oct — cerrada el 19 Oct (0.4826) · ahora techo'], [0.502, 'Mitad del impulso 0.2675 → 0.7365'], [0.5279, 'EMA20 — el rebote de hoy está acá'], [0.5607, 'INVALIDACIÓN bajista · mínimo 9 Oct · piso de la bandera · +1Y'], [0.6016, 'Cierre 12 Oct'], [0.6836, 'Cierre 7 Oct · techo del pullback'], [0.7365, 'Máximo 5 Oct'], [0.85, 'Medida de la bandera (61.8%) · solo con la bandera reconstruida'], [1.01, 'Blow-off Sep-25 · requiere revenue publicado']],
+    support: [[0.4826, 'Cierre 19 Oct · el día de la invalidación'], [0.4574, 'EMA50 · +1M'], [0.4466, '61.8% del impulso'], [0.3947, 'Máximo 2 Jun · el breakout viejo · +3M'], [0.3918, 'EMA100'], [0.3679, '78.6% del impulso'], [0.3485, 'EMA200 — subiendo 16%/20d'], [0.3125, 'Nivel del breakout del 21 Sep']],
   },
 };
+
+const BEAR = TA.bias === 'BEARISH';
 
 // ---- TA scenario fan chart (SVG, log-y) ----
 function TAFan({ price, ta, mb }) {
@@ -77,6 +79,7 @@ function TAFan({ price, ta, mb }) {
   const gridV = [0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.75];
   const lv = [...ta.levels.resistance, ...ta.levels.support].filter(([v]) => v >= yMin && v <= yMax && Math.abs(v - px) / px > 0.08 && v !== ta.invalidation.level);
   const inv = ta.invalidation.level;
+  const bear = ta.bias === 'BEARISH';
   const pct = (v) => `${v / px - 1 >= 0 ? '+' : ''}${Math.round((v / px - 1) * 100)}%`;
   return (
     <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: 'block', height: 'auto' }}>
@@ -98,9 +101,9 @@ function TAFan({ price, ta, mb }) {
         </g>
       ))}
       {/* invalidation zone */}
-      <rect x={L} y={ys(inv)} width={W - L - R} height={Math.max(0, H - B - ys(inv))} fill={RED} opacity="0.05" />
+      <rect x={L} y={bear ? T : ys(inv)} width={W - L - R} height={bear ? Math.max(0, ys(inv) - T) : Math.max(0, H - B - ys(inv))} fill={RED} opacity="0.05" />
       <line x1={L} x2={W - R} y1={ys(inv)} y2={ys(inv)} stroke={RED} strokeWidth="1.5" strokeDasharray="6 3" />
-      <text x={L + 6} y={ys(inv) + 12} fontSize="9.5" fontWeight="700" fill={RED} fontFamily="'JetBrains Mono',monospace">INVALIDATION ‹ ${inv} · path flips back to 0.2675</text>
+      <text x={L + 6} y={bear ? ys(inv) - 5 : ys(inv) + 12} fontSize="9.5" fontWeight="700" fill={RED} fontFamily="'JetBrains Mono',monospace">{bear ? `INVALIDATION › $${inv} · bear path cancelled, flag rebuilt` : `INVALIDATION ‹ $${inv} · path flips back to 0.2675`}</text>
       {lv.map(([v]) => (
         <g key={v}>
           <line x1={L} x2={W - R} y1={ys(v)} y2={ys(v)} stroke="rgba(255,255,255,.18)" strokeWidth="1" strokeDasharray="1 3" />
@@ -108,7 +111,7 @@ function TAFan({ price, ta, mb }) {
         </g>
       ))}
       <path d={cone} fill="url(#taCone)" />
-      <path d={dPath} fill="none" stroke={GRN} strokeWidth="2.4" />
+      <path d={dPath} fill="none" stroke={bear ? RED : GRN} strokeWidth="2.4" />
       <line x1={L} x2={W - R} y1={ys(px)} y2={ys(px)} stroke="var(--text-primary)" strokeOpacity=".4" strokeWidth="1" />
       <circle cx={xs(0)} cy={ys(px)} r="4.5" fill="#fff" />
       <rect x={W - R + 2} y={ys(px) - 8} width={R - 4} height="16" rx="2" fill="#fff" />
@@ -645,14 +648,14 @@ export default function NosanaTelemetry() {
       {/* DECISION CARD — qué hacer con esto */}
       {(() => {
         const px = d?.price; const st = chain?.staking; const ho = chain?.holders;
-        const inv = px != null && px < TA.invalidation.level;
+        const inv = px != null && (BEAR ? px > TA.invalidation.level : px < TA.invalidation.level);
         const supLine = (() => { const a = TA.structure.support.a, b = TA.structure.support.b; const m = (b[1] - a[1]) / (b[0] - a[0]); return a[1] + m * (Date.now() - a[0]); })();
         const zone = px == null ? null : px >= 0.85 ? 'target' : px > 0.7365 ? 'extended' : px >= TA.invalidation.level ? 'breakout' : px > 0.3947 ? 'failed' : 'broken';
         const Z = {
           target: ['EN LA MEDIDA DE LA BANDERA — zona de tomar parcial', GRN, 'Sobre 0.85. La medida al 61.8% del impulso está acá. Sin revenue pagado publicado, este es el lugar de vender otra parte, no de sumar.'],
           extended: ['NUEVOS MÁXIMOS — bandera resuelta arriba', GRN, 'Sobre 0.7365 (máximo del 5 Oct). El path alcista está intacto y acelerando; no es zona de entrar: el próximo nivel para sumar es el retest de 0.68–0.74 que aguante.'],
-          breakout: ['0.49 TOCADO — el impulso devolvió la mitad', AMB, 'Entre 0.49 y 0.7365. El piso de la bandera (0.5607) se perdió el 13 Oct, la EMA20 (0.527) el 16 Oct y el 0.49 se tocó intradía el 18 Oct; la entrada del plan no confirmó y queda cancelada. No se suma entre 0.49 y 0.527: recuperar la EMA20 al cierre reabre el caso, un cierre bajo 0.49 lo anula — y se actúa como si ya hubiera pasado.'],
-          failed: ['IMPULSO DEVUELTO AL 50% — bandera fallida', AMB, `Bajo 0.49 y sobre 0.3947. El path alcista queda anulado; el tramo fue rotación de sector. EMA50 (0.4542) es el piso antes del máximo de junio (0.3947); el rail del año está en ~${supLine.toFixed(3)}. Las alzas a 0.50–0.527 vuelven a ser para reducir.`],
+          breakout: ['SOBRE 0.5607 — bandera reconstruida, sesgo bajista anulado', GRN, 'Entre 0.5607 y 0.7365. El cierre bajo 0.49 del 19 Oct quedó como un barrido: el piso de la bandera se recuperó al cierre y el path alcista vuelve — 0.6836 (cierre del 7 Oct) y el retest de 0.7365. Sumar solo con 2× volumen y NOS subiendo más que SOL; sin eso, es un rebote largo.'],
+          failed: ['0.49 CERRADO — sesgo bajista; el rebote es para reducir', RED, `Bajo 0.5607 y sobre 0.3947. La invalidación se cumplió al cierre del 19 Oct (0.4826): el impulso devolvió más de la mitad y el tramo fue rotación de sector. Las alzas a 0.527–0.5607 (EMA20 y piso de la bandera) son para reducir; la EMA50 (0.4574) es el +1M y el máximo de junio (0.3947) el +3M; el rail del año está en ~${supLine.toFixed(3)}. Reabre el caso solo un cierre sobre 0.5607.`],
           broken: ['MÁXIMO DE JUNIO PERDIDO — de vuelta al triángulo', RED, 'Bajo 0.3947. Un impulso que se devuelve entero suele llegar al nivel del breakout: 0.3457 (EMA200) → 0.3125 → 0.2675. No promediar a la baja sin volumen de capitulación.'],
         };
         const z = zone ? Z[zone] : ['CARGANDO', 'var(--text-muted)', ''];
@@ -670,16 +673,16 @@ export default function NosanaTelemetry() {
             <div style={{ display: 'grid', gridTemplateColumns: mb ? '1fr' : 'repeat(3,1fr)', gap: 12, marginTop: 12, color: 'var(--text-secondary)' }}>
               <div>
                 <H c={RED}>Si ya tenés NOS</H>
-                <B c={RED}>Mantené solo mientras cierre sobre <b>0.49</b> — hoy el precio está debajo intradía y el cierre decide. El parcial de 0.47–0.49 del plan del 22 Sep ya se dio; el siguiente es <b>0.7365</b> si llega sin revenue publicado, y otro en 0.85.</B>
-                <B c={RED}>La EMA20 (0.527) cedió el 16 Oct y la mitad del impulso (0.502) se perdió intradía el 18 Oct: <b>no se suma</b>. La zona 0.49–0.502 solo era compra con vela de rechazo y volumen, y llegó con $0.49M — el volumen más bajo desde septiembre. Sumar vuelve al mapa con la EMA20 recuperada al cierre, no antes.</B>
-                <B c={RED}>Stop mental: cierre diario bajo <b>0.49</b> = el impulso devolvió la mitad y fue rotación de sector. Ahí se reduce en los rebotes a 0.50–0.527 (la mitad del impulso y la EMA20), piso en 0.4542 (EMA50) y el rail en {supLine.toFixed(3)}.</B>
+                <B c={RED}>El cierre bajo <b>0.49</b> se imprimió el 19 Oct (0.4826): el stop mental del plan se cumplió y el sesgo es bajista. El parcial de 0.47–0.49 del plan del 22 Sep ya se dio; lo que sigue es <b>reducir en el rebote a 0.527–0.5607</b> (EMA20 y piso de la bandera) lo que no querés tener en 0.4574 — el rebote de hoy (0.529, con la mitad del volumen) es exactamente ese lugar.</B>
+                <B c={RED}><b>No se suma.</b> El día verde de hoy no deshace el cierre bajo 0.49: lo deshace un cierre sobre <b>0.5607</b> con 2× volumen, que es donde la bandera se reconstruye. Un rebote de medio volumen ($0.57M) desde el nivel que anuló la tesis es cobertura de cortos, no demanda.</B>
+                <B c={RED}>Lo que quede después de reducir, con stop en el cierre bajo <b>0.4574</b> (EMA50, que coincide con el 61.8% del impulso, 0.4466): ahí el siguiente nivel es el máximo de junio (0.3947) y el rail del año en {supLine.toFixed(3)}.</B>
                 <B c={RED}>Si estás staked 181–365d: ya pagaste el costo. No rompas el lock por el chart, ni para arriba ni para abajo.</B>
               </div>
               <div>
                 <H c={GRN}>Si querés entrar</H>
-                <B c={GRN}>No persigas el rebote: después de +175% en tres semanas la bandera se rompió por abajo, la EMA20 cedió, el 0.49 se tocó y la red está igual — comprás el sector, no el activo. Y el sector se está yendo: NOS −17% en la semana con SOL −7%.</B>
-                <B c={GRN}>La entrada del plan (0.54–0.56) no confirmó y la de 0.49–0.502 llegó sin vela de rechazo ni volumen: las dos se cancelan. La próxima es el retest de la <b>EMA50 (0.4542)</b> que aguante al cierre con volumen sobre $1.2M y NOS subiendo más que SOL: 25% de la posición objetivo, stop en el cierre bajo 0.4542.</B>
-                <B c={GRN}>Entrada por fuerza: cierre diario &gt; <b>0.527</b> (EMA20 recuperada), después &gt; 0.5607 y &gt; 0.6836 con 2× volumen. Entrás más caro, pero con la bandera reconstruida.</B>
+                <B c={GRN}>No persigas el rebote: después de +175% en tres semanas la bandera se rompió por abajo, la EMA20 cedió, el 0.49 se cerró y la red está igual — comprás el sector, no el activo. Y el sector se está yendo: NOS −16% en la semana con SOL −6%.</B>
+                <B c={GRN}>Las entradas del plan (0.54–0.56 y 0.49–0.502) se cancelaron las dos. La próxima es el retest de la <b>EMA50 (0.4574)</b> que aguante al cierre con vela de rechazo, volumen sobre $1.2M y NOS subiendo más que SOL: 25% de la posición objetivo, stop en el cierre bajo 0.4466 (61.8% del impulso).</B>
+                <B c={GRN}>Entrada por fuerza: cierre diario &gt; <b>0.5607</b> (piso de la bandera recuperado) con 2× volumen, después &gt; 0.6836. Entrás más caro, pero con la bandera reconstruida y el sesgo de vuelta alcista.</B>
                 <B c={GRN}>Nunca full size en un alt de $47M con $0.5M de volumen diario: tu orden es el libro.</B>
               </div>
               <div>
@@ -889,7 +892,7 @@ export default function NosanaTelemetry() {
         {(() => {
           const t = trend;
           const col = !t ? 'var(--text-muted)' : t.score >= 5 ? GRN : t.score === 4 ? AMB : RED;
-          const inv = d?.price != null && d.price < TA.invalidation.level;
+          const inv = d?.price != null && (BEAR ? d.price > TA.invalidation.level : d.price < TA.invalidation.level);
           const tile = (k, v, sub, c) => (
             <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '8px 10px', minWidth: 0 }}>
               <div style={{ fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>{k}</div>
@@ -906,7 +909,7 @@ export default function NosanaTelemetry() {
                 {t && <div style={{ display: 'flex', gap: 3 }}>{t.checks.map((x, i) => <span key={i} title={x[0]} style={{ width: 14, height: 6, borderRadius: 2, background: x[1] ? col : 'rgba(255,255,255,.08)' }} />)}</div>}
                 {t && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t.score}/7 bullish checks</span>}
                 <div style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 700, letterSpacing: '.08em', color: inv ? RED : GRN }}>
-                  FORECAST BULL · {inv ? 'INVALIDATED ‹' : 'INTACT ›'} ${TA.invalidation.level}
+                  FORECAST {BEAR ? 'BEAR' : 'BULL'} · {inv ? (BEAR ? 'INVALIDATED ›' : 'INVALIDATED ‹') : (BEAR ? 'INTACT ‹' : 'INTACT ›')} ${TA.invalidation.level}
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', fontSize: 10.5, color: 'var(--text-muted)', marginTop: 8 }}>
@@ -945,26 +948,26 @@ export default function NosanaTelemetry() {
         <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: mb ? '1fr' : '1fr 1fr', gap: 10, fontSize: 11.5, lineHeight: 1.55, color: 'var(--text-secondary)', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>
           <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
             <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, marginBottom: 6, fontFamily: "'JetBrains Mono',monospace" }}>Pattern read</div>
-            <b>Impulso vertical, bandera rota por abajo, la EMA20 perdida y el 0.49 tocado.</b> Breakout del triángulo el 21 Sep (0.3125) → 0.49 el 1 Oct → 0.7365 el 5 Oct, sin un solo cierre debajo de la EMA20 en el camino: la medida del triángulo (0.47) se pasó en un 57%. Desde el 5 Oct: máximos decrecientes 0.7365 → 0.6836 → 0.6016, el piso de la bandera (0.5607) perdido el 13 Oct, la EMA20 perdida el 16 Oct (0.5084), dos cierres planos debajo de ella (0.5174, 0.5087) y hoy −8.6% a 0.474, debajo de la mitad del impulso (0.502) y de la invalidación (0.49) intradía. El impulso devolvió el 56% de su altura (0.469) en trece sesiones — más de lo que una continuación devuelve — y lo que sigue es la EMA50 (0.4542). La medida al 61.8% (0.85) vuelve a valer solo si el precio reconstruye la bandera sobre 0.5607 — la completa (1.03) no se usa para un alt de $47M.
-            <div style={{ marginTop: 6 }}><b>El 0.49 se tocó; el cierre decide.</b> La regla es cierre diario bajo 0.49, y el último cierre (0.5087) está 3.8% arriba — pero el precio ya está debajo, y las últimas tres veces que un nivel se tocó así en esta página (SOL 105, JUP 0.31, 2Z 0.0315) se cerró en la siguiente sesión: la decisión se escribe como si ya hubiera pasado. A favor: EMA50 (0.4542) sobre EMA200 (0.3457), la 200 subiendo 17% en 20 días, el precio todavía sobre las dos, y la caída sin volumen ($0.49M, un quinto del máximo del mes). En contra: la bandera resolvió abajo, la EMA20 cedió, la mitad del impulso se perdió, el RSI cruzó bajo 30 (19) en el nivel que anula la tesis y no en un piso, y la semana fue propia — −17% con SOL −7%, 2.5× el mercado — mientras la red no cambió: compute hours bajo 150k, revenue pagado sin publicar.</div>
+            <b>Impulso vertical, bandera rota por abajo, la EMA20 perdida y el 0.49 cerrado.</b> Breakout del triángulo el 21 Sep (0.3125) → 0.49 el 1 Oct → 0.7365 el 5 Oct, sin un solo cierre debajo de la EMA20 en el camino: la medida del triángulo (0.47) se pasó en un 57%. Desde el 5 Oct: máximos decrecientes 0.7365 → 0.6836 → 0.6016, el piso de la bandera (0.5607) perdido el 13 Oct, la EMA20 perdida el 16 Oct (0.5084), dos cierres planos debajo de ella (0.5174, 0.5087) y el 19 Oct el cierre bajo 0.49 (0.4826), con el 54% del impulso devuelto. Hoy +9.6% a 0.529, de vuelta sobre la mitad del impulso y pegado a la EMA20 (0.5279) con la mitad del volumen — el retest desde abajo, no la vuelta. Lo que sigue si el rebote falla es la EMA50 (0.4574), que coincide con el 61.8% del impulso (0.4466), y después el máximo de junio (0.3947). La medida al 61.8% (0.85) vuelve a valer solo si el precio reconstruye la bandera sobre 0.5607 — la completa (1.03) no se usa para un alt de $53M.
+            <div style={{ marginTop: 6 }}><b>El 0.49 se cerró; la regla se cumplió.</b> La lectura del 18 Oct ya se había escrito como si hubiera pasado — y pasó: 0.4826 al cierre, la cuarta vez en el mes que un nivel tocado así en esta página se cierra en la siguiente sesión (SOL 105, JUP 0.31, 2Z 0.0315, NOS 0.49). El rebote de hoy a 0.529 no lo deshace: la regla es simétrica, y lo que deshace un cierre bajo 0.49 es un cierre sobre 0.5607. A favor: EMA50 (0.4574) sobre EMA200 (0.3485), la 200 subiendo 16% en 20 días, el precio todavía sobre las dos, el MACD achicándose y la caída sin volumen. En contra: la bandera resolvió abajo, la EMA20 cedió, la mitad del impulso se perdió, la invalidación se cerró, el rebote llegó con $0.57M (la mitad del promedio) y la semana fue propia — −16% con SOL −6%, 2.6× el mercado — mientras la red no cambió: compute hours bajo 150k, revenue pagado sin publicar.</div>
           </div>
           <div style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
             <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, marginBottom: 6, fontFamily: "'JetBrains Mono',monospace" }}>What to watch this week</div>
             <b>Volumen.</b> {trend?.volRatio != null ? `El promedio de 20 días está en ${Math.round(trend.volRatio * 100)}% del de 90 días — ${trend.volRatio < 0.85 ? 'se está secando: el breakout se queda sin combustible' : trend.volRatio > 1.2 ? 'expandido: el movimiento tiene combustible' : 'plano'}.` : 'Cargando…'} El retest sano viene con volumen cayendo; un retest con volumen creciente es distribución.
-            <div style={{ marginTop: 6 }}><b>Secuencia que confirma el path alcista:</b> recuperar 0.49 y 0.502 al cierre → la EMA20 (<b>0.527</b>) al cierre con volumen sobre $1.2M → <b>0.5607</b> (piso de la bandera) → cierre sobre <b>0.6836</b> (techo del pullback) con 2× volumen → retest de 0.7365. Cada escalón es un punto para sumar el 25% de la posición objetivo, no antes; en 0.7365 sin revenue publicado, se vende parte. El 0.85 vuelve al mapa solo con la bandera reconstruida.</div>
-            <div style={{ marginTop: 6 }}><b>Secuencia que lo rompe:</b> el piso de la bandera (0.5607) se perdió el 13 Oct, la EMA20 el 16 Oct y la mitad del impulso (0.502) hoy intradía; lo que sigue es el cierre bajo <b>0.49</b> = invalidación — el precio ya está debajo. Un impulso parabólico que devuelve el 50% suele devolverlo entero: ahí el sesgo vuelve a lateral-bajista, 0.4542 (EMA50) y 0.3947 son los siguientes niveles, y las alzas a 0.50–0.527 son para reducir. <b>Relativo:</b> NOS −16.8% vs SOL −6.7%; hasta que NOS suba más que SOL en un día verde, la rotación de sector sigue saliendo.</div>
+            <div style={{ marginTop: 6 }}><b>Secuencia que anula el sesgo bajista:</b> sostener 0.49 y 0.502 al cierre → la EMA20 (<b>0.5279</b>) al cierre con volumen sobre $1.2M → cierre sobre <b>0.5607</b> (piso de la bandera) con 2× volumen = invalidación bajista cumplida y bandera reconstruida → <b>0.6836</b> (techo del pullback) → retest de 0.7365. Hasta 0.5607 cada escalón es un lugar para reducir, no para sumar; desde 0.5607 cada escalón es un punto para sumar el 25% de la posición objetivo. El 0.85 vuelve al mapa solo con la bandera reconstruida.</div>
+            <div style={{ marginTop: 6 }}><b>Secuencia que lo confirma:</b> el rebote a 0.527–0.5607 falla sin volumen → cierre bajo <b>0.49</b> de vuelta → <b>0.4574</b> (EMA50 = 61.8% del impulso, el +1M) → 0.3947 (máximo de junio, el +3M). Un impulso parabólico que devolvió el 54% suele devolverlo entero; con $1.5M+ de volumen bajo 0.4574, 0.3947 llega rápido. <b>Relativo:</b> NOS −15.6% vs SOL −6.1%; hasta que NOS suba más que SOL en un día verde con volumen, la rotación de sector sigue saliendo y el rebote de hoy es cobertura.</div>
             <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(245,158,11,.25)' }}>
               <div style={{ fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: AMB, fontFamily: "'JetBrains Mono',monospace", marginBottom: 3 }}>Decisión</div>
-              <div>› Con posición: <b>mantener solo con el cierre sobre 0.49; no sumar</b>. El precio está debajo intradía: si el cierre lo confirma, se reduce en los rebotes a 0.50–0.527, no en pánico. El parcial de 0.47–0.49 ya se dio; el siguiente es 0.7365 si llega sin revenue publicado.</div>
-              <div>› Sin posición: <b>las dos entradas se cancelan</b> — 0.54–0.56 no confirmó y 0.49–0.502 llegó sin vela de rechazo ni volumen. La próxima es el retest de la EMA50 (0.4542) que aguante al cierre con volumen sobre $1.2M, 25% del tamaño objetivo; o el cierre de vuelta sobre la EMA20 (0.527). Perseguir el rebote es pagar por un sector que se está yendo.</div>
-              <div>› Trigger único que anula el sesgo: <b>cierre diario &lt; 0.49</b>. Hoy el precio está debajo; si el cierre lo imprime, el impulso devolvió la mitad y fue rotación de sector, no tesis.</div>
+              <div>› Con posición: <b>reducir en el rebote a 0.527–0.5607; no sumar</b>. El cierre bajo 0.49 se imprimió (0.4826): el impulso devolvió la mitad y fue rotación de sector. El rebote de hoy (0.529) es el lugar de reducir, no la vuelta; lo que quede, con stop en el cierre bajo 0.4574.</div>
+              <div>› Sin posición: <b>nada</b>. Las dos entradas del plan se cancelaron. La próxima es el retest de la EMA50 (0.4574) que aguante al cierre con vela de rechazo y volumen sobre $1.2M, 25% del tamaño objetivo; o el cierre sobre 0.5607 con 2× volumen. Perseguir un rebote de medio volumen es pagar por un sector que se está yendo.</div>
+              <div>› Trigger único que anula el sesgo bajista: <b>cierre diario &gt; 0.5607</b> (piso de la bandera) con 2× volumen. Ahí el 19 Oct fue un barrido, la bandera se reconstruye y el path alcista vuelve: 0.6836 → 0.7365.</div>
             </div>
           </div>
         </div>
         <div style={{ marginTop: 14, border: '1px solid var(--border)', borderRadius: 4, padding: '8px 4px 4px' }}>
           <div style={{ display: 'flex', gap: 14, fontSize: 10.5, padding: '0 10px 4px', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
-            <span style={{ color: GRN, fontWeight: 800, letterSpacing: '.1em' }}>BIAS: {TA.bias}</span>
-            <span><span style={{ color: GRN }}>▬</span> forecast path</span>
+            <span style={{ color: BEAR ? RED : GRN, fontWeight: 800, letterSpacing: '.1em' }}>BIAS: {TA.bias}</span>
+            <span><span style={{ color: BEAR ? RED : GRN }}>▬</span> forecast path</span>
             <span><span style={{ color: RED }}>╌</span> invalidation</span>
             <span style={{ marginLeft: 'auto' }}>path set <b style={{ color: 'var(--text-primary)' }}>{TA.reviewed}</b>{stamps.atRead != null ? ` at $${stamps.atRead.toFixed(4)}` : ''} · log scale · x = √time · shade = tolerance</span>
           </div>
@@ -977,7 +980,7 @@ export default function NosanaTelemetry() {
               <div key={p.h} style={{ border: '1px solid var(--border)', borderRadius: 4, padding: '10px 12px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                   <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '.08em', color: 'var(--text-secondary)' }}>{p.h}</span>
-                  <span style={{ fontSize: 18, fontWeight: 800, color: GRN }}>${p.target.toFixed(2)} <span style={{ fontSize: 10.5, fontWeight: 500, color: 'var(--text-muted)' }}>{px ? `${p.target / px - 1 >= 0 ? '+' : ''}${Math.round((p.target / px - 1) * 100)}%` : ''}</span></span>
+                  <span style={{ fontSize: 18, fontWeight: 800, color: BEAR ? RED : GRN }}>${p.target.toFixed(2)} <span style={{ fontSize: 10.5, fontWeight: 500, color: 'var(--text-muted)' }}>{px ? `${p.target / px - 1 >= 0 ? '+' : ''}${Math.round((p.target / px - 1) * 100)}%` : ''}</span></span>
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, lineHeight: 1.5, fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>{p.how}</div>
               </div>

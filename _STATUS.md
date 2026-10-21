@@ -1,10 +1,13 @@
 # 10AMPRO Hub — _STATUS.md
-**Last updated:** October 2, 2026
+**Last updated:** October 21, 2026
 **Live URL:** https://10ampro-hub.vercel.app · **Prod domain:** https://mercados.10am.pro
 **Repo:** 10amalpha/10ampro-hub
 **Vercel Project ID:** prj_lKkui80lHh4x3Fietp6nC4CRfupB
 
 ---
+
+## Oct 21, 2026
+- **SPCX (SpaceX, Nasdaq) added** to the watchlist (`lib/watchlist.js`, after IREN) and the earnings feed (`lib/briefing.js`, 🚀). NAUT was already in both (Oct 2). Commit d90ffcb.
 
 ## Recent changes (Oct 2, 2026)
 

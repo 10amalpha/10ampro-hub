@@ -5,7 +5,7 @@ export const TOKEN = {
   sector: 'Solana MEV & liquid staking',
   tagline: 'MEV tips, JitoSOL TVL y revenue real — ¿el token captura lo que la red genera?',
   description: 'Jito ($JTO) en vivo: tips MEV, TVL de JitoSOL, fees y revenue del protocolo, supply overhang on-chain, TA con forecast y tripwires de la tesis. 10AMPRO.',
-  stance: 'accumulate-on-weakness', reviewed: '21 Oct 2026',
+  stance: 'accumulate-on-weakness', reviewed: '23 Oct 2026',
   catalyst: {
     title: 'SGP-0002 aprobada — y la salvaron los holders de JitoSOL',
     date: 'resultado 28 Ago 2026 · 67.0% vs 66.67% · + BAM preconfirmations en vivo desde el 9 Sep',

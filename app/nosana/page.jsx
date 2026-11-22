@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { taStamps } from '../lib/thesis/stamp';
 import RelativeLayer from '../lib/thesis/RelativeLayer';
-import { TA, zones, HoldBullets, EnterBullets, PatternRead, WatchSequences, DecisionLines } from './ta.content';
+import { TA, REVIEWED, zones, HoldBullets, EnterBullets, PatternRead, WatchSequences, DecisionLines } from './ta.content';
 
 // ============================================================
 // NOSANA // NETWORK TELEMETRY
@@ -24,7 +24,7 @@ const RED = '#ef4444';
 const SEED = {
   completed: 4115790, jobHours: 4125332, hosts: 826, running: 826, queued: 34,
   price: 0.2823, mcap: 28233000, ath: 7.83, peakHours: 220000,
-  hostsBaseline: 965, reviewed: '21 Nov 2026',
+  hostsBaseline: 965, reviewed: REVIEWED, // the "Última actualización" date lives in ta.content.jsx so the daily refresh never has to push this file for a date bump
 };
 
 
